@@ -1,4 +1,9 @@
-"""Train WheelNet: python scripts/train_nn.py MSH [epochs]"""
+"""Train WheelNet: python scripts/train_nn.py MSH [epochs] [event] [key=value ...]
+
+key=value pairs override WheelNet kwargs (d, heads, hist_layers, pack_layers, dropout, cross,
+others, tied_bag, meta) or training settings (lr, batch, wd). val_only=1 skips the test set and writes
+nothing, for architecture search.
+"""
 import json
 import pickle
 import sys
@@ -14,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from openlane.data import ROOT, load_tensors  # noqa: E402
 from openlane.evaluate import metrics  # noqa: E402
 from openlane.features import wheel_tensors  # noqa: E402
-from openlane.nn import WHEEL_PICKS, DraftDataset, WheelNet, collate  # noqa: E402
+from openlane.nn import WHEEL_PICKS, DraftDataset, WheelNet, card_features, collate  # noqa: E402
 
 DEV = "mps" if torch.backends.mps.is_available() else "cpu"
 
@@ -23,8 +28,8 @@ def predict(model, loader):
     model.eval()
     out = []
     with torch.no_grad():
-        for pack, pick, idx, copies, label, mask in loader:
-            logit = model(pack.to(DEV), pick.to(DEV), idx.to(DEV), copies.to(DEV), mask.to(DEV))
+        for *x, label, mask in loader:
+            logit = model(*(v.to(DEV) for v in x), mask.to(DEV))
             out.append(torch.sigmoid(logit).cpu().numpy())
     return np.concatenate(out)
 
@@ -39,32 +44,45 @@ def flat(ds, prob):
     })
 
 
-def main(set_code: str, epochs: str = "8", event: str = "PremierDraft"):
+TRAIN_KEYS = {"lr": 1e-3, "batch": 128, "wd": 0.01, "val_only": 0}
+
+
+def parse(kv: list[str]):
+    cfg = {k: float(v) if "." in v or "e-" in v else int(v) for k, v in (a.split("=") for a in kv)}
+    train = {k: type(d)(cfg.pop(k, d)) for k, d in TRAIN_KEYS.items()}
+    return cfg, train
+
+
+def main(set_code: str, epochs: str = "8", event: str = "PremierDraft", *kv: str):
     epochs = int(epochs)
+    cfg, tr = parse(list(kv))
     torch.manual_seed(0)
     feat_dir = ROOT / "data" / "features" / f"{set_code}.{event}"
     out = ROOT / "results" / f"{set_code}.{event}"
     splits = pickle.load(open(feat_dir / "meta.pkl", "rb"))["splits"]
     t = load_tensors(set_code, event)
     passed, back = wheel_tensors(t)
+    feats = card_features(t.meta) if cfg.pop("meta", 1) else None
+    n_cards = len(t.names)
     ds = {k: DraftDataset(t, passed, back, v) for k, v in splits.items()}
     del t, passed, back
-    loaders = {k: torch.utils.data.DataLoader(v, batch_size=128, shuffle=(k == "train"),
+    loaders = {k: torch.utils.data.DataLoader(v, batch_size=tr["batch"], shuffle=(k == "train"),
                                               collate_fn=collate) for k, v in ds.items()}
 
-    model = WheelNet(ds["train"].pack.shape[-1]).to(DEV)
-    opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)
+    model = WheelNet(n_cards, card_feats=feats, **cfg).to(DEV)
+    opt = torch.optim.AdamW(model.parameters(), lr=tr["lr"], weight_decay=tr["wd"])
     steps = epochs * len(loaders["train"])
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=1e-3, total_steps=steps, pct_start=0.05)
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=tr["lr"], total_steps=steps, pct_start=0.05)
+    print(f"cfg={cfg} train={tr}")
     print(f"device={DEV} params={sum(p.numel() for p in model.parameters()):,} steps={steps}")
 
     best, best_state = 1e9, None
     for ep in range(epochs):
         model.train()
         t0, tot, n = time.time(), 0.0, 0
-        for pack, pick, idx, copies, label, mask in loaders["train"]:
-            pack, pick, idx, copies, label, mask = (x.to(DEV) for x in (pack, pick, idx, copies, label, mask))
-            logit = model(pack, pick, idx, copies, mask)
+        for batch in loaders["train"]:
+            *x, label, mask = (v.to(DEV) for v in batch)
+            logit = model(*x, mask)
             loss = F.binary_cross_entropy_with_logits(logit[mask], label[mask].float())
             opt.zero_grad()
             loss.backward()
@@ -79,8 +97,11 @@ def main(set_code: str, epochs: str = "8", event: str = "PremierDraft"):
         if vm["logloss"] < best:
             best, best_state = vm["logloss"], {k: v.clone() for k, v in model.state_dict().items()}
 
+    print(f"best val_logloss={best:.4f}")
+    if tr["val_only"]:
+        return
     model.load_state_dict(best_state)
-    torch.save(best_state, out / "models" / "wheelnet.pt")
+    torch.save({"cfg": cfg, "card_feats": feats, "state": best_state}, out / "models" / "wheelnet.pt")
     test = flat(ds["test"], predict(model, loaders["test"]))
     test.write_parquet(out / "test_predictions_wheelnet.parquet")
     res = metrics(test["wheeled"].to_numpy(), test["wheelnet"].to_numpy())
