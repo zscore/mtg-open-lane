@@ -1,0 +1,4 @@
+warning: 1 returning packs are not subsets of the passed pack; clipping
+MSH: 5 weeks, drafts per week [27736, 15684, 11425, 10190, 3574]
+week 1: lookup_frozen=0.4663  lookup_refit=0.4663  retrain=0.4301  frozen=0.4301  finetune=0.4301  replay=0.4301  (1674s)
+week 2: lookup_frozen=0.4652  lookup_refit=0.4598  retrain=0.4193  frozen=0.4238  finetune=0.4202  replay=0.4205  (1822s)

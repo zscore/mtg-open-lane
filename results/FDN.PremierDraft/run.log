@@ -1,0 +1,36 @@
+=== FDN 12:39:49
+FDN PremierDraft: 130935 complete drafts, 286 cards, 14-card packs  (10s)
+  train: 91654 drafts -> 17,240,992 examples, wheel rate 0.334  (60s)
+  val: 19640 drafts -> 3,694,605 examples, wheel rate 0.334  (68s)
+  test: 19641 drafts -> 3,694,811 examples, wheel rate 0.334  (75s)
+GBM/baselines fit on 60,000 of 91,654 training drafts
+prior_by_pick                logloss=0.6071  brier=0.2101  auc=0.6387  ece=0.0000
+alsa_ata_logreg              logloss=0.4614  brier=0.1517  auc=0.8322  ece=0.0091
+card_x_pick_rate             logloss=0.4591  brier=0.1513  auc=0.8334  ece=0.0059
+lgbm_all                     logloss=0.4241  brier=0.1392  auc=0.8622  ece=0.0026
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/FDN.PremierDraft
+wheelnet epochs=4
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,816,193 steps=2868
+epoch 0: train_loss=0.4576 val_logloss=0.4254 val_auc=0.8615 (380s)
+epoch 1: train_loss=0.4313 val_logloss=0.4230 val_auc=0.8631 (368s)
+epoch 2: train_loss=0.4278 val_logloss=0.4203 val_auc=0.8651 (369s)
+epoch 3: train_loss=0.4258 val_logloss=0.4195 val_auc=0.8657 (368s)
+best val_logloss=0.4195
+wheelnet test {'logloss': 0.4201531410217285, 'brier': 0.13769596815109253, 'auc': 0.8652597205364105, 'ece': 0.001972396397682442}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.607137 ┆ 0.210081 ┆ 0.63867  ┆ … ┆ -0.315774 ┆ 0.607156 ┆ 0.607148 ┆ 0.607107 │
+│ alsa_ata_logre ┆ 0.461429 ┆ 0.151694 ┆ 0.832171 ┆ … ┆ 0.0       ┆ 0.449409 ┆ 0.464826 ┆ 0.470051 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.459125 ┆ 0.151251 ┆ 0.833439 ┆ … ┆ 0.004995  ┆ 0.4488   ┆ 0.461756 ┆ 0.466815 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.424053 ┆ 0.1392   ┆ 0.862204 ┆ … ┆ 0.081001  ┆ 0.418893 ┆ 0.428256 ┆ 0.425009 │
+│ wheelnet       ┆ 0.420153 ┆ 0.137696 ┆ 0.86526  ┆ … ┆ 0.089453  ┆ 0.419455 ┆ 0.422167 ┆ 0.418837 │
+│ ensemble       ┆ 0.420171 ┆ 0.137745 ┆ 0.865246 ┆ … ┆ 0.089415  ┆ 0.418228 ┆ 0.423034 ┆ 0.41925  │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== FDN done status=0 13:09:42

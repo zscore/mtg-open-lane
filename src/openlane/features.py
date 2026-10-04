@@ -1,6 +1,6 @@
 """Wheel labels and features.
 
-A pack seen at pick p (p <= 5) returns at pick p + 8 after the other 7 drafters each take one
+A pack seen at pick p (p < n_picks - 8, so p <= 5 for 14-card packs) returns at pick p + 8 after the other 7 drafters each take one
 card. One example = (draft, pack k, pick p, card c) for every card c the user passes; the label is
 whether at least one copy of c is still in the pack when it comes back.
 
@@ -17,18 +17,29 @@ from dataclasses import dataclass
 import numpy as np
 import polars as pl
 
-from .data import COLORS, N_PACKS, N_PICKS, N_SEATS, RARITIES, DraftTensors
+from .data import COLORS, N_PACKS, N_SEATS, RARITIES, DraftTensors
 
-WHEEL_PICKS = N_PICKS - N_SEATS  # picks 0..5 can wheel
+
+def n_wheel(t: DraftTensors) -> int:
+    """Number of wheel-eligible picks per pack (6 for 14-card packs)."""
+    return t.n_picks - N_SEATS
 
 
 def wheel_tensors(t: DraftTensors) -> tuple[np.ndarray, np.ndarray]:
     """passed[d,k,p,c] = copies passed on at pick p; back[d,k,p,c] = copies that came back."""
-    passed = t.pack[:, :, :WHEEL_PICKS].copy()
+    W = n_wheel(t)
+    passed = t.pack[:, :, :W].copy()
     D = passed.shape[0]
-    d, k, p = np.meshgrid(np.arange(D), np.arange(N_PACKS), np.arange(WHEEL_PICKS), indexing="ij")
-    passed[d, k, p, t.pick[:, :, :WHEEL_PICKS]] -= 1
-    back = t.pack[:, :, N_SEATS:]
+    d, k, p = np.meshgrid(np.arange(D), np.arange(N_PACKS), np.arange(W), indexing="ij")
+    passed[d, k, p, t.pick[:, :, :W]] -= 1
+    neg = passed < 0
+    if neg.any():  # malformed records whose pick is not in the pack shown
+        print(f"warning: {neg.any(-1).sum()} picks are not in their pack; ignoring those picks")
+        passed[neg] = 0
+    back = t.pack[:, :, N_SEATS:].copy()
+    if t.p1p1_missing:  # P1P1's pack is unknown, so it yields no examples
+        passed[:, 0, 0] = 0
+        back[:, 0, 0] = 0
     bad = (back > passed).any(-1)
     if bad.any():  # a handful of malformed 17Lands records; the returning pack must be a subset
         print(f"warning: {bad.sum()} returning packs are not subsets of the passed pack; clipping")
@@ -41,34 +52,44 @@ class CardStats:
     ata: np.ndarray        # average pick index when taken by the user
     alsa: np.ndarray       # average last pick index at which the card was seen
     take_rate: np.ndarray  # P(user takes c | c in pack)
-    wheel_cp: np.ndarray   # [C, 6] empirical wheel rate by pick (smoothed)
+    wheel_cp: np.ndarray   # [C, n_wheel] empirical wheel rate by pick (smoothed)
     wheel_c: np.ndarray    # overall empirical wheel rate
     seen: np.ndarray       # number of passed instances in train
 
 
-def fit_card_stats(t: DraftTensors, train: np.ndarray, passed, back, prior_n: float = 20.0) -> CardStats:
-    C = len(t.names)
+def fit_card_stats(t: DraftTensors, train: np.ndarray, passed, back, prior_n: float = 20.0,
+                   chunk: int = 8000) -> CardStats:
+    C, n = len(t.names), t.n_picks
     pick = t.pick[train].reshape(-1)
-    pnum = np.broadcast_to(np.arange(N_PICKS), t.pick[train].shape).reshape(-1)
+    pnum = np.broadcast_to(np.arange(n), t.pick[train].shape).reshape(-1)
     n_taken = np.bincount(pick, minlength=C)
     ata = np.bincount(pick, weights=pnum, minlength=C) / np.maximum(n_taken, 1)
+    # take rate needs the pack the card was taken from, which P1P1 lacks in some sets
+    n_taken_seen = n_taken - (np.bincount(t.pick[train, 0, 0], minlength=C) if t.p1p1_missing else 0)
 
-    present = t.pack[train] > 0  # [D,3,14,C]
-    last = np.where(present, np.arange(N_PICKS)[None, None, :, None], -1).max(axis=2)  # [D,3,C]
-    seen_mask = last >= 0
-    alsa = np.where(seen_mask, last, 0).sum((0, 1)) / np.maximum(seen_mask.sum((0, 1)), 1)
-    n_seen_pick = present.sum((0, 1, 2))
-    take_rate = n_taken / np.maximum(n_seen_pick, 1)
+    last_sum, n_rounds_seen, n_seen_pick = (np.zeros(C, np.int64) for _ in range(3))
+    n_cp = np.zeros((C, n_wheel(t)))
+    w_cp = np.zeros((C, n_wheel(t)))
+    pnum8 = np.arange(n, dtype=np.int8)[None, None, :, None]
+    for i in range(0, len(train), chunk):  # chunked: a [D,3,14,C] intermediate is ~20GB for big sets
+        idx = train[i:i + chunk]
+        present = t.pack[idx] > 0                                        # [d,3,14,C]
+        last = np.where(present, pnum8, np.int8(-1)).max(axis=2)         # [d,3,C]
+        seen = last >= 0
+        last_sum += np.where(seen, last, 0).sum((0, 1))
+        n_rounds_seen += seen.sum((0, 1))
+        n_seen_pick += present.sum((0, 1, 2))
+        n_cp += (passed[idx] > 0).sum((0, 1)).T                          # [C, n_wheel]
+        w_cp += (back[idx] > 0).sum((0, 1)).T
+    alsa = last_sum / np.maximum(n_rounds_seen, 1)
+    take_rate = n_taken_seen / np.maximum(n_seen_pick, 1)
 
-    pa, bk = passed[train] > 0, back[train] > 0
-    n_cp = pa.sum((0, 1)).T.astype(np.float64)       # [C, 6]
-    w_cp = bk.sum((0, 1)).T.astype(np.float64)
-    global_p = w_cp.sum(0) / n_cp.sum(0)             # [6]
+    global_p = w_cp.sum(0) / n_cp.sum(0)             # [n_wheel]
     wheel_cp = (w_cp + prior_n * global_p) / (n_cp + prior_n)
     wheel_c = (w_cp.sum(1) + prior_n * global_p.mean()) / (n_cp.sum(1) + prior_n)
     # unseen cards: fall back to rarity-agnostic late-ish defaults
-    ata = np.where(n_taken > 0, ata, N_PICKS - 1)
-    alsa = np.where(seen_mask.sum((0, 1)) > 0, alsa, N_PICKS - 1)
+    ata = np.where(n_taken > 0, ata, n - 1)
+    alsa = np.where(n_rounds_seen > 0, alsa, n - 1)
     f = lambda a: a.astype(np.float32)
     return CardStats(f(ata), f(alsa), f(take_rate), f(wheel_cp), f(wheel_c), n_cp.sum(1))
 
@@ -91,7 +112,7 @@ def build_examples(t: DraftTensors, stats: CardStats, passed, back, drafts: np.n
     rarity = meta["rarity"].replace_strict({r: i for i, r in enumerate(RARITIES)}, default=5).to_numpy()
 
     pack = t.pack[drafts]
-    pool = t.pool[drafts]
+    pool = t.pool(drafts)
     pk = t.pick[drafts]
     P = passed[drafts]
     B = back[drafts]
@@ -101,7 +122,8 @@ def build_examples(t: DraftTensors, stats: CardStats, passed, back, drafts: np.n
     # better[c', c] = 1 if c' is usually taken before c (lower empirical wheel rate at that pick)
     per_pick_better = []
     per_pick_better_col = []
-    for p in range(WHEEL_PICKS):
+    W = P.shape[2]
+    for p in range(W):
         w = stats.wheel_cp[:, p]
         better = (w[:, None] < w[None, :]).astype(np.float32)          # [C', C]
         per_pick_better.append(_dot(P[:, :, p], better))                 # [D,3,C]
@@ -111,24 +133,24 @@ def build_examples(t: DraftTensors, stats: CardStats, passed, back, drafts: np.n
     n_better = np.stack(per_pick_better, 2)                               # [D,3,6,C]
     n_better_col = np.stack(per_pick_better_col, 2)                       # [D,3,6,C,5]
     # expected number of 7 picks absorbed by *other* cards ~ sum of their take propensity
-    take_prop = 1.0 - stats.wheel_cp                                      # [C,6]
+    take_prop = 1.0 - stats.wheel_cp                                      # [C,W]
     pack_take_mass = np.stack([_dot(P[:, :, p], take_prop[:, p:p + 1])[..., 0]
-                               for p in range(WHEEL_PICKS)], 2)          # [D,3,6]
-    pack_size = P.sum(-1)                                                 # [D,3,6]
+                               for p in range(W)], 2)          # [D,3,W]
+    pack_size = P.sum(-1)                                                 # [D,3,W]
     pack_col_mass = _dot(P, col)                                          # [D,3,6,5]
 
     # ---------------- signals ----------------
     # lateness: a card seen at pick q that is usually gone by then is evidence that the upstream
     # drafters are not in its colors.
-    late_w = np.maximum(0, np.arange(N_PICKS)[None, :] - stats.alsa[:, None])   # [C,14]
-    late = np.stack([_dot(pack[:, :, q], col * late_w[:, q:q + 1]) for q in range(N_PICKS)], 2)
+    late_w = np.maximum(0, np.arange(t.n_picks)[None, :] - stats.alsa[:, None])   # [C,14]
+    late = np.stack([_dot(pack[:, :, q], col * late_w[:, q:q + 1]) for q in range(t.n_picks)], 2)
     late[:, :, 0] = 0                                                      # fresh pack: no signal
     late_cum = np.cumsum(late, 2)                                          # [D,3,14,5]
     late_round_total = late.sum(2)                                         # [D,3,5]
 
     # wheel residual per color per round: what came back beyond card-level expectation
     resid = np.zeros((D, N_PACKS, 5), np.float32)
-    for p in range(WHEEL_PICKS):
+    for p in range(W):
         r = ((B[:, :, p] > 0) - stats.wheel_cp[None, None, :, p]) * (P[:, :, p] > 0)
         resid += _dot(r, col)
     # prior-round aggregates split by passing direction relative to the current round

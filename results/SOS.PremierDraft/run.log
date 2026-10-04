@@ -1,0 +1,39 @@
+=== SOS 11:34:16
+SOS PremierDraft: 107459 complete drafts, 346 cards, 14-card packs  (3s)
+warning: 2 returning packs are not subsets of the passed pack; clipping
+  train: 75221 drafts -> 14,216,769 examples, wheel rate 0.333  (37s)
+  val: 16119 drafts -> 3,046,491 examples, wheel rate 0.333  (44s)
+  test: 16119 drafts -> 3,046,491 examples, wheel rate 0.333  (51s)
+GBM/baselines fit on 60,000 of 75,221 training drafts
+prior_by_pick                logloss=0.6067  brier=0.2099  auc=0.6389  ece=0.0000
+alsa_ata_logreg              logloss=0.4691  brier=0.1542  auc=0.8239  ece=0.0086
+card_x_pick_rate             logloss=0.4683  brier=0.1543  auc=0.8239  ece=0.0079
+lgbm_all                     logloss=0.4284  brier=0.1402  auc=0.8584  ece=0.0041
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/SOS.PremierDraft
+wheelnet epochs=5
+warning: 2 returning packs are not subsets of the passed pack; clipping
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,827,713 steps=2940
+epoch 0: train_loss=0.4683 val_logloss=0.4268 val_auc=0.8601 (308s)
+epoch 1: train_loss=0.4332 val_logloss=0.4225 val_auc=0.8635 (354s)
+epoch 2: train_loss=0.4289 val_logloss=0.4192 val_auc=0.8661 (328s)
+epoch 3: train_loss=0.4257 val_logloss=0.4187 val_auc=0.8663 (324s)
+epoch 4: train_loss=0.4237 val_logloss=0.4177 val_auc=0.8670 (322s)
+best val_logloss=0.4177
+wheelnet test {'logloss': 0.4150353968143463, 'brier': 0.13534623384475708, 'auc': 0.8686626232924829, 'ece': 0.0018672943451789618}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.606717 ┆ 0.209896 ┆ 0.638889 ┆ … ┆ -0.293246 ┆ 0.606717 ┆ 0.606717 ┆ 0.606717 │
+│ alsa_ata_logre ┆ 0.469143 ┆ 0.154227 ┆ 0.823943 ┆ … ┆ 0.0       ┆ 0.461171 ┆ 0.472441 ┆ 0.473817 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.468263 ┆ 0.154311 ┆ 0.823855 ┆ … ┆ 0.001876  ┆ 0.461202 ┆ 0.470821 ┆ 0.472766 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.428355 ┆ 0.140201 ┆ 0.85842  ┆ … ┆ 0.086942  ┆ 0.431369 ┆ 0.429667 ┆ 0.424028 │
+│ wheelnet       ┆ 0.415035 ┆ 0.135346 ┆ 0.868663 ┆ … ┆ 0.115333  ┆ 0.427343 ┆ 0.412003 ┆ 0.40576  │
+│ ensemble       ┆ 0.417787 ┆ 0.136277 ┆ 0.866806 ┆ … ┆ 0.109467  ┆ 0.427371 ┆ 0.416109 ┆ 0.409883 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== SOS done status=0 12:07:22

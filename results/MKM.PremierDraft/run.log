@@ -1,0 +1,35 @@
+=== MKM 15:35:35
+MKM PremierDraft: 157553 complete drafts, 326 cards, 13-card packs  (5s)
+  train: 110287 drafts -> 16,456,192 examples, wheel rate 0.300  (48s)
+  val: 23633 drafts -> 3,526,526 examples, wheel rate 0.300  (56s)
+  test: 23633 drafts -> 3,526,746 examples, wheel rate 0.300  (64s)
+GBM/baselines fit on 60,000 of 110,287 training drafts
+prior_by_pick                logloss=0.5855  brier=0.2000  auc=0.6331  ece=0.0000
+alsa_ata_logreg              logloss=0.4814  brier=0.1590  auc=0.8022  ece=0.0093
+card_x_pick_rate             logloss=0.4842  brier=0.1602  auc=0.7988  ece=0.0110
+lgbm_all                     logloss=0.4519  brier=0.1485  auc=0.8305  ece=0.0054
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/MKM.PremierDraft
+wheelnet epochs=3
+cfg={'n_picks': 13} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,822,721 steps=2586
+epoch 0: train_loss=0.4875 val_logloss=0.4578 val_auc=0.8249 (363s)
+epoch 1: train_loss=0.4675 val_logloss=0.4517 val_auc=0.8305 (347s)
+epoch 2: train_loss=0.4642 val_logloss=0.4503 val_auc=0.8316 (342s)
+best val_logloss=0.4503
+wheelnet test {'logloss': 0.4487133026123047, 'brier': 0.1473848819732666, 'auc': 0.8331771372687494, 'ece': 0.003235826248272961}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.58546  ┆ 0.200045 ┆ 0.633081 ┆ … ┆ -0.216114 ┆ 0.585488 ┆ 0.585484 ┆ 0.585406 │
+│ alsa_ata_logre ┆ 0.481418 ┆ 0.158952 ┆ 0.802165 ┆ … ┆ 0.0       ┆ 0.469867 ┆ 0.485224 ┆ 0.489162 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.48424  ┆ 0.160241 ┆ 0.798815 ┆ … ┆ -0.005861 ┆ 0.475656 ┆ 0.487316 ┆ 0.489746 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.451886 ┆ 0.148517 ┆ 0.830463 ┆ … ┆ 0.061345  ┆ 0.446551 ┆ 0.456647 ┆ 0.452459 │
+│ wheelnet       ┆ 0.448713 ┆ 0.147385 ┆ 0.833177 ┆ … ┆ 0.067935  ┆ 0.452281 ┆ 0.450198 ┆ 0.443662 │
+│ ensemble       ┆ 0.448095 ┆ 0.14712  ┆ 0.833957 ┆ … ┆ 0.06922   ┆ 0.448149 ┆ 0.451091 ┆ 0.445045 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== MKM done status=0 15:57:36

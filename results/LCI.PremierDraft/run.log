@@ -1,0 +1,40 @@
+=== LCI 13:09:42
+LCI PremierDraft: 134970 complete drafts, 291 cards, 15-card packs  (4s)
+warning: 5 picks are not in their pack; ignoring those picks
+warning: 1 returning packs are not subsets of the passed pack; clipping
+  train: 94479 drafts -> 21,824,647 examples, wheel rate 0.364  (49s)
+  val: 20245 drafts -> 4,676,595 examples, wheel rate 0.364  (58s)
+  test: 20246 drafts -> 4,676,826 examples, wheel rate 0.364  (67s)
+GBM/baselines fit on 60,000 of 94,479 training drafts
+prior_by_pick                logloss=0.6224  brier=0.2172  auc=0.6429  ece=0.0000
+alsa_ata_logreg              logloss=0.4860  brier=0.1607  auc=0.8239  ece=0.0053
+card_x_pick_rate             logloss=0.4858  brier=0.1610  auc=0.8235  ece=0.0097
+lgbm_all                     logloss=0.4484  brier=0.1475  auc=0.8540  ece=0.0054
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/LCI.PremierDraft
+wheelnet epochs=4
+warning: 5 picks are not in their pack; ignoring those picks
+warning: 1 returning packs are not subsets of the passed pack; clipping
+cfg={'n_picks': 15} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,818,305 steps=2956
+epoch 0: train_loss=0.4854 val_logloss=0.4482 val_auc=0.8539 (712s)
+epoch 1: train_loss=0.4600 val_logloss=0.4440 val_auc=0.8571 (710s)
+epoch 2: train_loss=0.4568 val_logloss=0.4417 val_auc=0.8586 (710s)
+epoch 3: train_loss=0.4550 val_logloss=0.4413 val_auc=0.8588 (711s)
+best val_logloss=0.4413
+wheelnet test {'logloss': 0.44338199496269226, 'brier': 0.14561136066913605, 'auc': 0.857766989354194, 'ece': 0.0035916451956654652}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.622432 ┆ 0.217188 ┆ 0.642857 ┆ … ┆ -0.280594 ┆ 0.622432 ┆ 0.622432 ┆ 0.622432 │
+│ alsa_ata_logre ┆ 0.486049 ┆ 0.160697 ┆ 0.823874 ┆ … ┆ 0.0       ┆ 0.475017 ┆ 0.489577 ┆ 0.493554 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.485797 ┆ 0.160961 ┆ 0.823453 ┆ … ┆ 0.000518  ┆ 0.476229 ┆ 0.488554 ┆ 0.49261  │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.448415 ┆ 0.147476 ┆ 0.854016 ┆ … ┆ 0.077429  ┆ 0.445301 ┆ 0.452401 ┆ 0.447543 │
+│ wheelnet       ┆ 0.443382 ┆ 0.145611 ┆ 0.857767 ┆ … ┆ 0.087784  ┆ 0.446175 ┆ 0.444483 ┆ 0.439487 │
+│ ensemble       ┆ 0.443687 ┆ 0.14571  ┆ 0.857676 ┆ … ┆ 0.087155  ┆ 0.444623 ┆ 0.445875 ┆ 0.440564 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== LCI done status=0 14:03:30

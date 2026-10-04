@@ -1,0 +1,37 @@
+=== BLB 15:07:01
+BLB PremierDraft: 154585 complete drafts, 276 cards, 13-card packs  (5s)
+warning: 5 returning packs are not subsets of the passed pack; clipping
+  train: 108209 drafts -> 16,144,195 examples, wheel rate 0.300  (42s)
+  val: 23188 drafts -> 3,459,759 examples, wheel rate 0.300  (51s)
+  test: 23188 drafts -> 3,459,518 examples, wheel rate 0.300  (59s)
+GBM/baselines fit on 60,000 of 108,209 training drafts
+prior_by_pick                logloss=0.5854  brier=0.2000  auc=0.6330  ece=0.0000
+alsa_ata_logreg              logloss=0.4991  brier=0.1661  auc=0.7835  ece=0.0046
+card_x_pick_rate             logloss=0.4986  brier=0.1659  auc=0.7841  ece=0.0074
+lgbm_all                     logloss=0.4691  brier=0.1550  auc=0.8145  ece=0.0008
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/BLB.PremierDraft
+wheelnet epochs=4
+warning: 5 returning packs are not subsets of the passed pack; clipping
+cfg={'n_picks': 13} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,813,121 steps=3384
+epoch 0: train_loss=0.4970 val_logloss=0.4645 val_auc=0.8192 (358s)
+epoch 1: train_loss=0.4747 val_logloss=0.4624 val_auc=0.8211 (355s)
+epoch 2: train_loss=0.4715 val_logloss=0.4596 val_auc=0.8237 (348s)
+epoch 3: train_loss=0.4694 val_logloss=0.4592 val_auc=0.8240 (354s)
+best val_logloss=0.4592
+wheelnet test {'logloss': 0.46219322085380554, 'brier': 0.15243089199066162, 'auc': 0.8210756693265544, 'ece': 0.0013175357681946538}
+shape: (6, 9)
+┌─────────────────┬──────────┬──────────┬──────────┬───┬──────────┬──────────┬──────────┬──────────┐
+│ model           ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa  ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---             ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---      ┆ ---      ┆ ---      ┆ ---      │
+│ str             ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64      ┆ f64      ┆ f64      ┆ f64      │
+╞═════════════════╪══════════╪══════════╪══════════╪═══╪══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick   ┆ 0.585437 ┆ 0.200032 ┆ 0.633015 ┆ … ┆ -0.17292 ┆ 0.585473 ┆ 0.585427 ┆ 0.585411 │
+│ alsa_ata_logreg ┆ 0.499128 ┆ 0.166052 ┆ 0.783462 ┆ … ┆ 0.0      ┆ 0.486768 ┆ 0.503717 ┆ 0.506895 │
+│ card_x_pick_rat ┆ 0.498571 ┆ 0.165929 ┆ 0.784134 ┆ … ┆ 0.001114 ┆ 0.488436 ┆ 0.502318 ┆ 0.504958 │
+│ e               ┆          ┆          ┆          ┆   ┆          ┆          ┆          ┆          │
+│ lgbm_all        ┆ 0.469063 ┆ 0.155038 ┆ 0.814542 ┆ … ┆ 0.060234 ┆ 0.468114 ┆ 0.473738 ┆ 0.465337 │
+│ wheelnet        ┆ 0.462193 ┆ 0.152431 ┆ 0.821076 ┆ … ┆ 0.073998 ┆ 0.467282 ┆ 0.464308 ┆ 0.454991 │
+│ ensemble        ┆ 0.462947 ┆ 0.152727 ┆ 0.820469 ┆ … ┆ 0.072488 ┆ 0.466511 ┆ 0.465918 ┆ 0.456412 │
+└─────────────────┴──────────┴──────────┴──────────┴───┴──────────┴──────────┴──────────┴──────────┘
+=== BLB done status=0 15:35:35

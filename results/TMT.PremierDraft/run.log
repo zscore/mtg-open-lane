@@ -1,0 +1,39 @@
+=== TMT 09:44:57
+TMT PremierDraft: 32151 complete drafts, 215 cards, 14-card packs, P1P1 missing  (1s)
+  train: 22505 drafts -> 3,938,278 examples, wheel rate 0.324  (31s)
+  val: 4823 drafts -> 842,702 examples, wheel rate 0.325  (34s)
+  test: 4823 drafts -> 842,610 examples, wheel rate 0.325  (37s)
+GBM/baselines fit on 22,505 of 22,505 training drafts
+prior_by_pick                logloss=0.6012  brier=0.2073  auc=0.6389  ece=0.0002
+alsa_ata_logreg              logloss=0.4625  brier=0.1514  auc=0.8292  ece=0.0084
+card_x_pick_rate             logloss=0.4605  brier=0.1512  auc=0.8301  ece=0.0107
+lgbm_all                     logloss=0.4250  brier=0.1389  auc=0.8597  ece=0.0053
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/TMT.PremierDraft
+wheelnet epochs=8
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,802,561 steps=1408
+epoch 0: train_loss=0.4925 val_logloss=0.4338 val_auc=0.8538 (117s)
+epoch 1: train_loss=0.4413 val_logloss=0.4213 val_auc=0.8627 (103s)
+epoch 2: train_loss=0.4340 val_logloss=0.4187 val_auc=0.8646 (92s)
+epoch 3: train_loss=0.4304 val_logloss=0.4165 val_auc=0.8662 (97s)
+epoch 4: train_loss=0.4275 val_logloss=0.4158 val_auc=0.8668 (96s)
+epoch 5: train_loss=0.4251 val_logloss=0.4142 val_auc=0.8679 (97s)
+epoch 6: train_loss=0.4231 val_logloss=0.4146 val_auc=0.8675 (96s)
+epoch 7: train_loss=0.4221 val_logloss=0.4144 val_auc=0.8677 (96s)
+best val_logloss=0.4142
+wheelnet test {'logloss': 0.4172821044921875, 'brier': 0.1359056830406189, 'auc': 0.8659700520371729, 'ece': 0.0038826103057281246}
+shape: (6, 9)
+┌─────────────────┬──────────┬──────────┬──────────┬───┬──────────┬──────────┬──────────┬──────────┐
+│ model           ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa  ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---             ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---      ┆ ---      ┆ ---      ┆ ---      │
+│ str             ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64      ┆ f64      ┆ f64      ┆ f64      │
+╞═════════════════╪══════════╪══════════╪══════════╪═══╪══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick   ┆ 0.601196 ┆ 0.207324 ┆ 0.638877 ┆ … ┆ -0.29978 ┆ 0.585743 ┆ 0.607359 ┆ 0.607299 │
+│ alsa_ata_logreg ┆ 0.462537 ┆ 0.151447 ┆ 0.829208 ┆ … ┆ 0.0      ┆ 0.446387 ┆ 0.468055 ┆ 0.469837 │
+│ card_x_pick_rat ┆ 0.460474 ┆ 0.151166 ┆ 0.830117 ┆ … ┆ 0.00446  ┆ 0.443958 ┆ 0.465565 ┆ 0.468491 │
+│ e               ┆          ┆          ┆          ┆   ┆          ┆          ┆          ┆          │
+│ lgbm_all        ┆ 0.425032 ┆ 0.13889  ┆ 0.859687 ┆ … ┆ 0.081086 ┆ 0.416526 ┆ 0.431449 ┆ 0.425366 │
+│ wheelnet        ┆ 0.417282 ┆ 0.135906 ┆ 0.86597  ┆ … ┆ 0.097841 ┆ 0.411674 ┆ 0.421946 ┆ 0.417069 │
+│ ensemble        ┆ 0.417669 ┆ 0.136127 ┆ 0.865515 ┆ … ┆ 0.097004 ┆ 0.412062 ┆ 0.422867 ┆ 0.416921 │
+└─────────────────┴──────────┴──────────┴──────────┴───┴──────────┴──────────┴──────────┴──────────┘
+=== TMT done status=0 10:01:44

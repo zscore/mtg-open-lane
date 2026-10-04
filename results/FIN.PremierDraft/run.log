@@ -1,0 +1,38 @@
+=== FIN 14:03:30
+FIN PremierDraft: 140237 complete drafts, 363 cards, 14-card packs  (5s)
+warning: 1 returning packs are not subsets of the passed pack; clipping
+  train: 98165 drafts -> 18,553,185 examples, wheel rate 0.333  (50s)
+  val: 21036 drafts -> 3,975,804 examples, wheel rate 0.333  (58s)
+  test: 21036 drafts -> 3,975,804 examples, wheel rate 0.333  (67s)
+GBM/baselines fit on 60,000 of 98,165 training drafts
+prior_by_pick                logloss=0.6067  brier=0.2099  auc=0.6389  ece=0.0000
+alsa_ata_logreg              logloss=0.4771  brier=0.1567  auc=0.8196  ece=0.0081
+card_x_pick_rate             logloss=0.4768  brier=0.1572  auc=0.8187  ece=0.0110
+lgbm_all                     logloss=0.4420  brier=0.1450  auc=0.8495  ece=0.0064
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/FIN.PremierDraft
+wheelnet epochs=4
+warning: 1 returning packs are not subsets of the passed pack; clipping
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,830,977 steps=3068
+epoch 0: train_loss=0.4821 val_logloss=0.4491 val_auc=0.8438 (398s)
+epoch 1: train_loss=0.4584 val_logloss=0.4451 val_auc=0.8469 (396s)
+epoch 2: train_loss=0.4551 val_logloss=0.4432 val_auc=0.8485 (396s)
+epoch 3: train_loss=0.4531 val_logloss=0.4423 val_auc=0.8492 (396s)
+best val_logloss=0.4423
+wheelnet test {'logloss': 0.43750932812690735, 'brier': 0.14339779317378998, 'auc': 0.8528502023693352, 'ece': 0.0036131363114400477}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.606717 ┆ 0.209896 ┆ 0.638889 ┆ … ┆ -0.271694 ┆ 0.606717 ┆ 0.606717 ┆ 0.606717 │
+│ alsa_ata_logre ┆ 0.477094 ┆ 0.15671  ┆ 0.819587 ┆ … ┆ 0.0       ┆ 0.462295 ┆ 0.480706 ┆ 0.48828  │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.476752 ┆ 0.157153 ┆ 0.818727 ┆ … ┆ 0.000718  ┆ 0.464485 ┆ 0.47949  ┆ 0.486279 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.441957 ┆ 0.145007 ┆ 0.849464 ┆ … ┆ 0.073649  ┆ 0.433299 ┆ 0.446291 ┆ 0.446281 │
+│ wheelnet       ┆ 0.437509 ┆ 0.143398 ┆ 0.85285  ┆ … ┆ 0.08297   ┆ 0.435396 ┆ 0.438875 ┆ 0.438257 │
+│ ensemble       ┆ 0.437663 ┆ 0.143417 ┆ 0.852992 ┆ … ┆ 0.082648  ┆ 0.433248 ┆ 0.440253 ┆ 0.439488 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== FIN done status=0 14:34:46

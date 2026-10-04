@@ -1,0 +1,17 @@
+=== TMT 09:39:48
+TMT PremierDraft: 32151 complete drafts, 215 cards, 14-card packs, P1P1 missing  (1s)
+  train: 22505 drafts -> 3,938,278 examples, wheel rate 0.324  (10s)
+  val: 4823 drafts -> 842,702 examples, wheel rate 0.325  (12s)
+  test: 4823 drafts -> 842,610 examples, wheel rate 0.325  (14s)
+GBM/baselines fit on 22,505 of 22,505 training drafts
+prior_by_pick                logloss=0.6012  brier=0.2073  auc=0.6389  ece=0.0002
+alsa_ata_logreg              logloss=0.4625  brier=0.1514  auc=0.8292  ece=0.0084
+card_x_pick_rate             logloss=0.4605  brier=0.1512  auc=0.8301  ece=0.0107
+lgbm_all                     logloss=0.4250  brier=0.1389  auc=0.8597  ece=0.0053
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/TMT.PremierDraft
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import pickle;print(len(pickle.load(open('data/features/TMT.PremierDraft/meta.pkl','rb'))['splits']['train']))
+                            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'openlane'
+=== TMT done status=1 09:41:32

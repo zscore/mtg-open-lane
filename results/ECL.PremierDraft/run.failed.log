@@ -1,0 +1,14 @@
+=== ECL 09:41:32
+/Users/zblanton/Documents/repos/mtg-open-lane/src/openlane/features.py:83: RuntimeWarning: invalid value encountered in divide
+  global_p = w_cp.sum(0) / n_cp.sum(0)             # [n_wheel]
+ECL PremierDraft: 1 complete drafts, 293 cards, 13-card packs  (1s)
+warning: 1 returning packs are not subsets of the passed pack; clipping
+Traceback (most recent call last):
+  File "/Users/zblanton/Documents/repos/mtg-open-lane/scripts/build_dataset.py", line 51, in <module>
+    main(*sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^^
+  File "/Users/zblanton/Documents/repos/mtg-open-lane/scripts/build_dataset.py", line 45, in main
+    writer.close()
+    ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'close'
+=== ECL done status=1 09:41:33

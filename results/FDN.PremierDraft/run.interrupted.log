@@ -1,0 +1,12 @@
+=== FDN 12:07:22
+FDN PremierDraft: 130935 complete drafts, 286 cards, 14-card packs  (5s)
+  train: 91654 drafts -> 17,240,992 examples, wheel rate 0.334  (45s)
+  val: 19640 drafts -> 3,694,605 examples, wheel rate 0.334  (53s)
+  test: 19641 drafts -> 3,694,811 examples, wheel rate 0.334  (62s)
+GBM/baselines fit on 60,000 of 91,654 training drafts
+prior_by_pick                logloss=0.6071  brier=0.2101  auc=0.6387  ece=0.0000
+alsa_ata_logreg              logloss=0.4614  brier=0.1517  auc=0.8322  ece=0.0091
+card_x_pick_rate             logloss=0.4591  brier=0.1513  auc=0.8334  ece=0.0059
+lgbm_all                     logloss=0.4241  brier=0.1392  auc=0.8622  ece=0.0026
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/FDN.PremierDraft
+wheelnet epochs=4

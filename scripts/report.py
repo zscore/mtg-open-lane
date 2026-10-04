@@ -1,4 +1,7 @@
-"""Combine all test predictions, add an ensemble, and write the results table: python scripts/report.py MSH"""
+"""Combine all test predictions, add an ensemble, and write the results table: python scripts/report.py MSH
+
+readme=0 writes summary.json only, leaving the README's MSH table alone.
+"""
 import json
 import re
 import sys
@@ -14,7 +17,8 @@ from openlane.evaluate import metrics, metrics_by  # noqa: E402
 KEYS = ["draft_idx", "pack_number", "pick_number", "card"]
 
 
-def main(set_code: str, event: str = "PremierDraft"):
+def main(set_code: str, event: str = "PremierDraft", *kv: str):
+    opts = {"readme": 1} | {k: int(v) for k, v in (a.split("=") for a in kv)}
     out = ROOT / "results" / f"{set_code}.{event}"
     df = pl.read_parquet(out / "test_predictions.parquet")
     nn_path = out / "test_predictions_wheelnet.parquet"
@@ -44,6 +48,8 @@ def main(set_code: str, event: str = "PremierDraft"):
         md.append(f"| `{r['model']}` | {r['logloss']:.4f} | {r['brier']:.4f} | {r['auc']:.4f} | "
                   f"{r['ece']:.4f} | {r['vs_alsa']:+.1%} | "
                   f"{r['ll_pack1']:.3f} / {r['ll_pack2']:.3f} / {r['ll_pack3']:.3f} |")
+    if not opts["readme"]:
+        return
     readme = ROOT / "README.md"
     text = readme.read_text()
     block = "<!-- results -->\n" + "\n".join(md) + "\n<!-- /results -->"

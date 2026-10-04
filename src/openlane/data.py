@@ -13,7 +13,7 @@ RAW = ROOT / "data" / "raw"
 PARQUET = ROOT / "data" / "parquet"
 S3 = "https://17lands-public.s3.amazonaws.com/analysis_data"
 
-N_PACKS, N_PICKS, N_SEATS = 3, 14, 8
+N_PACKS, N_SEATS = 3, 8
 COLORS = "WUBRG"
 RARITIES = ["common", "uncommon", "rare", "mythic", "basic", "special"]
 
@@ -75,6 +75,7 @@ def card_metadata(names: list[str], set_code: str) -> pl.DataFrame:
         "name",
         pl.col("rarity").fill_null("special"),
         pl.col("mana_value").fill_null(0).cast(pl.Float32),
+        pl.col("types").fill_null(""),
         pl.col("types").fill_null("").str.contains("Creature").alias("is_creature"),
         (pl.col("expansion") != set_code).fill_null(True).alias("is_bonus"),
     )
@@ -86,8 +87,10 @@ class DraftTensors:
     """Dense arrays for complete drafts, sorted by draft_time.
 
     pack[d, k, p, c]: copies of card c in the pack shown at pack k, pick p.
-    pool[d, k, p, c]: copies of card c already taken before that pick.
     pick[d, k, p]:    index of the card taken.
+    n_picks:          picks per pack (13, 14 or 15 depending on the set).
+    p1p1_missing:     the set's files never include P1P1 (TLA, TMT). pack[:, 0, 0] is then all
+                      zeros; the P1P1 pick is recovered from the P1P2 pool.
     """
 
     set_code: str
@@ -99,45 +102,87 @@ class DraftTensors:
     user_wr: np.ndarray
     user_ngames: np.ndarray
     pack: np.ndarray
-    pool: np.ndarray
     pick: np.ndarray
+    n_picks: int = 14
+    p1p1_missing: bool = False
 
     @property
     def color_matrix(self) -> np.ndarray:
         return self.meta.select(list(COLORS)).to_numpy().astype(np.float32)
 
+    def pool(self, drafts: np.ndarray) -> np.ndarray:
+        """pool[d, k, p, c]: copies of c taken before that pick (17Lands' pool_* columns)."""
+        pk = self.pick[drafts].reshape(len(drafts), -1).astype(np.int64)
+        oh = np.zeros(pk.shape + (len(self.names),), np.int8)
+        np.put_along_axis(oh, pk[..., None], 1, -1)
+        return (np.cumsum(oh, 1, dtype=np.int8) - oh).reshape(self.pack[drafts].shape)
+
 
 RANK_ORDER = {"bronze": 0, "silver": 1, "gold": 2, "platinum": 3, "diamond": 4, "mythic": 5}
 
 
-def load_tensors(set_code: str, event: str = "PremierDraft") -> DraftTensors:
-    df = pl.read_parquet(download(set_code, event))
-    pack_cols = [c for c in df.columns if c.startswith("pack_card_")]
+def load_tensors(set_code: str, event: str = "PremierDraft", col_batch: int = 64) -> DraftTensors:
+    """Complete drafts as dense tensors, reading the card columns a batch at a time.
+
+    Peak memory is about the size of the pack tensor, so the largest sets (~200k drafts) fit in
+    16GB. A draft is complete when it has every pick of every pack (bar P1P1 for sets whose files
+    never include it).
+    """
+    path = download(set_code, event)
+    lf = pl.scan_parquet(path)
+    pack_cols = [c for c in lf.collect_schema().names() if c.startswith("pack_card_")]
     names = [c[len("pack_card_"):] for c in pack_cols]
-    pool_cols = [f"pool_{n}" for n in names]
+    C = len(names)
+    keys = lf.select("draft_id", "draft_time", "pack_number", "pick_number", "pick", "rank",
+                     "user_game_win_rate_bucket", "user_n_games_bucket").with_row_index("row").collect()
 
-    full = df.group_by("draft_id").len().filter(pl.col("len") == N_PACKS * N_PICKS)["draft_id"]
-    df = df.filter(pl.col("draft_id").is_in(full.implode()))
-    df = df.sort(["draft_time", "draft_id", "pack_number", "pick_number"])
-    D, C = df.height // (N_PACKS * N_PICKS), len(names)
+    n_picks = int(keys["pick_number"].max()) + 1
+    # some sets' files drop P1P1 from (almost) every draft; a stray draft that has it is skipped
+    n_p1p1 = keys.filter((pl.col("pack_number") == 0) & (pl.col("pick_number") == 0)).height
+    p1p1_missing = n_p1p1 < keys["draft_id"].n_unique() / 2
+    T = N_PACKS * n_picks
+    full = keys.group_by("draft_id").len().filter(pl.col("len") == T - p1p1_missing)["draft_id"]
+    keys = keys.filter(pl.col("draft_id").is_in(full.implode()))
+    # a first-seen time per draft keeps each draft's rows together when sorting
+    keys = keys.with_columns(pl.col("draft_time").min().over("draft_id").alias("t0"))
+    keys = keys.sort(["t0", "draft_id", "pack_number", "pick_number"])
+    D = keys.height // (T - p1p1_missing)
+    slot = keys["pack_number"].to_numpy().astype(np.int64) * n_picks + keys["pick_number"].to_numpy()
+    d_of_row = np.repeat(np.arange(D), T - p1p1_missing)
+    dest = d_of_row * T + slot                    # flat (draft, pack, pick) slot of each source row
+    src = keys["row"].to_numpy()
 
-    shape = (D, N_PACKS, N_PICKS, C)
-    pack = df.select(pack_cols).to_numpy().astype(np.int8).reshape(shape)
-    pool = df.select(pool_cols).to_numpy().astype(np.int8).reshape(shape)
+    pack = np.zeros((D * T, C), np.int8)
+    for i in range(0, C, col_batch):
+        block = pl.read_parquet(path, columns=pack_cols[i:i + col_batch]).to_numpy().astype(np.int8)
+        pack[dest, i:i + col_batch] = block[src]
+        del block
     idx = {n: i for i, n in enumerate(names)}
-    pick = np.array([idx[n] for n in df["pick"].to_list()], dtype=np.int16).reshape(shape[:3])
+    pick = np.full(D * T, -1, np.int16)
+    pick[dest] = np.array([idx[n] for n in keys["pick"].to_list()], dtype=np.int16)
 
-    per_draft = df.gather_every(N_PACKS * N_PICKS)
+    per_draft = keys.filter(pl.Series(slot == slot.min()))   # one row per draft, in draft order
+    if p1p1_missing:  # the only card in the P1P2 pool is the P1P1 pick
+        pool_cols = [f"pool_{n}" for n in names]
+        p1p2 = lf.filter((pl.col("pack_number") == 0) & (pl.col("pick_number") == 1)) \
+            .select(["draft_id", *pool_cols]).collect()
+        p1p2 = per_draft.select("draft_id").join(p1p2, on="draft_id", how="left", maintain_order="left")
+        pick[np.arange(D) * T] = p1p2.select(pool_cols).to_numpy().argmax(1)
+        del p1p2
+    assert (pick >= 0).all()
+
+    shape = (D, N_PACKS, n_picks)
     return DraftTensors(
         set_code=set_code,
         names=names,
         meta=card_metadata(names, set_code),
         draft_id=per_draft["draft_id"].to_numpy(),
-        draft_time=per_draft["draft_time"].to_numpy(),
+        draft_time=per_draft["t0"].to_numpy(),
         rank=per_draft["rank"].replace_strict(RANK_ORDER, default=None).fill_null(-1).to_numpy(),
         user_wr=per_draft["user_game_win_rate_bucket"].fill_null(-1).cast(pl.Float32).to_numpy(),
         user_ngames=per_draft["user_n_games_bucket"].fill_null(-1).cast(pl.Float32).to_numpy(),
-        pack=pack,
-        pool=pool,
-        pick=pick,
+        pack=pack.reshape(*shape, C),
+        pick=pick.reshape(shape),
+        n_picks=n_picks,
+        p1p1_missing=p1p1_missing,
     )

@@ -1,0 +1,37 @@
+=== TLA 11:01:34
+TLA PremierDraft: 102793 complete drafts, 347 cards, 14-card packs, P1P1 missing  (3s)
+  train: 71955 drafts -> 12,663,355 examples, wheel rate 0.324  (35s)
+  val: 15419 drafts -> 2,713,583 examples, wheel rate 0.324  (41s)
+  test: 15419 drafts -> 2,713,583 examples, wheel rate 0.324  (47s)
+GBM/baselines fit on 60,000 of 71,955 training drafts
+prior_by_pick                logloss=0.6006  brier=0.2070  auc=0.6393  ece=0.0000
+alsa_ata_logreg              logloss=0.4596  brier=0.1506  auc=0.8291  ece=0.0059
+card_x_pick_rate             logloss=0.4572  brier=0.1502  auc=0.8307  ece=0.0094
+lgbm_all                     logloss=0.4267  brier=0.1399  auc=0.8566  ece=0.0051
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/TLA.PremierDraft
+wheelnet epochs=5
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,827,905 steps=2815
+epoch 0: train_loss=0.4685 val_logloss=0.4299 val_auc=0.8541 (296s)
+epoch 1: train_loss=0.4394 val_logloss=0.4244 val_auc=0.8586 (299s)
+epoch 2: train_loss=0.4354 val_logloss=0.4213 val_auc=0.8609 (292s)
+epoch 3: train_loss=0.4331 val_logloss=0.4204 val_auc=0.8616 (293s)
+epoch 4: train_loss=0.4315 val_logloss=0.4200 val_auc=0.8619 (299s)
+best val_logloss=0.4200
+wheelnet test {'logloss': 0.42140862345695496, 'brier': 0.13800090551376343, 'auc': 0.8607960065333194, 'ece': 0.0015804754186281157}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.600558 ┆ 0.207046 ┆ 0.639329 ┆ … ┆ -0.306748 ┆ 0.585019 ┆ 0.606725 ┆ 0.606725 │
+│ alsa_ata_logre ┆ 0.459582 ┆ 0.150593 ┆ 0.829074 ┆ … ┆ 0.0       ┆ 0.440451 ┆ 0.465424 ┆ 0.468926 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.45721  ┆ 0.150185 ┆ 0.830745 ┆ … ┆ 0.005161  ┆ 0.438431 ┆ 0.462639 ┆ 0.466686 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.426668 ┆ 0.139939 ┆ 0.856595 ┆ … ┆ 0.071617  ┆ 0.412054 ┆ 0.434249 ┆ 0.430687 │
+│ wheelnet       ┆ 0.421409 ┆ 0.138001 ┆ 0.860796 ┆ … ┆ 0.083062  ┆ 0.410711 ┆ 0.42779  ┆ 0.423517 │
+│ ensemble       ┆ 0.422117 ┆ 0.138266 ┆ 0.860305 ┆ … ┆ 0.081521  ┆ 0.410341 ┆ 0.428995 ┆ 0.424585 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== TLA done status=0 11:31:08

@@ -1,0 +1,35 @@
+=== DSK 15:57:36
+DSK PremierDraft: 167672 complete drafts, 286 cards, 14-card packs  (5s)
+  train: 117370 drafts -> 22,075,975 examples, wheel rate 0.334  (58s)
+  val: 25151 drafts -> 4,731,022 examples, wheel rate 0.334  (69s)
+  test: 25151 drafts -> 4,730,831 examples, wheel rate 0.334  (79s)
+GBM/baselines fit on 60,000 of 117,370 training drafts
+prior_by_pick                logloss=0.6071  brier=0.2101  auc=0.6386  ece=0.0000
+alsa_ata_logreg              logloss=0.4542  brier=0.1487  auc=0.8384  ece=0.0098
+card_x_pick_rate             logloss=0.4540  brier=0.1491  auc=0.8376  ece=0.0069
+lgbm_all                     logloss=0.4191  brier=0.1373  auc=0.8656  ece=0.0025
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/DSK.PremierDraft
+wheelnet epochs=3
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,816,193 steps=2751
+epoch 0: train_loss=0.4511 val_logloss=0.4183 val_auc=0.8663 (475s)
+epoch 1: train_loss=0.4293 val_logloss=0.4154 val_auc=0.8685 (476s)
+epoch 2: train_loss=0.4262 val_logloss=0.4140 val_auc=0.8694 (484s)
+best val_logloss=0.4140
+wheelnet test {'logloss': 0.4159267544746399, 'brier': 0.13604149222373962, 'auc': 0.8680641032259446, 'ece': 0.003088181650063453}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.607137 ┆ 0.210079 ┆ 0.638582 ┆ … ┆ -0.336718 ┆ 0.607158 ┆ 0.607128 ┆ 0.607124 │
+│ alsa_ata_logre ┆ 0.454199 ┆ 0.148747 ┆ 0.838362 ┆ … ┆ 0.0       ┆ 0.440506 ┆ 0.458115 ┆ 0.463973 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.453983 ┆ 0.149149 ┆ 0.837608 ┆ … ┆ 0.000477  ┆ 0.442756 ┆ 0.456925 ┆ 0.462265 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.419097 ┆ 0.137252 ┆ 0.865613 ┆ … ┆ 0.077284  ┆ 0.410646 ┆ 0.423885 ┆ 0.422759 │
+│ wheelnet       ┆ 0.415927 ┆ 0.136041 ┆ 0.868064 ┆ … ┆ 0.084264  ┆ 0.412943 ┆ 0.418468 ┆ 0.416369 │
+│ ensemble       ┆ 0.415479 ┆ 0.135893 ┆ 0.868451 ┆ … ┆ 0.08525   ┆ 0.410473 ┆ 0.418979 ┆ 0.416984 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== DSK done status=0 16:27:30

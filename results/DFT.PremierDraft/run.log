@@ -1,0 +1,38 @@
+=== DFT 14:34:46
+DFT PremierDraft: 141166 complete drafts, 286 cards, 14-card packs  (4s)
+warning: 1 returning packs are not subsets of the passed pack; clipping
+  train: 98816 drafts -> 18,674,891 examples, wheel rate 0.333  (44s)
+  val: 21175 drafts -> 4,001,791 examples, wheel rate 0.333  (52s)
+  test: 21175 drafts -> 4,001,764 examples, wheel rate 0.333  (60s)
+GBM/baselines fit on 60,000 of 98,816 training drafts
+prior_by_pick                logloss=0.6067  brier=0.2099  auc=0.6389  ece=0.0000
+alsa_ata_logreg              logloss=0.4608  brier=0.1513  auc=0.8322  ece=0.0070
+card_x_pick_rate             logloss=0.4603  brier=0.1516  auc=0.8322  ece=0.0120
+lgbm_all                     logloss=0.4266  brier=0.1403  auc=0.8596  ece=0.0045
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/DFT.PremierDraft
+wheelnet epochs=4
+warning: 1 returning packs are not subsets of the passed pack; clipping
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,816,193 steps=3088
+epoch 0: train_loss=0.4654 val_logloss=0.4303 val_auc=0.8570 (406s)
+epoch 1: train_loss=0.4418 val_logloss=0.4253 val_auc=0.8609 (405s)
+epoch 2: train_loss=0.4388 val_logloss=0.4235 val_auc=0.8620 (404s)
+epoch 3: train_loss=0.4369 val_logloss=0.4230 val_auc=0.8624 (431s)
+best val_logloss=0.4230
+wheelnet test {'logloss': 0.4239185154438019, 'brier': 0.13923808932304382, 'auc': 0.8617535167915337, 'ece': 0.002463973589437882}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.606725 ┆ 0.2099   ┆ 0.638907 ┆ … ┆ -0.316644 ┆ 0.606723 ┆ 0.606724 ┆ 0.606729 │
+│ alsa_ata_logre ┆ 0.460812 ┆ 0.151319 ┆ 0.832222 ┆ … ┆ 0.0       ┆ 0.446833 ┆ 0.464475 ┆ 0.471128 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.460311 ┆ 0.151601 ┆ 0.832222 ┆ … ┆ 0.001088  ┆ 0.448713 ┆ 0.463074 ┆ 0.469146 │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.426604 ┆ 0.140295 ┆ 0.85963  ┆ … ┆ 0.074234  ┆ 0.417752 ┆ 0.431183 ┆ 0.430878 │
+│ wheelnet       ┆ 0.423919 ┆ 0.139238 ┆ 0.861754 ┆ … ┆ 0.080062  ┆ 0.420802 ┆ 0.425921 ┆ 0.425033 │
+│ ensemble       ┆ 0.423335 ┆ 0.139055 ┆ 0.862298 ┆ … ┆ 0.081328  ┆ 0.418075 ┆ 0.426442 ┆ 0.425487 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== DFT done status=0 15:07:01

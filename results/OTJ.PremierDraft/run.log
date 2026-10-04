@@ -1,0 +1,35 @@
+=== OTJ 16:27:30
+OTJ PremierDraft: 195312 complete drafts, 381 cards, 14-card packs  (7s)
+  train: 136718 drafts -> 25,728,359 examples, wheel rate 0.334  (74s)
+  val: 29297 drafts -> 5,513,441 examples, wheel rate 0.334  (87s)
+  test: 29297 drafts -> 5,513,249 examples, wheel rate 0.334  (100s)
+GBM/baselines fit on 60,000 of 136,718 training drafts
+prior_by_pick                logloss=0.6071  brier=0.2101  auc=0.6386  ece=0.0000
+alsa_ata_logreg              logloss=0.4472  brier=0.1461  auc=0.8445  ece=0.0069
+card_x_pick_rate             logloss=0.4470  brier=0.1463  auc=0.8450  ece=0.0152
+lgbm_all                     logloss=0.4085  brier=0.1335  auc=0.8737  ece=0.0045
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/OTJ.PremierDraft
+wheelnet epochs=3
+cfg={'n_picks': 14} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0}
+device=mps params=3,834,433 steps=3207
+epoch 0: train_loss=0.4489 val_logloss=0.4104 val_auc=0.8727 (551s)
+epoch 1: train_loss=0.4268 val_logloss=0.4069 val_auc=0.8748 (554s)
+epoch 2: train_loss=0.4239 val_logloss=0.4065 val_auc=0.8750 (561s)
+best val_logloss=0.4065
+wheelnet test {'logloss': 0.4057908356189728, 'brier': 0.13241851329803467, 'auc': 0.8756370659665442, 'ece': 0.004967094515768986}
+shape: (6, 9)
+┌────────────────┬──────────┬──────────┬──────────┬───┬───────────┬──────────┬──────────┬──────────┐
+│ model          ┆ logloss  ┆ brier    ┆ auc      ┆ … ┆ vs_alsa   ┆ ll_pack1 ┆ ll_pack2 ┆ ll_pack3 │
+│ ---            ┆ ---      ┆ ---      ┆ ---      ┆   ┆ ---       ┆ ---      ┆ ---      ┆ ---      │
+│ str            ┆ f64      ┆ f64      ┆ f64      ┆   ┆ f64       ┆ f64      ┆ f64      ┆ f64      │
+╞════════════════╪══════════╪══════════╪══════════╪═══╪═══════════╪══════════╪══════════╪══════════╡
+│ prior_by_pick  ┆ 0.607088 ┆ 0.210057 ┆ 0.638589 ┆ … ┆ -0.357417 ┆ 0.607076 ┆ 0.607092 ┆ 0.607095 │
+│ alsa_ata_logre ┆ 0.447237 ┆ 0.14612  ┆ 0.844515 ┆ … ┆ 0.0       ┆ 0.433853 ┆ 0.451265 ┆ 0.456594 │
+│ g              ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ card_x_pick_ra ┆ 0.446952 ┆ 0.146317 ┆ 0.844953 ┆ … ┆ 0.000639  ┆ 0.436127 ┆ 0.450008 ┆ 0.45472  │
+│ te             ┆          ┆          ┆          ┆   ┆           ┆          ┆          ┆          │
+│ lgbm_all       ┆ 0.40846  ┆ 0.133468 ┆ 0.873672 ┆ … ┆ 0.086704  ┆ 0.400362 ┆ 0.413666 ┆ 0.411352 │
+│ wheelnet       ┆ 0.405791 ┆ 0.132419 ┆ 0.875637 ┆ … ┆ 0.092673  ┆ 0.404932 ┆ 0.407953 ┆ 0.404488 │
+│ ensemble       ┆ 0.405017 ┆ 0.132167 ┆ 0.876295 ┆ … ┆ 0.094403  ┆ 0.401275 ┆ 0.408544 ┆ 0.405232 │
+└────────────────┴──────────┴──────────┴──────────┴───┴───────────┴──────────┴──────────┴──────────┘
+=== OTJ done status=0 17:01:50

@@ -1,0 +1,60 @@
+=== baseline
+cfg={'n_picks': 14, 'n_ctx': 0} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 1} inputs={'rank': False, 'skill': False, 'time': False, 'types': False} card_feats=14
+device=mps params=3,826,369 steps=3008
+epoch 0: train_loss=0.4831 val_logloss=0.4342 val_auc=0.8544 (199s)
+epoch 1: train_loss=0.4445 val_logloss=0.4295 val_auc=0.8582 (197s)
+epoch 2: train_loss=0.4393 val_logloss=0.4263 val_auc=0.8613 (196s)
+epoch 3: train_loss=0.4369 val_logloss=0.4254 val_auc=0.8613 (197s)
+epoch 4: train_loss=0.4348 val_logloss=0.4245 val_auc=0.8620 (196s)
+epoch 5: train_loss=0.4330 val_logloss=0.4228 val_auc=0.8633 (195s)
+epoch 6: train_loss=0.4314 val_logloss=0.4226 val_auc=0.8635 (196s)
+epoch 7: train_loss=0.4305 val_logloss=0.4228 val_auc=0.8633 (207s)
+best val_logloss=0.4226
+=== +types
+cfg={'n_picks': 14, 'n_ctx': 0} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 1} inputs={'rank': False, 'skill': False, 'time': False, 'types': True} card_feats=25
+device=mps params=3,828,481 steps=3008
+epoch 0: train_loss=0.4836 val_logloss=0.4417 val_auc=0.8480 (202s)
+epoch 1: train_loss=0.4460 val_logloss=0.4296 val_auc=0.8585 (200s)
+epoch 2: train_loss=0.4398 val_logloss=0.4260 val_auc=0.8610 (196s)
+epoch 3: train_loss=0.4370 val_logloss=0.4246 val_auc=0.8621 (196s)
+epoch 4: train_loss=0.4350 val_logloss=0.4239 val_auc=0.8625 (196s)
+epoch 5: train_loss=0.4331 val_logloss=0.4222 val_auc=0.8639 (196s)
+epoch 6: train_loss=0.4316 val_logloss=0.4226 val_auc=0.8634 (197s)
+epoch 7: train_loss=0.4307 val_logloss=0.4226 val_auc=0.8635 (196s)
+best val_logloss=0.4222
+=== +rank+skill
+cfg={'n_picks': 14, 'n_ctx': 11} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 1} inputs={'rank': True, 'skill': True, 'time': False, 'types': False} card_feats=14
+device=mps params=3,865,729 steps=3008
+epoch 0: train_loss=0.4814 val_logloss=0.4373 val_auc=0.8525 (196s)
+epoch 1: train_loss=0.4445 val_logloss=0.4281 val_auc=0.8594 (196s)
+epoch 2: train_loss=0.4395 val_logloss=0.4269 val_auc=0.8607 (196s)
+epoch 3: train_loss=0.4369 val_logloss=0.4244 val_auc=0.8621 (196s)
+epoch 4: train_loss=0.4350 val_logloss=0.4237 val_auc=0.8627 (197s)
+epoch 5: train_loss=0.4332 val_logloss=0.4235 val_auc=0.8627 (196s)
+epoch 6: train_loss=0.4316 val_logloss=0.4233 val_auc=0.8629 (196s)
+epoch 7: train_loss=0.4307 val_logloss=0.4229 val_auc=0.8633 (196s)
+best val_logloss=0.4229
+=== +time
+cfg={'n_picks': 14, 'n_ctx': 2} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 1} inputs={'rank': False, 'skill': False, 'time': True, 'types': False} card_feats=14
+device=mps params=3,864,001 steps=3008
+epoch 0: train_loss=0.4808 val_logloss=0.4320 val_auc=0.8570 (196s)
+epoch 1: train_loss=0.4436 val_logloss=0.4235 val_auc=0.8631 (200s)
+epoch 2: train_loss=0.4379 val_logloss=0.4221 val_auc=0.8640 (196s)
+epoch 3: train_loss=0.4353 val_logloss=0.4201 val_auc=0.8654 (196s)
+epoch 4: train_loss=0.4334 val_logloss=0.4197 val_auc=0.8660 (196s)
+epoch 5: train_loss=0.4317 val_logloss=0.4189 val_auc=0.8663 (198s)
+epoch 6: train_loss=0.4301 val_logloss=0.4187 val_auc=0.8665 (197s)
+epoch 7: train_loss=0.4292 val_logloss=0.4188 val_auc=0.8665 (196s)
+best val_logloss=0.4187
+=== all
+cfg={'n_picks': 14, 'n_ctx': 13} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 1} inputs={'rank': True, 'skill': True, 'time': True, 'types': True} card_feats=25
+device=mps params=3,868,225 steps=3008
+epoch 0: train_loss=0.4821 val_logloss=0.4338 val_auc=0.8549 (196s)
+epoch 1: train_loss=0.4442 val_logloss=0.4235 val_auc=0.8629 (196s)
+epoch 2: train_loss=0.4382 val_logloss=0.4223 val_auc=0.8640 (199s)
+epoch 3: train_loss=0.4355 val_logloss=0.4201 val_auc=0.8657 (194s)
+epoch 4: train_loss=0.4334 val_logloss=0.4192 val_auc=0.8661 (195s)
+epoch 5: train_loss=0.4315 val_logloss=0.4187 val_auc=0.8665 (196s)
+epoch 6: train_loss=0.4300 val_logloss=0.4187 val_auc=0.8666 (196s)
+epoch 7: train_loss=0.4291 val_logloss=0.4187 val_auc=0.8666 (195s)
+best val_logloss=0.4187

@@ -1,0 +1,12 @@
+cfg={'n_picks': 14, 'n_ctx': 2} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0, 'name': 'wheelnet_time'} inputs={'rank': False, 'skill': False, 'time': True, 'types': False} card_feats=14
+device=mps params=3,864,001 steps=3008
+epoch 0: train_loss=0.4808 val_logloss=0.4314 val_auc=0.8569 (201s)
+epoch 1: train_loss=0.4436 val_logloss=0.4234 val_auc=0.8631 (200s)
+epoch 2: train_loss=0.4379 val_logloss=0.4220 val_auc=0.8640 (196s)
+epoch 3: train_loss=0.4353 val_logloss=0.4202 val_auc=0.8654 (195s)
+epoch 4: train_loss=0.4334 val_logloss=0.4197 val_auc=0.8659 (195s)
+epoch 5: train_loss=0.4317 val_logloss=0.4190 val_auc=0.8663 (194s)
+epoch 6: train_loss=0.4301 val_logloss=0.4188 val_auc=0.8665 (194s)
+epoch 7: train_loss=0.4292 val_logloss=0.4189 val_auc=0.8664 (196s)
+best val_logloss=0.4188
+wheelnet_time test {'logloss': 0.42181044816970825, 'brier': 0.13800953328609467, 'auc': 0.8644159113797927, 'ece': 0.007472571372142202}
