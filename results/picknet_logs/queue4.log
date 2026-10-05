@@ -27,3 +27,13 @@ MSH rating T=1.0: ATA corr 0.989 (MAE 0.44) ALSA corr 0.990 wheel/card corr 0.98
   OTJ: 381 cards, train 20000 [20s]
   DSK: 286 cards, train 20000 [34s]
   FDN: 286 cards, train 20000 [48s]
+  DFT: 286 cards, train 20000 [59s]
+  TDM: 286 cards, train 20000 [68s]
+  FIN: 363 cards, train 20000 [81s]
+  SOS: 346 cards, train 20000 [91s]
+  MSH: 339 cards, test 10292, train 48026 [103s]
+multiset_plus_target: target=MSH sets=['OTJ', 'DSK', 'FDN', 'DFT', 'TDM', 'FIN', 'SOS', 'MSH'] train drafts=178625 cards=2573 feat dim=465 params=1,400,065 cfg={} [103s]
+  epoch 0: train 0.9811 val nll 0.8482 top1 0.6716 (1106s)
+  epoch 1: train 0.8332 val nll 0.8202 top1 0.6818 (1113s)
+  epoch 2: train 0.8145 val nll 0.8106 top1 0.6850 (1110s)
+MSH multiset_plus_target TEST nll 0.8102 top1 0.6855 (P1 0.684 P2 0.693 P3 0.680) [3446s]
