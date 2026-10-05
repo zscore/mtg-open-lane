@@ -112,6 +112,20 @@ def deck_scores(pick, colbin, gih, n_deck=23):
     return out.max(-1), out.argmax(-1)
 
 
+def card_gih(set_code, names, first_test, draft_id):
+    """GIH WR per card from training-split games (deckstrength/card_values.csv when it exists)."""
+    p = ROOT / "results" / f"{set_code}.PremierDraft" / "deckstrength" / "card_values.csv"
+    if p.exists():
+        cv = pl.read_csv(p)
+        g = dict(zip(cv["name"], cv["gih_wr"]))
+        return np.array([g.get(n, np.nan) for n in names])
+    from openlane.deckstrength import game_win_rates
+    from openlane.games import game_path
+    games = pl.read_parquet(game_path(set_code))
+    train_ids = pl.Series(draft_id[:first_test]).implode()  # drafts are sorted by time
+    return game_win_rates(games.filter(pl.col("draft_id").is_in(train_ids)), names)["gih_wr"]
+
+
 def main(set_code="MSH", n_tables="2000", name="picknet", dev=None):
     n_tables = int(n_tables)
     dev = dev or ("mps" if torch.backends.mps.is_available() else "cpu")
@@ -121,9 +135,7 @@ def main(set_code="MSH", n_tables="2000", name="picknet", dev=None):
     test = splits_for(t, set_code, "PremierDraft")["test"]
     ctx = draft_context(t) if ck["train"].get("ctx", 1) else np.zeros((len(t.draft_id), 0), np.float32)
     colbin = t.color_matrix > 0
-    cv = pl.read_csv(ROOT / "results" / f"{set_code}.PremierDraft" / "deckstrength" / "card_values.csv")
-    gih = dict(zip(cv["name"], cv["gih_wr"]))
-    gih = np.array([gih.get(n, np.nan) for n in t.names])
+    gih = card_gih(set_code, t.names, test.min(), t.draft_id)
     gih = np.where(np.isnan(gih), np.nanquantile(gih, 0.10), gih)
     import pickle
     alsa = pickle.load(open(ROOT / "data" / "features" / f"{set_code}.PremierDraft" / "meta.pkl", "rb"))["stats"].alsa
