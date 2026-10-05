@@ -41,6 +41,16 @@
    "said_wheels_hit": 0.7267,
    "said_gone": 0.4414,
    "said_gone_wheeled": 0.0747
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.4188,
+   "brier": 0.137,
+   "auc": 0.8663,
+   "ece": 0.003,
+   "said_wheels": 0.2848,
+   "said_wheels_hit": 0.7301,
+   "said_gone": 0.437,
+   "said_gone_wheeled": 0.0719
   }
  },
  "rank1": {
@@ -84,6 +94,16 @@
    "said_wheels": 0.0003,
    "said_wheels_hit": 0.4364,
    "said_gone": 0.9768,
+   "said_gone_wheeled": 0.0321
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.1306,
+   "brier": 0.0329,
+   "auc": 0.8267,
+   "ece": 0.0019,
+   "said_wheels": 0.0002,
+   "said_wheels_hit": 0.5172,
+   "said_gone": 0.9787,
    "said_gone_wheeled": 0.0321
   }
  },
@@ -129,6 +149,16 @@
    "said_wheels_hit": 0.5139,
    "said_gone": 0.9128,
    "said_gone_wheeled": 0.0559
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.2237,
+   "brier": 0.062,
+   "auc": 0.787,
+   "ece": 0.0034,
+   "said_wheels": 0.0015,
+   "said_wheels_hit": 0.5576,
+   "said_gone": 0.9202,
+   "said_gone_wheeled": 0.0565
   }
  },
  "rank3": {
@@ -173,6 +203,16 @@
    "said_wheels_hit": 0.5074,
    "said_gone": 0.8029,
    "said_gone_wheeled": 0.0756
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.3087,
+   "brier": 0.0916,
+   "auc": 0.7651,
+   "ece": 0.0047,
+   "said_wheels": 0.006,
+   "said_wheels_hit": 0.5675,
+   "said_gone": 0.813,
+   "said_gone_wheeled": 0.076
   }
  },
  "rank4": {
@@ -217,6 +257,16 @@
    "said_wheels_hit": 0.5196,
    "said_gone": 0.6721,
    "said_gone_wheeled": 0.0911
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.3828,
+   "brier": 0.1198,
+   "auc": 0.7548,
+   "ece": 0.0043,
+   "said_wheels": 0.0184,
+   "said_wheels_hit": 0.5492,
+   "said_gone": 0.6707,
+   "said_gone_wheeled": 0.0891
   }
  },
  "rank5": {
@@ -261,6 +311,16 @@
    "said_wheels_hit": 0.5454,
    "said_gone": 0.5425,
    "said_gone_wheeled": 0.1038
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.4471,
+   "brier": 0.1451,
+   "auc": 0.7436,
+   "ece": 0.0049,
+   "said_wheels": 0.0432,
+   "said_wheels_hit": 0.5665,
+   "said_gone": 0.5239,
+   "said_gone_wheeled": 0.0987
   }
  },
  "rank6+": {
@@ -305,6 +365,16 @@
    "said_wheels_hit": 0.7323,
    "said_gone": 0.1323,
    "said_gone_wheeled": 0.1176
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.5281,
+   "brier": 0.1795,
+   "auc": 0.8044,
+   "ece": 0.0042,
+   "said_wheels": 0.5311,
+   "said_wheels_hit": 0.7341,
+   "said_gone": 0.1241,
+   "said_gone_wheeled": 0.1074
   }
  },
  "rank1_oncolour_p2p3": {
@@ -349,6 +419,16 @@
    "said_wheels_hit": 0.4848,
    "said_gone": 0.9474,
    "said_gone_wheeled": 0.0478
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.1857,
+   "brier": 0.0503,
+   "auc": 0.814,
+   "ece": 0.0064,
+   "said_wheels": 0.0007,
+   "said_wheels_hit": 0.5556,
+   "said_gone": 0.9474,
+   "said_gone_wheeled": 0.0472
   }
  },
  "rank2_oncolour_p2p3": {
@@ -393,6 +473,16 @@
    "said_wheels_hit": 0.5213,
    "said_gone": 0.8459,
    "said_gone_wheeled": 0.0718
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.285,
+   "brier": 0.0836,
+   "auc": 0.7817,
+   "ece": 0.0078,
+   "said_wheels": 0.0053,
+   "said_wheels_hit": 0.55,
+   "said_gone": 0.8479,
+   "said_gone_wheeled": 0.0704
   }
  },
  "rank3_oncolour_p2p3": {
@@ -437,6 +527,16 @@
    "said_wheels_hit": 0.5178,
    "said_gone": 0.7151,
    "said_gone_wheeled": 0.0906
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.3662,
+   "brier": 0.1137,
+   "auc": 0.7657,
+   "ece": 0.01,
+   "said_wheels": 0.0193,
+   "said_wheels_hit": 0.5655,
+   "said_gone": 0.7124,
+   "said_gone_wheeled": 0.0859
   }
  },
  "uncertain_by_alsa": {
@@ -481,6 +581,16 @@
    "said_wheels_hit": 0.6654,
    "said_gone": 0.1818,
    "said_gone_wheeled": 0.1335
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.5755,
+   "brier": 0.1967,
+   "auc": 0.7613,
+   "ece": 0.0045,
+   "said_wheels": 0.4138,
+   "said_wheels_hit": 0.6688,
+   "said_gone": 0.1689,
+   "said_gone_wheeled": 0.1242
   }
  },
  "pick0_rank1-3": {
@@ -525,6 +635,16 @@
    "said_wheels_hit": 0.5234,
    "said_gone": 0.8459,
    "said_gone_wheeled": 0.0687
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.2786,
+   "brier": 0.0814,
+   "auc": 0.7813,
+   "ece": 0.0062,
+   "said_wheels": 0.0055,
+   "said_wheels_hit": 0.5562,
+   "said_gone": 0.8489,
+   "said_gone_wheeled": 0.0684
   }
  },
  "pick1_rank1-3": {
@@ -569,6 +689,16 @@
    "said_wheels_hit": 0.4793,
    "said_gone": 0.8396,
    "said_gone_wheeled": 0.0666
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.2783,
+   "brier": 0.0808,
+   "auc": 0.7766,
+   "ece": 0.0056,
+   "said_wheels": 0.0055,
+   "said_wheels_hit": 0.5634,
+   "said_gone": 0.8441,
+   "said_gone_wheeled": 0.0669
   }
  },
  "pick2_rank1-3": {
@@ -613,6 +743,16 @@
    "said_wheels_hit": 0.5205,
    "said_gone": 0.853,
    "said_gone_wheeled": 0.0663
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.2713,
+   "brier": 0.0783,
+   "auc": 0.7776,
+   "ece": 0.0048,
+   "said_wheels": 0.0031,
+   "said_wheels_hit": 0.5966,
+   "said_gone": 0.8628,
+   "said_gone_wheeled": 0.0667
   }
  },
  "pick3_rank1-3": {
@@ -657,6 +797,16 @@
    "said_wheels_hit": 0.4962,
    "said_gone": 0.895,
    "said_gone_wheeled": 0.0595
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.2386,
+   "brier": 0.0669,
+   "auc": 0.7808,
+   "ece": 0.0034,
+   "said_wheels": 0.0011,
+   "said_wheels_hit": 0.5,
+   "said_gone": 0.908,
+   "said_gone_wheeled": 0.0605
   }
  },
  "pick4_rank1-3": {
@@ -701,6 +851,16 @@
    "said_wheels_hit": 0.6818,
    "said_gone": 0.9563,
    "said_gone_wheeled": 0.0451
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.1797,
+   "brier": 0.0472,
+   "auc": 0.7904,
+   "ece": 0.0027,
+   "said_wheels": 0.0001,
+   "said_wheels_hit": 0.8,
+   "said_gone": 0.9637,
+   "said_gone_wheeled": 0.0459
   }
  },
  "pick5_rank1-3": {
@@ -744,6 +904,16 @@
    "said_wheels": 0.0,
    "said_wheels_hit": null,
    "said_gone": 0.9953,
+   "said_gone_wheeled": 0.0192
+  },
+  "wheelnet_multiset_plus_target": {
+   "logloss": 0.0795,
+   "brier": 0.0186,
+   "auc": 0.8556,
+   "ece": 0.0012,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.9962,
    "said_gone_wheeled": 0.0192
   }
  }

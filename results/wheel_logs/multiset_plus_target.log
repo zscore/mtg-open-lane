@@ -14,3 +14,5 @@ wheelnet_multiset_plus_target: target=MSH sets=['OTJ', 'DSK', 'FDN', 'DFT', 'TDM
 epoch 0: train_loss=0.4589 val_logloss=0.4378 (696s)
 epoch 1: train_loss=0.4332 val_logloss=0.4296 (652s)
 epoch 2: train_loss=0.4291 val_logloss=0.4273 (673s)
+epoch 3: train_loss=0.4269 val_logloss=0.4265 (734s)
+MSH wheelnet_multiset_plus_target TEST logloss 0.4188 auc 0.8663 ece 0.0030 [2873s]
