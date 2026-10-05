@@ -1,0 +1,580 @@
+{
+ "all": {
+  "n": 842610,
+  "base_rate": 0.3245321085674274,
+  "alsa_ata_logreg": {
+   "logloss": 0.4625,
+   "brier": 0.1514,
+   "auc": 0.8292,
+   "ece": 0.0084,
+   "said_wheels": 0.2514,
+   "said_wheels_hit": 0.7027,
+   "said_gone": 0.4176,
+   "said_gone_wheeled": 0.0927
+  },
+  "lgbm_all": {
+   "logloss": 0.425,
+   "brier": 0.1389,
+   "auc": 0.8597,
+   "ece": 0.0053,
+   "said_wheels": 0.2626,
+   "said_wheels_hit": 0.7289,
+   "said_gone": 0.4348,
+   "said_gone_wheeled": 0.0722
+  },
+  "wheelnet": {
+   "logloss": 0.4173,
+   "brier": 0.1359,
+   "auc": 0.866,
+   "ece": 0.0039,
+   "said_wheels": 0.2719,
+   "said_wheels_hit": 0.7303,
+   "said_gone": 0.4532,
+   "said_gone_wheeled": 0.073
+  }
+ },
+ "rank1": {
+  "n": 81991,
+  "base_rate": 0.031149760339549463,
+  "alsa_ata_logreg": {
+   "logloss": 0.1377,
+   "brier": 0.0305,
+   "auc": 0.731,
+   "ece": 0.0278,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.9926,
+   "said_gone_wheeled": 0.0306
+  },
+  "lgbm_all": {
+   "logloss": 0.1171,
+   "brier": 0.0284,
+   "auc": 0.8179,
+   "ece": 0.0053,
+   "said_wheels": 0.0003,
+   "said_wheels_hit": 0.48,
+   "said_gone": 0.9831,
+   "said_gone_wheeled": 0.0277
+  },
+  "wheelnet": {
+   "logloss": 0.1155,
+   "brier": 0.0282,
+   "auc": 0.8248,
+   "ece": 0.0018,
+   "said_wheels": 0.0002,
+   "said_wheels_hit": 0.6471,
+   "said_gone": 0.9832,
+   "said_gone_wheeled": 0.0276
+  }
+ },
+ "rank2": {
+  "n": 81991,
+  "base_rate": 0.07008086253369272,
+  "alsa_ata_logreg": {
+   "logloss": 0.2465,
+   "brier": 0.0649,
+   "auc": 0.6684,
+   "ece": 0.0247,
+   "said_wheels": 0.0,
+   "said_wheels_hit": 0.25,
+   "said_gone": 0.9424,
+   "said_gone_wheeled": 0.0656
+  },
+  "lgbm_all": {
+   "logloss": 0.2229,
+   "brier": 0.0606,
+   "auc": 0.7653,
+   "ece": 0.0093,
+   "said_wheels": 0.0025,
+   "said_wheels_hit": 0.4627,
+   "said_gone": 0.9224,
+   "said_gone_wheeled": 0.0551
+  },
+  "wheelnet": {
+   "logloss": 0.2191,
+   "brier": 0.06,
+   "auc": 0.778,
+   "ece": 0.0054,
+   "said_wheels": 0.0029,
+   "said_wheels_hit": 0.5212,
+   "said_gone": 0.9213,
+   "said_gone_wheeled": 0.0543
+  }
+ },
+ "rank3": {
+  "n": 81991,
+  "base_rate": 0.11378078081740679,
+  "alsa_ata_logreg": {
+   "logloss": 0.3445,
+   "brier": 0.0999,
+   "auc": 0.6453,
+   "ece": 0.0228,
+   "said_wheels": 0.0004,
+   "said_wheels_hit": 0.2222,
+   "said_gone": 0.8069,
+   "said_gone_wheeled": 0.0973
+  },
+  "lgbm_all": {
+   "logloss": 0.3142,
+   "brier": 0.0925,
+   "auc": 0.7444,
+   "ece": 0.0111,
+   "said_wheels": 0.0076,
+   "said_wheels_hit": 0.512,
+   "said_gone": 0.8059,
+   "said_gone_wheeled": 0.0782
+  },
+  "wheelnet": {
+   "logloss": 0.3084,
+   "brier": 0.0911,
+   "auc": 0.7595,
+   "ece": 0.0065,
+   "said_wheels": 0.0098,
+   "said_wheels_hit": 0.5306,
+   "said_gone": 0.8119,
+   "said_gone_wheeled": 0.0759
+  }
+ },
+ "rank4": {
+  "n": 81991,
+  "base_rate": 0.15750509202229512,
+  "alsa_ata_logreg": {
+   "logloss": 0.4255,
+   "brier": 0.1312,
+   "auc": 0.6348,
+   "ece": 0.0305,
+   "said_wheels": 0.0036,
+   "said_wheels_hit": 0.302,
+   "said_gone": 0.6134,
+   "said_gone_wheeled": 0.1195
+  },
+  "lgbm_all": {
+   "logloss": 0.388,
+   "brier": 0.1204,
+   "auc": 0.7326,
+   "ece": 0.0166,
+   "said_wheels": 0.0212,
+   "said_wheels_hit": 0.5187,
+   "said_gone": 0.6455,
+   "said_gone_wheeled": 0.0904
+  },
+  "wheelnet": {
+   "logloss": 0.38,
+   "brier": 0.1182,
+   "auc": 0.75,
+   "ece": 0.0109,
+   "said_wheels": 0.0273,
+   "said_wheels_hit": 0.5335,
+   "said_gone": 0.6672,
+   "said_gone_wheeled": 0.0882
+  }
+ },
+ "rank5": {
+  "n": 81991,
+  "base_rate": 0.21070605310338938,
+  "alsa_ata_logreg": {
+   "logloss": 0.5004,
+   "brier": 0.1625,
+   "auc": 0.6352,
+   "ece": 0.0326,
+   "said_wheels": 0.0161,
+   "said_wheels_hit": 0.3755,
+   "said_gone": 0.4336,
+   "said_gone_wheeled": 0.1356
+  },
+  "lgbm_all": {
+   "logloss": 0.4576,
+   "brier": 0.1482,
+   "auc": 0.7274,
+   "ece": 0.0146,
+   "said_wheels": 0.0474,
+   "said_wheels_hit": 0.5466,
+   "said_gone": 0.4862,
+   "said_gone_wheeled": 0.0992
+  },
+  "wheelnet": {
+   "logloss": 0.4498,
+   "brier": 0.1454,
+   "auc": 0.743,
+   "ece": 0.012,
+   "said_wheels": 0.0584,
+   "said_wheels_hit": 0.5506,
+   "said_gone": 0.5184,
+   "said_gone_wheeled": 0.0985
+  }
+ },
+ "rank6+": {
+  "n": 432655,
+  "base_rate": 0.5215125215240781,
+  "alsa_ata_logreg": {
+   "logloss": 0.5872,
+   "brier": 0.2023,
+   "auc": 0.7493,
+   "ece": 0.0212,
+   "said_wheels": 0.4858,
+   "said_wheels_hit": 0.7054,
+   "said_gone": 0.0952,
+   "said_gone_wheeled": 0.1889
+  },
+  "lgbm_all": {
+   "logloss": 0.5435,
+   "brier": 0.1852,
+   "auc": 0.7921,
+   "ece": 0.0114,
+   "said_wheels": 0.4965,
+   "said_wheels_hit": 0.7348,
+   "said_gone": 0.1185,
+   "said_gone_wheeled": 0.1195
+  },
+  "wheelnet": {
+   "logloss": 0.5336,
+   "brier": 0.1808,
+   "auc": 0.8027,
+   "ece": 0.011,
+   "said_wheels": 0.5108,
+   "said_wheels_hit": 0.7371,
+   "said_gone": 0.1432,
+   "said_gone_wheeled": 0.121
+  }
+ },
+ "rank1_oncolour_p2p3": {
+  "n": 14186,
+  "base_rate": 0.055195262935288314,
+  "alsa_ata_logreg": {
+   "logloss": 0.198,
+   "brier": 0.0504,
+   "auc": 0.7213,
+   "ece": 0.0087,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.993,
+   "said_gone_wheeled": 0.0538
+  },
+  "lgbm_all": {
+   "logloss": 0.1801,
+   "brier": 0.0479,
+   "auc": 0.8007,
+   "ece": 0.003,
+   "said_wheels": 0.0008,
+   "said_wheels_hit": 0.5,
+   "said_gone": 0.9492,
+   "said_gone_wheeled": 0.0438
+  },
+  "wheelnet": {
+   "logloss": 0.1786,
+   "brier": 0.0475,
+   "auc": 0.8083,
+   "ece": 0.0079,
+   "said_wheels": 0.0006,
+   "said_wheels_hit": 0.75,
+   "said_gone": 0.9566,
+   "said_gone_wheeled": 0.0447
+  }
+ },
+ "rank2_oncolour_p2p3": {
+  "n": 15931,
+  "base_rate": 0.10696127047894043,
+  "alsa_ata_logreg": {
+   "logloss": 0.3227,
+   "brier": 0.0926,
+   "auc": 0.6759,
+   "ece": 0.0166,
+   "said_wheels": 0.0001,
+   "said_wheels_hit": 0.5,
+   "said_gone": 0.9396,
+   "said_gone_wheeled": 0.1005
+  },
+  "lgbm_all": {
+   "logloss": 0.2989,
+   "brier": 0.0874,
+   "auc": 0.7545,
+   "ece": 0.0089,
+   "said_wheels": 0.0082,
+   "said_wheels_hit": 0.4733,
+   "said_gone": 0.8293,
+   "said_gone_wheeled": 0.0731
+  },
+  "wheelnet": {
+   "logloss": 0.2938,
+   "brier": 0.0859,
+   "auc": 0.7686,
+   "ece": 0.01,
+   "said_wheels": 0.0077,
+   "said_wheels_hit": 0.5328,
+   "said_gone": 0.8447,
+   "said_gone_wheeled": 0.0738
+  }
+ },
+ "rank3_oncolour_p2p3": {
+  "n": 16822,
+  "base_rate": 0.15622399239091667,
+  "alsa_ata_logreg": {
+   "logloss": 0.4216,
+   "brier": 0.1292,
+   "auc": 0.6388,
+   "ece": 0.0325,
+   "said_wheels": 0.0007,
+   "said_wheels_hit": 0.0833,
+   "said_gone": 0.8046,
+   "said_gone_wheeled": 0.1373
+  },
+  "lgbm_all": {
+   "logloss": 0.3826,
+   "brier": 0.1186,
+   "auc": 0.7401,
+   "ece": 0.0114,
+   "said_wheels": 0.0207,
+   "said_wheels_hit": 0.5158,
+   "said_gone": 0.6749,
+   "said_gone_wheeled": 0.0928
+  },
+  "wheelnet": {
+   "logloss": 0.3744,
+   "brier": 0.1162,
+   "auc": 0.758,
+   "ece": 0.0098,
+   "said_wheels": 0.024,
+   "said_wheels_hit": 0.5446,
+   "said_gone": 0.7017,
+   "said_gone_wheeled": 0.089
+  }
+ },
+ "uncertain_by_alsa": {
+  "n": 439987,
+  "base_rate": 0.44024482541529636,
+  "alsa_ata_logreg": {
+   "logloss": 0.6259,
+   "brier": 0.2178,
+   "auc": 0.6962,
+   "ece": 0.0068,
+   "said_wheels": 0.3661,
+   "said_wheels_hit": 0.6315,
+   "said_gone": 0.0,
+   "said_gone_wheeled": null
+  },
+  "lgbm_all": {
+   "logloss": 0.5817,
+   "brier": 0.1992,
+   "auc": 0.7534,
+   "ece": 0.0066,
+   "said_wheels": 0.3835,
+   "said_wheels_hit": 0.6709,
+   "said_gone": 0.147,
+   "said_gone_wheeled": 0.1249
+  },
+  "wheelnet": {
+   "logloss": 0.5703,
+   "brier": 0.1944,
+   "auc": 0.7662,
+   "ece": 0.0046,
+   "said_wheels": 0.4,
+   "said_wheels_hit": 0.6752,
+   "said_gone": 0.1808,
+   "said_gone_wheeled": 0.1262
+  }
+ },
+ "pick0_rank1-3": {
+  "n": 28938,
+  "base_rate": 0.0972769368995784,
+  "alsa_ata_logreg": {
+   "logloss": 0.2963,
+   "brier": 0.0848,
+   "auc": 0.7182,
+   "ece": 0.0267,
+   "said_wheels": 0.0013,
+   "said_wheels_hit": 0.1842,
+   "said_gone": 0.8354,
+   "said_gone_wheeled": 0.0789
+  },
+  "lgbm_all": {
+   "logloss": 0.2689,
+   "brier": 0.079,
+   "auc": 0.7893,
+   "ece": 0.0066,
+   "said_wheels": 0.0068,
+   "said_wheels_hit": 0.4569,
+   "said_gone": 0.8363,
+   "said_gone_wheeled": 0.0636
+  },
+  "wheelnet": {
+   "logloss": 0.2644,
+   "brier": 0.0777,
+   "auc": 0.8017,
+   "ece": 0.0072,
+   "said_wheels": 0.0089,
+   "said_wheels_hit": 0.4669,
+   "said_gone": 0.8426,
+   "said_gone_wheeled": 0.0612
+  }
+ },
+ "pick1_rank1-3": {
+  "n": 43407,
+  "base_rate": 0.0986016080355703,
+  "alsa_ata_logreg": {
+   "logloss": 0.3066,
+   "brier": 0.0871,
+   "auc": 0.6903,
+   "ece": 0.0303,
+   "said_wheels": 0.0,
+   "said_wheels_hit": 1.0,
+   "said_gone": 0.8236,
+   "said_gone_wheeled": 0.0802
+  },
+  "lgbm_all": {
+   "logloss": 0.2788,
+   "brier": 0.0808,
+   "auc": 0.7672,
+   "ece": 0.007,
+   "said_wheels": 0.0059,
+   "said_wheels_hit": 0.5079,
+   "said_gone": 0.848,
+   "said_gone_wheeled": 0.0682
+  },
+  "wheelnet": {
+   "logloss": 0.2754,
+   "brier": 0.08,
+   "auc": 0.7763,
+   "ece": 0.0071,
+   "said_wheels": 0.0078,
+   "said_wheels_hit": 0.5353,
+   "said_gone": 0.8478,
+   "said_gone_wheeled": 0.0678
+  }
+ },
+ "pick2_rank1-3": {
+  "n": 43407,
+  "base_rate": 0.09337203676826318,
+  "alsa_ata_logreg": {
+   "logloss": 0.3026,
+   "brier": 0.0843,
+   "auc": 0.6588,
+   "ece": 0.0314,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.8996,
+   "said_gone_wheeled": 0.0841
+  },
+  "lgbm_all": {
+   "logloss": 0.2722,
+   "brier": 0.0776,
+   "auc": 0.7593,
+   "ece": 0.0086,
+   "said_wheels": 0.0044,
+   "said_wheels_hit": 0.5156,
+   "said_gone": 0.8643,
+   "said_gone_wheeled": 0.0678
+  },
+  "wheelnet": {
+   "logloss": 0.269,
+   "brier": 0.0768,
+   "auc": 0.7679,
+   "ece": 0.0062,
+   "said_wheels": 0.0056,
+   "said_wheels_hit": 0.551,
+   "said_gone": 0.8682,
+   "said_gone_wheeled": 0.0667
+  }
+ },
+ "pick3_rank1-3": {
+  "n": 43407,
+  "base_rate": 0.07729168106526597,
+  "alsa_ata_logreg": {
+   "logloss": 0.2686,
+   "brier": 0.0715,
+   "auc": 0.6473,
+   "ece": 0.0301,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.9042,
+   "said_gone_wheeled": 0.0723
+  },
+  "lgbm_all": {
+   "logloss": 0.2413,
+   "brier": 0.0665,
+   "auc": 0.7562,
+   "ece": 0.0131,
+   "said_wheels": 0.0036,
+   "said_wheels_hit": 0.4968,
+   "said_gone": 0.8999,
+   "said_gone_wheeled": 0.0593
+  },
+  "wheelnet": {
+   "logloss": 0.2366,
+   "brier": 0.0655,
+   "auc": 0.7691,
+   "ece": 0.0077,
+   "said_wheels": 0.0034,
+   "said_wheels_hit": 0.5541,
+   "said_gone": 0.9035,
+   "said_gone_wheeled": 0.0581
+  }
+ },
+ "pick4_rank1-3": {
+  "n": 43407,
+  "base_rate": 0.05238786370861843,
+  "alsa_ata_logreg": {
+   "logloss": 0.2047,
+   "brier": 0.05,
+   "auc": 0.6342,
+   "ece": 0.0218,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.9949,
+   "said_gone_wheeled": 0.0522
+  },
+  "lgbm_all": {
+   "logloss": 0.1813,
+   "brier": 0.0469,
+   "auc": 0.7727,
+   "ece": 0.0106,
+   "said_wheels": 0.0011,
+   "said_wheels_hit": 0.5625,
+   "said_gone": 0.957,
+   "said_gone_wheeled": 0.0448
+  },
+  "wheelnet": {
+   "logloss": 0.177,
+   "brier": 0.0463,
+   "auc": 0.7879,
+   "ece": 0.004,
+   "said_wheels": 0.0014,
+   "said_wheels_hit": 0.6102,
+   "said_gone": 0.9557,
+   "said_gone_wheeled": 0.0436
+  }
+ },
+ "pick5_rank1-3": {
+  "n": 43407,
+  "base_rate": 0.019628170571566798,
+  "alsa_ata_logreg": {
+   "logloss": 0.0965,
+   "brier": 0.0193,
+   "auc": 0.6337,
+   "ece": 0.0083,
+   "said_wheels": 0.0,
+   "said_wheels_hit": null,
+   "said_gone": 0.9998,
+   "said_gone_wheeled": 0.0196
+  },
+  "lgbm_all": {
+   "logloss": 0.0827,
+   "brier": 0.0185,
+   "auc": 0.8246,
+   "ece": 0.0062,
+   "said_wheels": 0.0001,
+   "said_wheels_hit": 0.6667,
+   "said_gone": 0.9948,
+   "said_gone_wheeled": 0.0185
+  },
+  "wheelnet": {
+   "logloss": 0.0803,
+   "brier": 0.0183,
+   "auc": 0.8388,
+   "ece": 0.0019,
+   "said_wheels": 0.0001,
+   "said_wheels_hit": 0.8,
+   "said_gone": 0.9941,
+   "said_gone_wheeled": 0.0183
+  }
+ }
+}

@@ -1,0 +1,1 @@
++results/wheel_logs/queue_wheel.sh:2> .venv/bin/python -u scripts/train_wheelnet_multiset.py MSH 4 20000 'with_target=1'

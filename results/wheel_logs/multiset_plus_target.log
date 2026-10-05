@@ -1,0 +1,16 @@
+  OTJ: 381 cards, train 20000 [20s]
+  DSK: 286 cards, train 20000 [34s]
+  FDN: 286 cards, train 20000 [45s]
+warning: 1 returning packs are not subsets of the passed pack; clipping
+  DFT: 286 cards, train 20000 [58s]
+  TDM: 286 cards, train 20000 [67s]
+warning: 1 returning packs are not subsets of the passed pack; clipping
+  FIN: 363 cards, train 20000 [81s]
+warning: 2 returning packs are not subsets of the passed pack; clipping
+  SOS: 346 cards, train 20000 [93s]
+warning: 1 returning packs are not subsets of the passed pack; clipping
+  MSH: 339 cards, test 10292, train 48026 [107s]
+wheelnet_multiset_plus_target: target=MSH sets=['OTJ', 'DSK', 'FDN', 'DFT', 'TDM', 'FIN', 'SOS', 'MSH'] train drafts=178625 cards=2573 feat dim=465 params=4,051,009 steps=5584 [109s]
+epoch 0: train_loss=0.4589 val_logloss=0.4378 (696s)
+epoch 1: train_loss=0.4332 val_logloss=0.4296 (652s)
+epoch 2: train_loss=0.4291 val_logloss=0.4273 (673s)

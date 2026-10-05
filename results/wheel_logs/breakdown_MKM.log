@@ -1,0 +1,23 @@
+/Users/zblanton/Documents/repos/mtg-open-lane/scripts/wheel_breakdown.py:46: RuntimeWarning: Mean of empty slice
+  r = {"n": int(len(d)), "base_rate": float(y.mean())}
+/Users/zblanton/Documents/repos/mtg-open-lane/.venv/lib/python3.14/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+MKM: 3,526,746 passed cards, models ['alsa_ata_logreg', 'lgbm_all', 'wheelnet']
+slice                            n   base        alsa_ata_logreg               lgbm_all               wheelnet
+all                      3,526,746  0.300           0.4814/0.802           0.4519/0.831           0.4487/0.833
+rank1                      354,495  0.031           0.1340/0.700           0.1168/0.806           0.1168/0.804
+rank2                      354,495  0.068           0.2442/0.651           0.2217/0.755           0.2210/0.758
+rank3                      354,495  0.115           0.3487/0.631           0.3220/0.725           0.3202/0.730
+rank4                      354,495  0.165           0.4399/0.622           0.4089/0.709           0.4063/0.714
+rank5                      354,495  0.220           0.5179/0.617           0.4838/0.698           0.4810/0.703
+rank6+                   1,754,271  0.483           0.6274/0.704           0.5946/0.745           0.5898/0.750
+rank1_oncolour_p2p3         54,358  0.051           0.1915/0.681           0.1748/0.780           0.1715/0.795
+rank2_oncolour_p2p3         61,774  0.099           0.3144/0.645           0.2883/0.745           0.2836/0.760
+rank3_oncolour_p2p3         65,948  0.153           0.4182/0.633           0.3854/0.724           0.3784/0.740
+uncertain_by_alsa        1,959,752  0.446           0.6284/0.693           0.5942/0.741           0.5902/0.745
+pick0_rank1-3              212,697  0.091           0.2852/0.702           0.2589/0.782           0.2593/0.781
+pick1_rank1-3              212,697  0.090           0.2892/0.682           0.2627/0.770           0.2622/0.771
+pick2_rank1-3              212,697  0.081           0.2708/0.678           0.2460/0.767           0.2448/0.771
+pick3_rank1-3              212,697  0.062           0.2262/0.662           0.2059/0.759           0.2047/0.765
+pick4_rank1-3              212,697  0.032           0.1401/0.648           0.1272/0.755           0.1256/0.768
+pick5_rank1-3                    0    nan                                                                     

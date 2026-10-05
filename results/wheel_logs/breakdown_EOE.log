@@ -1,0 +1,23 @@
+/Users/zblanton/Documents/repos/mtg-open-lane/scripts/wheel_breakdown.py:46: RuntimeWarning: Mean of empty slice
+  r = {"n": int(len(d)), "base_rate": float(y.mean())}
+/Users/zblanton/Documents/repos/mtg-open-lane/.venv/lib/python3.14/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+EOE: 2,348,550 passed cards, models ['alsa_ata_logreg', 'lgbm_all']
+slice                            n   base        alsa_ata_logreg               lgbm_all
+all                      2,348,550  0.300           0.4739/0.810           0.4459/0.836
+rank1                      234,855  0.030           0.1316/0.689           0.1176/0.783
+rank2                      234,855  0.065           0.2358/0.646           0.2175/0.741
+rank3                      234,855  0.106           0.3341/0.619           0.3092/0.717
+rank4                      234,855  0.153           0.4245/0.608           0.3937/0.703
+rank5                      234,855  0.207           0.5052/0.603           0.4715/0.689
+rank6+                   1,174,275  0.488           0.6215/0.712           0.5899/0.750
+rank1_oncolour_p2p3         28,898  0.055           0.2054/0.675           0.1918/0.752
+rank2_oncolour_p2p3         33,464  0.106           0.3327/0.642           0.3042/0.735
+rank3_oncolour_p2p3         35,701  0.159           0.4373/0.621           0.3981/0.714
+uncertain_by_alsa        1,227,248  0.445           0.6292/0.693           0.5960/0.739
+pick0_rank1-3              140,913  0.088           0.2803/0.692           0.2612/0.758
+pick1_rank1-3              140,913  0.087           0.2838/0.671           0.2610/0.754
+pick2_rank1-3              140,913  0.075           0.2596/0.660           0.2375/0.750
+pick3_rank1-3              140,913  0.056           0.2141/0.643           0.1954/0.747
+pick4_rank1-3              140,913  0.029           0.1313/0.650           0.1187/0.762
+pick5_rank1-3                    0    nan                                              

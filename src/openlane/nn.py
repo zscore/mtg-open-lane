@@ -146,18 +146,24 @@ class WheelNet(nn.Module):
     def __init__(self, n_cards: int, n_picks: int = 14, d: int = 192, heads: int = 6, hist_layers: int = 4,
                  pack_layers: int = 3, dropout: float = 0.2, cross: bool = True,
                  others: bool = True, tied_bag: bool = True, card_feats: np.ndarray | None = None,
-                 n_ctx: int = 0):
+                 n_ctx: int = 0, ids: bool = True):
+        """ids=False: a card is only an MLP of `card_feats` (no learned per-card vector), so one model
+        can be trained on several sets and score cards it never saw."""
         super().__init__()
         self.C, self.cross, self.use_others, self.tied_bag = n_cards, cross, others, tied_bag
+        self.ids = ids
         W = self.W = n_picks - N_SEATS  # wheel-eligible picks per pack
         self.max_pass = n_picks - 1
         T = N_PACKS * n_picks
-        self.card_ = nn.Embedding(n_cards + 1, d, padding_idx=n_cards)
+        if ids:
+            self.card_ = nn.Embedding(n_cards + 1, d, padding_idx=n_cards)
         if card_feats is not None:  # known attributes seed each card's learned embedding
             f = torch.as_tensor(card_feats, dtype=torch.float32)
             self.register_buffer("feats", torch.cat([f, f.new_zeros(1, f.shape[1])]))
-            self.feat_proj = nn.Linear(f.shape[1], d, bias=False)
+            self.feat_proj = (nn.Linear(f.shape[1], d, bias=False) if ids else
+                              nn.Sequential(nn.Linear(f.shape[1], 2 * d), nn.GELU(), nn.Linear(2 * d, d)))
         else:
+            assert ids, "a features-only card table needs card_feats"
             self.feats = None
         if tied_bag:  # bags are count-weighted means of the shared card embeddings
             self.bag = nn.Linear(d, d)
@@ -194,6 +200,9 @@ class WheelNet(nn.Module):
         self.register_buffer("block", pos[:, None] != pos[None])                   # [234, 234]
 
     def card_table(self):
+        if not self.ids:  # padding row stays zero
+            w = self.feat_proj(self.feats)
+            return w * (torch.arange(len(w), device=w.device) < len(w) - 1)[:, None]
         w = self.card_.weight
         return w if self.feats is None else w + self.feat_proj(self.feats)
 
