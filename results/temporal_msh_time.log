@@ -2,3 +2,6 @@ warning: 1 returning packs are not subsets of the passed pack; clipping
 MSH: 5 weeks, drafts per week [27736, 15684, 11425, 10190, 3574]
 week 1: lookup_frozen=0.4663  lookup_refit=0.4663  retrain=0.4301  frozen=0.4301  finetune=0.4301  replay=0.4301  (1674s)
 week 2: lookup_frozen=0.4652  lookup_refit=0.4598  retrain=0.4193  frozen=0.4238  finetune=0.4202  replay=0.4205  (1822s)
+week 3: lookup_frozen=0.4660  lookup_refit=0.4574  retrain=0.4191  frozen=0.4264  finetune=0.4199  replay=0.4200  (1872s)
+week 4: lookup_frozen=0.4691  lookup_refit=0.4585  retrain=0.4200  frozen=0.4308  finetune=0.4212  replay=0.4210  (48021s)
+wrote /Users/zblanton/Documents/repos/mtg-open-lane/results/MSH.PremierDraft/temporal.json

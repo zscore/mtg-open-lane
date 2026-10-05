@@ -1,0 +1,16 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 12501.56it/s]
+MSH (339, 384) missing 0
+OTJ (381, 384) missing 0
+DSK (286, 384) missing 0
+FDN (286, 384) missing 0
+DFT (286, 384) missing 0
+TDM (286, 384) missing 0
+FIN (363, 384) missing 0
+SOS (346, 384) missing 0
+BLB (276, 384) missing 0
+LCI (291, 384) missing 0
+MKM (326, 384) missing 0
+EOE (321, 384) missing 0
+ECL (293, 384) missing 0
+TLA (347, 384) missing 0
