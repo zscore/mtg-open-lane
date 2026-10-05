@@ -1,0 +1,3 @@
++results/wheel_logs/queue_fdn.sh:2> .venv/bin/python scripts/train_picknet.py FDN picknet 6 'batch=128'
++results/wheel_logs/queue_fdn.sh:3> .venv/bin/python -u scripts/force_vs_follow.py FDN 2000 picknet
++results/wheel_logs/queue_fdn.sh:4> echo 'FDN DONE'

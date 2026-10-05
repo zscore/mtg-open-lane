@@ -1,0 +1,8 @@
+FDN picknet: model=picknet cfg={} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0, 'name': '', 'meta': 1, 'rich': 1, 'text': 0, 'ctx': 1, 'event': 'PremierDraft', 'max_train': 0} feats=(286, 81) params=1,294,977 train drafts=91654 device=mps [17s]
+  epoch 0: train 0.9981 val nll 0.7907 top1 0.6950 (523s)
+  epoch 1: train 0.8040 val nll 0.7716 top1 0.7025 (509s)
+  epoch 2: train 0.7876 val nll 0.7536 top1 0.7071 (508s)
+  epoch 3: train 0.7766 val nll 0.7417 top1 0.7112 (509s)
+  epoch 4: train 0.7672 val nll 0.7376 top1 0.7126 (508s)
+  epoch 5: train 0.7619 val nll 0.7364 top1 0.7127 (508s)
+FDN picknet TEST nll 0.7407 top1 0.7120 (P1 0.702 P2 0.722 P3 0.712) [3096s]
