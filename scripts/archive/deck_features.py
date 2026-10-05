@@ -20,7 +20,7 @@ import polars as pl
 import torch
 from sklearn.metrics import log_loss, roc_auc_score
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 from openlane.cardinfo import card_info, card_matrix, deck_features  # noqa: E402
 from openlane.data import ROOT, card_metadata  # noqa: E402
 from openlane.deckstrength import (aligned, covariates, experience, flag, game_split, load_drafts,  # noqa: E402

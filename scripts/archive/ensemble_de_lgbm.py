@@ -10,8 +10,8 @@ import numpy as np
 import polars as pl
 from scipy.special import expit, logit
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from improve_deck import fit_draft_model, fit_lgbm, structure_features  # noqa: E402
 from openlane.data import ROOT  # noqa: E402
 from openlane.deckstrength import N_RANKS, deck_metrics, load_drafts, most_played_deck  # noqa: E402
