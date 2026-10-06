@@ -12,6 +12,7 @@ tables are in the README.
 | **Can we predict human picks?** | **68.6%** top-1, vs 49.7% for a pick-order bot. | `drafting.ipynb` |
 | **Does the open lane pay?** | Open colours win **+3.2 pts** of game win rate, but that comes from more good cards flowing your way, not from reading it. In simulation, forcing a random pair ties drafting like a human, forcing the best pair beats it (+1.3 pts MSH), and pure signal-chasing loses. | `drafting.ipynb` part 2 |
 | **How good is this deck?** | Spearman **0.28** with run win rate, about as high as Bo1 noise allows. | `decks.ipynb` |
+| **Does the DraftEncoder paper hold up?** | Its numbers reproduce (0.19–0.21), but its 2× over linear comes from a weak baseline. The same text features as an order-free linear model match or beat it on the same set. Only on an unseen set, with META, does the transformer win (+0.01). Four days of the new set's data beat everything else. | README, "Full DraftEncoder replication" |
 | **Odds in the next game?** | At a fixed deck, each win so far costs ~2 pts (matchmaking). Being on the play is worth ~5 pts. | `decks.ipynb` part 2 |
 | **Is card synergy real?** | Small. Pairs add little beyond card power + deck structure. The one big-looking effect (cards seen together in a game) is probably card draw in disguise, and round 8 is checking that. | `synergy.ipynb` |
 
@@ -35,7 +36,8 @@ tables are in the README.
 
 ## Dead ends
 
-Transformers on a single set (DraftEncoder, the deck transformer, a cross-set deck network); Sealed/draft multitask;
+Transformers on a single set (DraftEncoder, the deck transformer, a cross-set deck network); DraftEncoder pooled over
+12 sets from card text (ties the linear bag with META, and loses without it); Sealed/draft multitask;
 ensembling the transformer with LightGBM; higher-rank or richer pair terms (saturated after rank 4); per-card
 affinity profiles; GIH WR prior; archetype identity; pick-based skill proxy; deeper WheelNet; rank or skill inputs to
 WheelNet. Scripts and notebooks for the archived ones are in `scripts/archive/` and `notebooks/archive/`.
