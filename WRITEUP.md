@@ -14,7 +14,7 @@ tables are in the README.
 | **How good is this deck?** | Spearman **0.28** with run win rate, about as high as Bo1 noise allows. | `decks.ipynb` |
 | **Does the DraftEncoder paper hold up?** | Its numbers reproduce (0.19–0.21), but its 2× over linear comes from a weak baseline. The same text features as an order-free linear model match or beat it on the same set. Only on an unseen set, with META, does the transformer win (+0.01). Four days of the new set's data beat everything else. | README, "Full DraftEncoder replication" |
 | **Odds in the next game?** | At a fixed deck, each win so far costs ~2 pts (matchmaking). Being on the play is worth ~5 pts. | `decks.ipynb` part 2 |
-| **Is card synergy real?** | Small. Pairs add little beyond card power + deck structure. The one big-looking effect (cards seen together in a game) is probably card draw in disguise, and round 8 is checking that. | `synergy.ipynb` |
+| **Is card synergy real?** | Small. Pairs add little beyond card power + deck structure. The one big-looking effect (cards seen together in a game) is mostly card draw: a per-card "saw more cards" slope beats it alone. On the opening hand, where draw can't explain it, partner-specific synergy is real but about 10× smaller (11/12 sets). | `synergy.ipynb` |
 
 ## What mattered
 
@@ -44,9 +44,6 @@ WheelNet. Scripts and notebooks for the archived ones are in `scripts/archive/` 
 
 ## Open
 
-- **Synergy round 8** (`scripts/deck_synergy_v8.py`, running on SOS): rerun the seen-together synergy model on the
-  opening hand only, since cards seen later partly depend on card draw. If the effect vanishes, deck-level synergy
-  (small) is the honest answer.
 - Stronger simulated drafters, and tables where several seats force.
 - A live overlay: P(wheel) for each card in your pack, fine-tuned weekly.
 
