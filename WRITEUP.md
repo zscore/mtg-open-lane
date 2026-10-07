@@ -15,6 +15,7 @@ tables are in the README.
 | **Does the DraftEncoder paper hold up?** | Its numbers reproduce (0.19–0.21), but its 2× over linear comes from a weak baseline. The same text features as an order-free linear model match or beat it on the same set. Only on an unseen set, with META, does the transformer win (+0.01). Four days of the new set's data beat everything else. | README, "Full DraftEncoder replication" |
 | **Odds in the next game?** | At a fixed deck, each win so far costs ~2 pts (matchmaking). Being on the play is worth ~5 pts. | `decks.ipynb` part 2 |
 | **Is card synergy real?** | Small. Pairs add little beyond card power + deck structure. The one big-looking effect (cards seen together in a game) is mostly card draw: a per-card "saw more cards" slope beats it alone. On the opening hand, where draw can't explain it, partner-specific synergy is real but about 10× smaller (11/12 sets). | `synergy.ipynb` |
+| **How much do the cards in your deck matter?** | By GIH WR, deck card strength explains about **a third** of the real spread in drafters' win rates (0.20–0.47 by set, and the sets really differ). GIH WR beats IWD as the card rating on all 19 sets (r with total wins 0.21 vs 0.13). In opened packs, card strength is near-symmetric with fat tails on both sides, and about 1 pack in 7 has an above-fence card. | `bombs.ipynb`, `bombs_packs.ipynb` |
 
 ## What mattered
 
@@ -50,4 +51,5 @@ WheelNet. Scripts and notebooks for the archived ones are in `scripts/archive/` 
 ## Notebooks
 
 `wheel.ipynb` · `drafting.ipynb` · `decks.ipynb` · `synergy.ipynb`. Each one merges two former notebooks as parts 1 and 2,
-and each part runs on its own.
+and each part runs on its own. `bombs.ipynb` (card ratings, deck strength, bombs) and `bombs_packs.ipynb` (card strength in
+opened packs, which reads `bombs.ipynb`'s card cache).
