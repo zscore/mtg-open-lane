@@ -1,0 +1,217 @@
+set,name,rarity,main_type,mana_value,group,agreement,gih_wr,norm_eb,iwd_eb,z,data_rank,set_cards,ata,take_early,is_bonus
+TDM,"Ugin, Eye of the Storms",mythic,Planeswalker,7.0,bomb: pre & post,strong,68.5,13.5,17.1,4.8,1,278,1.06,0.96,false
+LCI,Bonehoard Dracosaur,mythic,Creature,5.0,bomb: pre & post,strong,70.3,14.9,16.4,4.45,1,285,1.13,0.91,false
+DSK,Overlord of the Mistmoors,mythic,Creature,7.0,bomb: pre & post,strong,68.1,13.6,15.9,4.41,1,275,1.19,0.84,false
+DFT,"Sab-Sunen, Luxa Embodied",mythic,Creature,5.0,bomb: pre & post,strong,68.0,13.0,14.6,4.17,1,278,1.29,0.86,false
+MKM,Aurelia's Vindicator,mythic,Creature,4.0,bomb: pre & post,strong,68.4,13.3,13.8,4.1,1,303,1.15,0.92,false
+LCI,"Aclazotz, Deepest Betrayal",mythic,Creature,5.0,bomb: pre & post,strong,68.9,13.5,17.1,4.04,2,285,1.2,0.79,false
+WOE,Gruff Triplets,rare,Creature,6.0,bomb: pre & post,strong,68.9,13.7,16.9,4.0,1,307,1.41,0.78,false
+OTJ,"Bonny Pall, Clearcutter",rare,Creature,6.0,bomb: pre & post,strong,66.2,12.1,15.9,3.7,1,368,1.58,0.75,false
+DSK,Valgavoth's Onslaught,rare,Sorcery,1.0,bomb: pre & post,strong,65.9,11.4,14.5,3.68,2,275,1.41,0.84,false
+LCI,Palani's Hatcher,rare,Creature,5.0,bomb: pre & post,strong,67.4,12.0,13.6,3.6,3,285,1.63,0.66,false
+DFT,"Skysovereign, Consul Flagship",mythic,Artifact,5.0,bomb: pre & post,strong,66.4,11.3,9.8,3.59,2,278,1.06,0.95,true
+TMT,Umezawa's Jitte,rare,Artifact,2.0,bomb: pre & post,strong,71.7,13.0,10.3,3.34,1,196,1.4,0.86,true
+TMT,"Sally Pride, Lioness Leader",rare,Creature,5.0,bomb: pre & post,strong,69.9,12.9,13.9,3.33,2,196,1.63,0.73,false
+DFT,"Mu Yanling, Wind Rider",mythic,Creature,4.0,bomb: pre & post,strong,65.4,10.4,12.7,3.31,3,278,1.41,0.76,false
+MSH,"Captain Marvel, Earth's Protector",mythic,Creature,5.0,bomb: pre & post,strong,69.6,13.3,13.7,3.28,2,295,1.26,0.87,false
+DSK,Unholy Annex // Ritual Chamber,rare,Enchantment,8.0,bomb: pre & post,moderate,64.7,10.2,14.7,3.27,3,275,1.67,0.63,false
+WOE,Virtue of Persistence,mythic,Enchantment,7.0,bomb: pre & post,strong,66.3,11.1,13.1,3.24,2,307,1.2,0.88,false
+DSK,The Swarmweaver,rare,Creature,4.0,bomb: pre & post,strong,64.3,9.9,13.5,3.16,4,275,1.87,0.61,false
+NEO,The Wandering Emperor,mythic,Planeswalker,4.0,bomb: pre & post,strong,66.9,11.2,14.7,3.15,3,280,,,false
+MKM,"Izoni, Center of the Web",rare,Creature,6.0,bomb: pre & post,strong,65.1,10.1,14.5,3.15,2,303,1.69,0.68,false
+DSK,Ghostly Dancers,rare,Creature,5.0,bomb: pre & post,strong,64.3,9.8,11.9,3.14,5,275,1.43,0.73,false
+ECL,Ashling's Command,rare,Instant,5.0,bomb: pre & post,strong,66.7,11.6,14.4,3.1,1,278,2.51,0.51,false
+MOM,Chrome Host Seedshark,rare,Creature,3.0,bomb: pre & post,moderate,64.9,10.1,11.6,3.09,3,341,1.42,0.82,false
+OTJ,"Oko, Thief of Crowns",mythic,Planeswalker,3.0,bomb: pre & post,moderate,64.2,10.0,12.7,3.07,4,368,1.3,0.84,true
+LCI,Kitesail Larcenist,rare,Creature,3.0,bomb: pre & post,moderate,65.6,10.2,10.4,3.07,4,285,1.6,0.74,false
+ONE,"Nissa, Ascended Animist",mythic,Planeswalker,7.0,bomb: pre & post,strong,67.0,12.1,14.8,3.06,1,260,,,false
+DFT,Agonasaur Rex,rare,Creature,5.0,bomb: pre & post,strong,64.5,9.6,10.2,3.05,5,278,1.47,0.73,false
+TLA,The Legend of Yangchen,mythic,Enchantment,5.0,bomb: pre & post,strong,66.2,10.1,10.7,3.05,5,299,1.73,0.69,false
+ONE,"Migloz, Maze Crusher",rare,Creature,3.0,bomb: pre & post,moderate,66.8,12.0,12.9,3.05,2,260,,,false
+DSK,Overlord of the Boilerbilges,mythic,Creature,6.0,bomb: pre & post,strong,64.0,9.5,10.0,3.04,6,275,1.35,0.79,false
+BLB,Sword of Fire and Ice,mythic,Artifact,3.0,bomb: pre & post,strong,64.9,10.1,11.7,3.03,2,268,1.08,0.93,true
+ECL,Gloom Ripper,rare,Creature,5.0,bomb: pre & post,strong,66.4,11.4,11.6,3.03,2,278,2.53,0.43,false
+OTJ,Vaultborn Tyrant,mythic,Creature,7.0,bomb: pre & post,moderate,64.1,9.9,10.4,3.01,5,368,1.36,0.78,true
+LCI,Unstable Glyphbridge,rare,Artifact,5.0,bomb: pre & post,moderate,65.3,9.9,11.0,2.98,5,285,1.6,0.71,false
+BLB,Dreamdew Entrancer,rare,Creature,4.0,bomb: pre & post,strong,64.6,10.0,13.9,2.98,3,268,2.81,0.41,false
+OTJ,"Rakdos, the Muscle",mythic,Creature,5.0,bomb: pre & post,strong,63.9,9.7,13.5,2.97,6,368,1.58,0.66,false
+LCI,Sanguine Evangelist,rare,Creature,3.0,bomb: pre & post,moderate,65.2,9.8,10.3,2.96,7,285,1.6,0.71,false
+NEO,Inventive Iteration,rare,Enchantment,4.0,bomb: pre & post,moderate,66.0,10.4,12.7,2.92,4,280,,,false
+MOM,Boon-Bringer Valkyrie,rare,Creature,5.0,bomb: pre & post,strong,64.3,9.5,10.6,2.9,4,341,1.31,0.77,false
+LCI,"Breeches, Eager Pillager",rare,Creature,3.0,bomb: pre & post,moderate,64.9,9.5,9.3,2.88,9,285,1.4,0.78,false
+BLB,Valley Questcaller,rare,Creature,2.0,bomb: pre & post,moderate,64.3,9.7,10.5,2.87,4,268,1.59,0.63,false
+OTJ,"Bristly Bill, Spine Sower",mythic,Creature,2.0,bomb: pre & post,moderate,63.5,9.3,9.6,2.84,8,368,1.28,0.84,false
+BLB,Fecund Greenshell,rare,Creature,5.0,bomb: pre & post,moderate,63.9,9.3,11.6,2.76,6,268,1.59,0.72,false
+BLB,"Mabel, Heir to Cragflame",rare,Creature,3.0,bomb: pre & post,moderate,64.0,9.3,12.5,2.76,5,268,2.32,0.41,false
+SOS,Antiquities on the Loose,rare,Sorcery,3.0,bomb: pre & post,strong,65.5,10.1,9.9,2.76,2,329,1.94,0.62,false
+MKM,"Agrus Kos, Spirit of Justice",mythic,Creature,4.0,bomb: pre & post,moderate,63.7,8.7,9.4,2.75,3,303,1.44,0.75,false
+DFT,"Loot, the Pathfinder",mythic,Creature,5.0,bomb: pre & post,strong,63.6,8.7,11.4,2.74,6,278,1.82,0.61,false
+DSK,Overlord of the Floodpits,mythic,Creature,5.0,bomb: pre & post,strong,63.1,8.6,10.4,2.74,7,275,1.47,0.7,false
+MKM,Vein Ripper,mythic,Creature,6.0,bomb: pre & post,strong,63.5,8.5,12.5,2.69,4,303,1.5,0.63,false
+FDN,"Liliana, Dreadhorde General",mythic,Planeswalker,6.0,bomb: pre & post,strong,64.1,9.5,12.8,2.68,1,277,1.24,0.85,false
+MKM,"Tolsimir, Midnight's Light",rare,Creature,5.0,bomb: pre & post,moderate,63.5,8.5,10.9,2.67,5,303,1.84,0.62,false
+SOS,Emeritus of Ideation,mythic,Creature,5.0,bomb: pre & post,strong,65.1,9.7,13.3,2.62,4,329,1.38,0.76,false
+ECL,Kinbinding,rare,Enchantment,5.0,bomb: pre & post,strong,64.7,9.7,12.2,2.56,3,278,1.86,0.63,false
+ONE,The Eternal Wanderer,rare,Planeswalker,6.0,bomb: pre & post,strong,64.7,9.9,11.1,2.54,4,260,,,false
+FDN,Embercleave,mythic,Artifact,6.0,bomb: pre & post,strong,63.8,9.0,8.4,2.54,2,277,1.73,0.6,true
+MKM,"Ezrim, Agency Chief",rare,Creature,5.0,bomb: pre & post,moderate,63.0,8.0,11.3,2.53,8,303,1.79,0.58,false
+BLB,Warren Warleader,mythic,Creature,4.0,bomb: pre & post,moderate,63.2,8.6,10.1,2.52,7,268,1.34,0.74,false
+DFT,Riptide Gearhulk,mythic,Creature,5.0,bomb: pre & post,moderate,62.9,8.0,9.8,2.52,7,278,2.23,0.41,false
+OTJ,Ornery Tumblewagg,rare,Creature,3.0,bomb: pre & post,moderate,62.4,8.3,8.6,2.51,11,368,1.4,0.78,false
+BLB,"Maha, Its Feathers Night",mythic,Creature,5.0,bomb: pre & post,moderate,63.2,8.6,9.5,2.51,8,268,1.32,0.78,false
+MKM,Cryptic Coat,rare,Artifact,3.0,bomb: pre & post,strong,62.9,7.9,10.0,2.51,9,303,1.5,0.78,false
+OTJ,Hostile Investigator,mythic,Creature,4.0,bomb: pre & post,moderate,62.4,8.2,9.4,2.48,12,368,1.69,0.67,true
+OTJ,Collector's Cage,mythic,Artifact,2.0,bomb: pre & post,moderate,62.3,8.2,8.2,2.48,13,368,1.76,0.65,true
+WOE,"Lord Skitter, Sewer King",rare,Creature,3.0,bomb: pre & post,moderate,63.5,8.3,9.2,2.43,5,307,1.35,0.81,false
+BLB,Innkeeper's Talent,rare,Enchantment,2.0,bomb: pre & post,moderate,62.9,8.3,10.4,2.41,10,268,1.41,0.79,false
+BLB,Manifold Mouse,rare,Creature,2.0,bomb: pre & post,moderate,62.9,8.3,10.4,2.41,11,268,2.33,0.4,false
+WOE,Realm-Scorcher Hellkite,mythic,Creature,6.0,bomb: pre & post,strong,63.3,8.1,9.0,2.36,6,307,1.31,0.83,false
+DSK,Overlord of the Balemurk,mythic,Creature,5.0,bomb: pre & post,moderate,61.8,7.3,10.0,2.32,11,275,1.48,0.67,false
+FDN,Bloodthirsty Conqueror,mythic,Creature,5.0,bomb: pre & post,strong,62.7,8.1,12.0,2.29,3,277,1.31,0.78,false
+BLB,"Beza, the Bounding Spring",mythic,Creature,4.0,bomb: pre & post,moderate,62.5,7.8,9.2,2.27,12,268,1.42,0.68,false
+MSH,Jennifer Walters,mythic,Creature,2.0,bomb: pre & post,strong,65.5,9.3,9.6,2.27,8,295,1.46,0.76,false
+BLB,"Dragonhawk, Fate's Tempest",mythic,Creature,5.0,bomb: pre & post,moderate,62.4,7.8,10.0,2.25,13,268,1.46,0.64,false
+WOE,Virtue of Loyalty,mythic,Enchantment,5.0,bomb: pre & post,moderate,62.7,7.4,9.6,2.17,9,307,1.25,0.83,false
+ONE,Archfiend of the Dross,rare,Creature,4.0,bomb: pre & post,moderate,63.0,8.2,12.2,2.13,6,260,,,false
+FDN,Spinner of Souls,rare,Creature,3.0,bomb: pre & post,moderate,62.1,7.5,9.5,2.12,5,277,1.8,0.56,false
+FDN,Curator of Destinies,rare,Creature,6.0,bomb: pre & post,moderate,62.1,7.5,9.2,2.11,6,277,1.96,0.61,false
+FDN,Celestial Armor,rare,Artifact,3.0,bomb: pre & post,moderate,62.0,7.4,7.7,2.09,8,277,1.73,0.66,false
+ECL,Curious Colossus,mythic,Creature,7.0,bomb: pre & post,moderate,63.1,8.0,10.8,2.07,12,278,1.81,0.57,false
+FIN,Summon: Primal Odin,rare,Creature,6.0,bomb: pre & post,moderate,63.4,7.6,9.2,2.05,13,352,1.55,0.7,false
+MKM,"Teysa, Opulent Oligarch",rare,Creature,3.0,bomb: pre & post,moderate,61.3,6.4,10.6,2.05,12,303,1.74,0.59,false
+FDN,"Alesha, Who Laughs at Fate",rare,Creature,3.0,bomb: pre & post,moderate,61.8,7.2,10.4,2.04,10,277,2.36,0.5,false
+MSH,Avengers Assemble!,mythic,Enchantment,5.0,bomb: pre & post,moderate,64.5,8.3,10.0,2.02,10,295,1.47,0.77,false
+ECL,Champions of the Shoal,rare,Creature,4.0,bomb: pre & post,strong,62.8,7.8,9.1,2.01,13,278,2.81,0.38,false
+FDN,Scavenging Ooze,rare,Creature,2.0,bomb: pre & post,moderate,61.7,7.1,9.0,2.01,11,277,1.99,0.47,false
+FDN,"Chandra, Flameshaper",mythic,Planeswalker,7.0,bomb: pre & post,moderate,61.6,7.0,9.1,1.98,12,277,1.56,0.66,false
+TMT,"Agent Bishop, Man in Black",rare,Creature,3.0,bomb: pre & post,moderate,64.8,7.9,9.3,1.93,5,196,1.53,0.72,false
+FDN,Vivien Reid,mythic,Planeswalker,5.0,bomb: pre & post,moderate,61.4,6.8,9.3,1.92,14,277,1.5,0.59,false
+TMT,"Armaggon, Future Shark",rare,Creature,8.0,bomb: pre & post,moderate,64.7,7.8,10.7,1.88,7,196,2.17,0.54,false
+TMT,Dream Beavers,uncommon,Creature,1.0,bomb: pre & post,moderate,64.5,7.6,9.7,1.84,8,196,3.43,0.32,false
+ECL,Loch Mare,mythic,Creature,2.0,bomb: pre & post,moderate,62.1,7.0,8.3,1.8,16,278,1.79,0.64,false
+MSH,Monica Rambeau,mythic,Creature,3.0,bomb: pre & post,strong,63.4,7.3,9.3,1.76,19,295,1.41,0.8,false
+SOS,Informed Inkwright,rare,Creature,2.0,bomb: pre & post,moderate,61.7,6.3,5.7,1.64,14,329,1.84,0.6,false
+TDM,Jeskai Revelation,mythic,Instant,7.0,bomb: post only,strong,68.5,13.5,15.8,4.79,2,278,1.81,0.7,false
+TDM,"Ureni, the Song Unending",mythic,Creature,8.0,bomb: post only,strong,68.0,12.9,17.2,4.59,3,278,1.47,0.77,false
+TDM,Dragonback Assault,mythic,Enchantment,6.0,bomb: post only,strong,67.5,12.5,16.8,4.42,4,278,1.42,0.78,false
+TDM,Marang River Regent,rare,Creature,6.0,bomb: post only,strong,67.4,12.3,14.6,4.35,5,278,1.42,0.81,false
+MOM,"Elesh Norn, Grand Cenobite",mythic,Creature,7.0,bomb: post only,moderate,67.4,12.5,14.7,3.8,1,341,1.24,0.81,true
+MOM,Sunfall,rare,Sorcery,5.0,bomb: post only,strong,67.0,12.2,14.1,3.7,2,341,1.35,0.79,false
+EOE,Ouroboroid,mythic,Creature,4.0,bomb: post only,strong,67.3,11.8,12.9,3.69,1,299,1.33,0.79,false
+NEO,Jugan Defends the Temple,mythic,Enchantment,3.0,bomb: post only,moderate,68.4,12.7,15.7,3.59,1,280,,,false
+MSH,The Super Hero Civil War,rare,Enchantment,5.0,bomb: post only,strong,70.3,14.1,17.4,3.48,1,295,1.52,0.81,false
+EOE,Quantum Riddler,mythic,Creature,5.0,bomb: post only,strong,66.5,11.1,13.6,3.45,2,299,1.4,0.8,false
+OTJ,Railway Brawler,mythic,Creature,5.0,bomb: post only,moderate,65.2,11.0,12.4,3.38,2,368,1.22,0.87,false
+BLB,Season of Loss,mythic,Sorcery,5.0,bomb: post only,strong,65.6,11.0,13.2,3.32,1,268,1.57,0.72,false
+DFT,Lumbering Worldwagon,rare,Artifact,3.0,bomb: post only,moderate,65.3,10.3,11.3,3.29,4,278,1.53,0.71,false
+NEO,Fable of the Mirror-Breaker,rare,Enchantment,3.0,bomb: post only,moderate,67.3,11.6,15.2,3.27,2,280,,,false
+OTJ,Overwhelming Forces,mythic,Sorcery,8.0,bomb: post only,moderate,64.7,10.5,12.7,3.21,3,368,2.17,0.55,true
+EOE,Elegy Acolyte,rare,Creature,4.0,bomb: post only,strong,65.6,10.2,12.6,3.18,3,299,1.49,0.75,false
+TMT,The Last Ronin,mythic,Enchantment,6.0,bomb: post only,strong,69.1,12.1,14.4,3.08,3,196,1.83,0.62,false
+LCI,Magmatic Galleon,rare,Artifact,5.0,bomb: post only,moderate,65.2,9.9,10.7,2.97,6,285,1.53,0.74,false
+LCI,"Huatli, Poet of Unity",mythic,Creature,3.0,bomb: post only,moderate,65.0,9.7,11.9,2.92,8,285,1.34,0.74,false
+NEO,Farewell,rare,Sorcery,6.0,bomb: post only,moderate,66.0,10.4,12.8,2.91,5,280,,,false
+MSH,"Leader, Super-Genius",rare,Creature,4.0,bomb: post only,strong,67.8,11.6,14.5,2.86,3,295,1.65,0.78,false
+TLA,The Earth King,rare,Creature,4.0,bomb: post only,moderate,65.4,9.3,11.8,2.8,9,299,1.82,0.61,false
+SOS,Together as One,rare,Sorcery,6.0,bomb: post only,strong,65.5,10.1,14.0,2.76,1,329,2.01,0.7,false
+ONE,"Sheoldred, the Apocalypse",mythic,Creature,4.0,bomb: post only,moderate,65.5,10.5,14.1,2.69,3,260,,,false
+MOM,Breach the Multiverse,rare,Sorcery,7.0,bomb: post only,moderate,63.5,8.7,10.8,2.67,9,341,1.74,0.71,false
+SOS,Practiced Offense,rare,Sorcery,3.0,bomb: post only,strong,65.1,9.7,9.9,2.64,3,329,1.74,0.69,false
+MKM,Hide in Plain Sight,rare,Sorcery,4.0,bomb: post only,moderate,63.1,8.1,10.2,2.57,6,303,2.02,0.58,false
+EOE,Cosmogrand Zenith,mythic,Creature,3.0,bomb: post only,strong,63.7,8.3,10.4,2.57,4,299,1.28,0.79,false
+ECL,Trystan's Command,rare,Sorcery,6.0,bomb: post only,moderate,64.6,9.5,11.2,2.51,4,278,2.31,0.51,false
+ECL,Sunderflock,rare,Creature,9.0,bomb: post only,strong,64.5,9.5,12.0,2.5,5,278,2.59,0.42,false
+ECL,Figure of Fable,rare,Creature,1.0,bomb: post only,moderate,64.1,9.1,10.5,2.38,7,278,1.61,0.7,false
+MSH,Sword of Fire and Ice,mythic,Artifact,3.0,bomb: post only,moderate,66.9,9.6,9.8,2.35,5,295,1.19,0.95,true
+MKM,Crashing Footfalls,mythic,Sorcery,0.0,bomb: post only,moderate,62.3,7.3,9.9,2.32,10,303,1.94,0.56,true
+MOM,"Etali, Primal Conqueror",rare,Creature,7.0,bomb: post only,moderate,62.3,7.5,10.1,2.32,14,341,1.4,0.75,false
+MSH,Doctor Doom,mythic,Creature,6.0,bomb: post only,moderate,65.7,9.5,13.0,2.32,6,295,1.34,0.77,false
+MKM,Doppelgang,rare,Sorcery,2.0,bomb: post only,moderate,62.1,7.1,9.4,2.26,11,303,2.65,0.5,false
+WOE,Imodane's Recruiter,uncommon,Creature,3.0,bomb: post only,moderate,62.8,7.6,8.0,2.22,8,307,2.82,0.54,false
+SOS,Moment of Reckoning,rare,Sorcery,7.0,bomb: post only,moderate,63.6,8.2,9.6,2.21,5,329,2.46,0.48,false
+EOE,Genemorph Imago,rare,Creature,2.0,bomb: post only,moderate,62.5,7.1,8.4,2.19,5,299,2.5,0.52,false
+SOS,Ark of Hunger,rare,Artifact,4.0,bomb: post only,moderate,63.5,8.1,9.0,2.17,6,329,1.99,0.68,false
+TLA,Earthbender Ascension,rare,Enchantment,3.0,bomb: post only,moderate,62.9,6.9,8.8,2.07,18,299,2.2,0.5,false
+EOE,Celestial Colonnade,rare,Land,0.0,bomb: post only,moderate,62.2,6.8,7.9,2.07,7,299,3.65,0.31,true
+TMT,Mighty Mutanimals,uncommon,Creature,4.0,bomb: post only,moderate,65.2,8.3,10.0,2.04,4,196,2.76,0.48,false
+SOS,Stirring Hopesinger,rare,Creature,3.0,bomb: post only,moderate,63.0,7.6,7.6,2.03,7,329,1.58,0.69,false
+TLA,Raven Eagle,rare,Creature,3.0,bomb: post only,moderate,62.7,6.7,9.7,2.01,20,299,2.19,0.55,false
+SOS,Improvisation Capstone,mythic,Sorcery,7.0,bomb: post only,strong,62.9,7.4,9.0,1.97,10,329,1.78,0.69,false
+ECL,Grub's Command,rare,Sorcery,5.0,bomb: post only,moderate,62.5,7.5,10.6,1.94,15,278,3.55,0.29,false
+TMT,"April O'Neil, Hacktivist",rare,Creature,4.0,bomb: post only,moderate,64.7,7.8,10.8,1.89,6,196,2.34,0.61,false
+ONE,"Atraxa, Grand Unifier",mythic,Creature,7.0,bomb: post only,moderate,62.1,7.2,17.9,1.88,14,260,,,false
+MSH,"Justice, Vance Astrovik",uncommon,Creature,3.0,bomb: post only,moderate,63.5,7.4,8.3,1.78,18,295,2.79,0.52,false
+EOE,Mutinous Massacre,rare,Sorcery,7.0,bomb: post only,moderate,60.4,5.1,7.4,1.53,15,299,3.33,0.33,false
+TLA,South Pole Voyager,rare,Creature,2.0,bomb: post only,moderate,61.1,5.1,5.4,1.52,33,299,1.98,0.54,false
+TDM,Roar of Endless Song,rare,Enchantment,5.0,bomb: pre only,moderate,65.4,10.3,13.9,3.62,7,278,1.83,0.67,false
+TDM,Sage of the Skies,rare,Creature,3.0,bomb: pre only,moderate,64.9,9.9,10.6,3.45,8,278,1.46,0.76,false
+TLA,The Rise of Sozin,mythic,Enchantment,6.0,bomb: pre only,strong,67.2,11.1,14.2,3.34,2,299,1.74,0.65,false
+TLA,"Wan Shi Tong, Librarian",mythic,Creature,2.0,bomb: pre only,strong,65.9,9.8,12.2,2.95,6,299,1.49,0.77,false
+FIN,"Atraxa, Grand Unifier",mythic,Creature,7.0,bomb: pre only,moderate,66.9,10.9,19.2,2.94,1,352,2.02,0.55,true
+TDM,"Shiko, Paragon of the Way",mythic,Creature,5.0,bomb: pre only,moderate,63.5,8.4,11.2,2.93,9,278,1.57,0.7,false
+TLA,United Front,mythic,Sorcery,2.0,bomb: pre only,strong,65.3,9.3,11.7,2.78,10,299,1.55,0.72,false
+WOE,Redcap Gutter-Dweller,rare,Creature,4.0,bomb: pre only,moderate,64.0,8.8,8.2,2.57,3,307,1.61,0.73,false
+FIN,Smuggler's Copter,rare,Artifact,2.0,bomb: pre only,moderate,65.3,9.4,8.1,2.54,2,352,1.63,0.82,true
+FIN,"Winota, Joiner of Forces",mythic,Creature,4.0,bomb: pre only,moderate,65.4,9.3,11.0,2.52,3,352,3.52,0.3,true
+OTJ,Fractured Identity,mythic,Sorcery,5.0,bomb: pre only,moderate,62.5,8.3,11.6,2.51,10,368,2.18,0.57,true
+FIN,"Ardyn, the Usurper",rare,Creature,8.0,bomb: pre only,moderate,64.9,9.2,11.6,2.48,4,352,1.81,0.65,false
+TLA,"Bumi, Unleashed",mythic,Creature,5.0,bomb: pre only,strong,64.2,8.2,11.3,2.47,11,299,1.97,0.51,false
+TLA,"Koh, the Face Stealer",mythic,Creature,6.0,bomb: pre only,moderate,64.2,8.2,10.6,2.45,12,299,1.88,0.57,false
+TDM,"Betor, Kin to All",mythic,Creature,5.0,bomb: pre only,moderate,62.1,7.0,11.6,2.41,10,278,1.49,0.67,false
+FIN,Nibelheim Aflame,mythic,Sorcery,4.0,bomb: pre only,moderate,64.5,8.7,10.0,2.35,5,352,1.82,0.62,false
+FIN,"Urza, Lord High Artificer",mythic,Creature,4.0,bomb: pre only,moderate,64.5,8.6,12.1,2.33,8,352,2.03,0.61,true
+FIN,"Dion, Bahamut's Dominant",rare,Creature,4.0,bomb: pre only,strong,64.4,8.6,9.8,2.33,7,352,1.36,0.8,false
+WOE,Faunsbane Troll,rare,Creature,4.0,bomb: pre only,moderate,63.0,7.8,9.7,2.28,7,307,1.85,0.68,false
+ONE,White Sun's Twilight,rare,Sorcery,2.0,bomb: pre only,strong,63.6,8.8,9.9,2.27,5,260,,,false
+TLA,The Legend of Roku,mythic,Enchantment,4.0,bomb: pre only,moderate,63.5,7.5,9.0,2.24,16,299,1.69,0.65,false
+NEO,"Ao, the Dawn Sky",mythic,Creature,5.0,bomb: pre only,strong,63.6,8.0,11.9,2.23,11,280,,,false
+TLA,"Azula, Cunning Usurper",rare,Creature,5.0,bomb: pre only,strong,63.3,7.2,11.1,2.18,17,299,2.7,0.45,false
+TDM,Revival of the Ancestors,rare,Enchantment,4.0,bomb: pre only,moderate,61.5,6.4,8.9,2.17,13,278,2.35,0.41,false
+MOM,Archangel Elspeth,mythic,Planeswalker,4.0,bomb: pre only,strong,61.5,6.8,8.2,2.09,16,341,1.18,0.8,false
+FIN,"Jill, Shiva's Dominant",rare,Creature,3.0,bomb: pre only,strong,63.5,7.7,9.7,2.07,12,352,1.71,0.72,false
+WOE,Spellbook Vendor,rare,Creature,2.0,bomb: pre only,moderate,62.3,7.1,9.2,2.07,10,307,1.52,0.7,false
+ONE,"Lukka, Bound to Ruin",mythic,Planeswalker,5.0,bomb: pre only,moderate,62.5,7.7,8.0,2.0,9,260,,,false
+WOE,Goblin Bombardment,rare,Enchantment,2.0,bomb: pre only,moderate,61.8,6.6,4.7,1.93,12,307,4.16,0.31,true
+WOE,The Goose Mother,rare,Creature,2.0,bomb: pre only,moderate,61.8,6.6,10.9,1.92,13,307,1.66,0.71,false
+EOE,Sunset Saboteur,rare,Creature,2.0,bomb: pre only,moderate,61.6,6.3,7.3,1.9,9,299,2.74,0.43,false
+FIN,"Yawgmoth, Thran Physician",mythic,Creature,4.0,bomb: pre only,moderate,62.9,7.0,10.0,1.89,17,352,2.03,0.57,true
+ONE,"Thrun, Breaker of Silence",rare,Creature,5.0,bomb: pre only,moderate,61.8,7.1,9.1,1.85,15,260,,,false
+TDM,Ambling Stormshell,rare,Creature,5.0,bomb: pre only,moderate,60.2,5.2,7.6,1.71,22,278,2.14,0.6,false
+OTJ,Terror of the Peaks,mythic,Creature,5.0,bomb: pre only,moderate,59.7,5.5,9.2,1.65,31,368,1.25,0.76,false
+ONE,Blue Sun's Twilight,rare,Sorcery,2.0,bomb: pre only,moderate,60.7,5.9,9.0,1.59,17,260,,,false
+NEO,"Kyodai, Soul of Kamigawa",rare,Creature,4.0,bomb: pre only,moderate,61.3,5.7,8.7,1.56,27,280,,,false
+OTJ,Mana Drain,mythic,Instant,2.0,bomb: pre only,moderate,59.3,5.1,9.2,1.52,35,368,2.43,0.41,true
+TLA,The Unagi of Kyoshi Island,rare,Creature,5.0,bomb: pre only,moderate,60.6,4.6,6.5,1.37,34,299,2.05,0.61,false
+TLA,"Appa, Steadfast Guardian",mythic,Creature,4.0,bomb: pre only,moderate,60.3,4.3,4.8,1.3,38,299,1.58,0.62,false
+MOM,Elesh Norn,mythic,Creature,4.0,bomb: pre only,moderate,57.6,2.9,4.7,0.95,67,341,1.18,0.8,false
+TLA,"Ozai, the Phoenix King",mythic,Creature,6.0,bomb: pre only,moderate,59.0,3.0,7.6,0.91,56,299,2.91,0.29,false
+FIN,Ultima,rare,Sorcery,5.0,bomb: pre only,moderate,55.6,-0.1,2.6,-0.07,189,352,3.02,0.26,false
+EOE,"Mm'menon, the Right Hand",rare,Creature,5.0,bomb: pre only,moderate,50.8,-4.4,-1.0,-1.55,273,299,2.91,0.26,false
+NEO,"Junji, the Midnight Sky",mythic,Creature,5.0,"hyped, downgraded",contested,63.9,8.2,11.0,2.29,9,280,,,false
+FDN,Sire of Seven Deaths,mythic,Creature,7.0,"hyped, downgraded",contested,62.0,7.4,9.7,2.1,7,277,1.1,0.93,false
+DFT,Debris Beetle,rare,Artifact,4.0,"hyped, downgraded",contested,61.4,6.5,7.5,2.03,12,278,2.18,0.54,false
+NEO,The Restoration of Eiganjo,rare,Enchantment,3.0,"hyped, downgraded",contested,62.7,7.1,9.3,1.96,19,280,,,false
+DFT,Pyrewood Gearhulk,mythic,Creature,6.0,"hyped, downgraded",contested,60.9,6.0,8.3,1.86,15,278,2.05,0.45,false
+DFT,The Aetherspark,mythic,Planeswalker,4.0,"hyped, downgraded",contested,60.9,6.0,7.3,1.86,16,278,1.05,0.96,false
+MKM,Wojek Investigator,rare,Creature,3.0,"hyped, downgraded",contested,60.2,5.2,5.3,1.71,22,303,1.44,0.74,false
+DSK,"Niko, Light of Hope",mythic,Creature,4.0,"hyped, downgraded",contested,60.0,5.5,8.4,1.7,27,275,1.81,0.59,false
+TDM,Sinkhole Surveyor,rare,Creature,2.0,"hyped, downgraded",contested,60.1,5.1,6.7,1.67,25,278,1.65,0.56,false
+ECL,"Eirdu, Carrier of Dawn",mythic,Creature,5.0,"hyped, downgraded",contested,61.5,6.5,8.8,1.65,23,278,1.49,0.64,false
+ECL,"Ajani, Outland Chaperone",mythic,Planeswalker,3.0,"hyped, downgraded",contested,60.9,5.8,8.8,1.47,29,278,1.54,0.62,false
+DSK,The Wandering Rescuer,mythic,Creature,5.0,"hyped, downgraded",contested,58.8,4.4,6.0,1.32,38,275,1.37,0.68,false
+MKM,Proft's Eidetic Memory,rare,Enchantment,2.0,"hyped, downgraded",contested,58.8,3.8,5.5,1.31,39,303,2.51,0.42,false
+OTJ,"Oko, the Ringleader",mythic,Planeswalker,4.0,"hyped, downgraded",contested,58.5,4.4,7.4,1.28,47,368,1.34,0.74,false
+TMT,Turncoat Kunoichi,rare,Creature,3.0,"hyped, downgraded",contested,62.1,5.3,6.4,1.19,23,196,2.17,0.5,false
+MSH,Bruce Banner,mythic,Creature,1.0,"hyped, downgraded",contested,60.6,4.5,5.5,1.05,37,295,1.83,0.63,false
+FIN,"Sin, Spira's Punishment",rare,Creature,7.0,"hyped, downgraded",contested,59.3,3.5,7.7,0.93,57,352,2.49,0.48,false
+FDN,Herald of Eternal Dawn,mythic,Creature,7.0,"hyped, downgraded",contested,57.7,3.2,3.8,0.89,50,277,2.0,0.45,false
+DSK,Split Up,rare,Sorcery,3.0,"hyped, downgraded",contested,57.5,3.0,4.8,0.88,57,275,2.19,0.37,false
+SOS,Emeritus of Truce,mythic,Creature,3.0,"hyped, downgraded",contested,59.0,3.6,3.4,0.86,57,329,1.81,0.55,false
+WOE,Archon of the Wild Rose,rare,Creature,4.0,"hyped, downgraded",contested,58.1,2.9,5.1,0.86,49,307,1.56,0.62,false
+FDN,"Ajani, Caller of the Pride",mythic,Planeswalker,3.0,"hyped, downgraded",contested,57.6,3.1,4.0,0.85,53,277,1.39,0.65,false
+TMT,"Krang, Master Mind",rare,Creature,8.0,"hyped, downgraded",contested,60.0,3.2,3.8,0.61,44,196,2.62,0.42,false
+BLB,Starfall Invocation,rare,Sorcery,5.0,"hyped, downgraded",contested,57.1,2.5,4.4,0.5,80,268,2.06,0.45,false
+DSK,"Valgavoth, Terror Eater",mythic,Creature,9.0,"hyped, downgraded",contested,54.3,-0.2,3.1,-0.19,159,275,1.85,0.41,false
+TLA,Avatar's Wrath,rare,Sorcery,4.0,"hyped, downgraded",contested,54.6,-1.4,0.3,-0.42,197,299,3.09,0.25,false
+MKM,No Witnesses,rare,Sorcery,4.0,"hyped, downgraded",contested,52.3,-2.7,-0.8,-0.58,218,303,2.41,0.34,false
+MSH,Doom Reigns Supreme,rare,Enchantment,2.0,"hyped, downgraded",contested,53.2,-2.7,3.1,-0.76,227,295,2.89,0.23,false
