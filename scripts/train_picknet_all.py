@@ -12,7 +12,9 @@ scores the Premier test split of every set: the same chronological test drafts a
 Switches (defaults in CFG): d heads hist_layers pack_layers dropout | batch lr wd steps warmup amp |
 pack_drop (share of drafts whose history hides pack contents) deck_w (weight of the deck-inclusion
 loss, 0 = no head) sets=A,B events=PremierDraft,TradDraft max_train (subsample train drafts) |
-val_every val_drafts ckpt_every resume bench name test_sets=A,B (default: every set).
+val_every val_drafts ckpt_every resume bench name test_sets=A,B (default: every set) |
+init=path/to/model.pt (start from saved weights, e.g. a second epoch) shuffle_seed (training order; default seed,
+which also fixes the val drafts, so a second epoch can change the order and keep the same val set).
 Writes results/picknet_all/{name}.json, models/{name}.pt (best val state), test_{name}_{SET}.npz.
 """
 import json
@@ -37,7 +39,8 @@ N_PICKS = 15  # layout: 3 packs x 15 slots
 CFG = dict(d=256, heads=8, hist_layers=4, pack_layers=3, dropout=0.05,
            batch=128, lr=7e-4, wd=0.01, steps=40000, warmup=0.03, amp=0,
            pack_drop=0.5, deck_w=0.3, sets="", events="PremierDraft,TradDraft", max_train=0,
-           val_every=2000, val_drafts=4000, ckpt_every=1000, resume=1, bench=0, name="all", seed=0, test_sets="")
+           val_every=2000, val_drafts=4000, ckpt_every=1000, resume=1, bench=0, name="all", seed=0, test_sets="",
+           init="", shuffle_seed=-1)
 FIELDS = ("idx", "cnt", "pick", "oidx", "ocnt", "ctx", "sid", "target", "valid", "rate")
 
 
@@ -206,12 +209,16 @@ def main(*kv):
         sched.load_state_dict(ck["sched"])
         step, best, hist = ck["step"], ck["best"], ck["hist"]
         print(f"resumed at step {step} (best val nll {best:.4f})", flush=True)
+    elif cfg["init"]:
+        model.load_state_dict(torch.load(cfg["init"], map_location="cpu", weights_only=False)["state"])
+        print(f"initialised from {cfg['init']}", flush=True)
 
     def save_best():
         torch.save({"cfg": cfg, "state": model.state_dict(), "feat_mu": mu, "feat_sd": sd, "n_ctx": n_ctx,
                     "sets": all_sets, "params": n_par}, best_path)
 
-    batches = train_batches(shards, train, cfg["batch"], cfg["seed"], step)
+    shuffle = cfg["seed"] if cfg["shuffle_seed"] < 0 else cfg["shuffle_seed"]
+    batches = train_batches(shards, train, cfg["batch"], shuffle, step)
     model.train()
     run = {"nll": 0.0, "deck": 0.0, "n": 0}
     t1, step0 = time.time(), step
