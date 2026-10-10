@@ -1,99 +1,82 @@
-# What Is a Bomb Actually Worth? 14 Million Limited Games, 19 Sets, One Yardstick
+# What Is a Bomb Actually Worth? 14 Million Limited Games Across 19 Sets
 
-*Putting every set's best cards on the same scale, how often you'll actually see one, and which formats are decided by rares*
-
----
-
-Every Limited player knows the feeling. You crack your first pack, and there it is: a mythic that will just win the game if it resolves. A **bomb**.
-
-But "bomb" is a slippery word. Is Bonehoard Dracosaur in Lost Caverns the same kind of bomb as Liliana, Dreadhorde General in Foundations? Do some sets have more of them? How often do you actually open one, and how often does one end up in your deck? And when people call a format "rare-driven," is that the same thing as having lots of bombs?
-
-I tried to answer those questions with data: **19 sets of 17Lands Premier Draft data**, from Kamigawa: Neon Dynasty (Feb 2022) to Marvel Super Heroes, about **14 million games**. This post walks through what I did and what came out. The short version:
-
-- **A set's best card is worth about +4.4 percentage points of game win rate per copy** compared with an average card in the same deck. The 10th-best card is worth about +2.3.
-- Defining a bomb as **≥ 2.5 pp of game win rate per copy** gives about **8 bombs per set**, from 3 (Foundations, Edge of Eternities, TMNT) to 14 (Lost Caverns).
-- **One opened pack in eleven** has a bomb. You open one in your own three packs about **a quarter** of the time.
-- "Prince" formats, where rares decide games, are **not** the same thing as bomb-heavy formats. Across sets the two barely correlate.
+*Measuring every set's best cards on the same scale, how often you actually get one, and which formats are decided by rares*
 
 ---
 
-## Part 1: Rating cards
+Some Magic the Gathering sets are said to be bomb-heavy: there are extremely powerful cards in the set that if played can often win the game. In general, this is said in a derogatory way, as it introduces additional luck into the limited format, thus reducing the impact of player skill. I wanted to use some 17lands data to actually try to empirically answer this question using **19 sets of 17Lands Premier Draft data**, from Kamigawa: Neon Dynasty (Feb 2022) to Marvel Super Heroes, about **14 million games** in total.
 
-### Start with GIH WR, but fix the baseline
+To do that, I first needed a definition of a bomb that means the same thing in every set, which turned out to be harder than it sounds. Once I had one, I could count how many bombs each set has, how often you open one, and how often one ends up in your pool. Then I looked at a related idea that Limited players talk about a lot: whether a format is "prince" (decided by rares) or "pauper" (decided by commons and uncommons). It turns out that being bomb-heavy and being prince are not the same thing.
 
-The obvious per-card number is 17Lands' **GIH WR**: the win rate of games where the card was in your opening hand or drawn. Two fixes are needed before it can be compared across sets.
+Here's a summary of what I found:
 
-**The baseline moves.** 17Lands users are better than the average Arena player, so they win about 55% of their games, not 50%, and the exact figure depends on the set (54.1% in Outlaws, 56.8% in TMNT). A 58% GIH WR card is good in one set and merely fine in another. So I subtract the set's average and rate each card in **percentage points above the set baseline**.
+- A set's best card is worth about 4.4 percentage points (pp) of game win rate per copy, compared with an average card in the same deck. The 10th-best card is worth about 2.3 pp.
+- If you call a card a bomb when it's worth at least 2.5 pp per copy, a typical set has about 8 bombs. Foundations, Edge of Eternities and TMNT have 3. Lost Caverns of Ixalan has 14.
+- About one opened pack in eleven contains a bomb, and you'll open one in your own three packs about a quarter of the time.
+- Bomb-heavy sets don't reduce the impact of skill. Skill explains about 10 times as much of the spread in draft results as having bombs does, and that ratio doesn't shrink in sets with more bombs.
+- Whether a set is bomb-heavy and whether it's prince barely correlate across sets.
 
-**Small samples lie at the extremes.** The noisiest cards end up disproportionately at the top and bottom of the list, so I shrink every card toward the average for its rarity (an *empirical Bayes* adjustment). Cards with lots of data barely move; cards with little data get pulled toward the middle. Shrinking toward the *rarity* average, not one shared average, keeps the real bombs from being dragged down.
+---
 
-Why not **IWD** (GIH WR minus the win rate when the card sat in the deck unseen)? I tested both: rate each deck by the average rating of its cards and see which one better predicts wins. **GIH WR won on all 19 sets.** IWD answers "is drawing this card better than not drawing it, in this deck?", which isn't the same as "do decks with this card win?"
+## Rating cards
 
-## Part 2: Deck score, and the ruler problem
+The natural starting point is 17Lands' GIH WR: the win rate of games where a card was in your opening hand or drawn. It needs two adjustments before it can be compared across sets.
 
-For every game, I scored the deck as the **average rating of its nonbasic cards**. To keep it honest, the scoring is *cross-fitted*: I split drafts into two random halves and score each half using card ratings computed only from the other half. Otherwise a deck's own wins would leak into its score.
+First, the baseline moves. 17Lands users are better than the average Arena player, so they win about 55% of their games rather than 50%, and the exact number depends on the set (54.1% in Outlaws of Thunder Junction, 56.8% in TMNT). A 58% GIH WR card is good in one set and only fine in another. So I subtracted each set's average and rated every card in percentage points above its set's baseline.
+
+Second, cards with few games have noisy win rates, and the noisiest cards tend to end up at the very top and bottom of the list. To correct for this, I shrank each card's rating toward the average for its rarity (an empirical Bayes adjustment). Cards with a lot of data barely move, and cards with little data get pulled toward the middle. I shrank toward the rarity average rather than one overall average because mythics are on average several points better than commons, and a single shared average would have dragged the real bombs down.
+
+I also considered using IWD (GIH WR minus the win rate when the card was in the deck but never seen), which is meant to separate a card's effect from the quality of the decks it's in. I tested both by rating each deck as the average rating of its cards and checking which version better predicts wins. GIH WR did better on all 19 sets, so I used it throughout.
+
+## Deck score, and why ratings aren't comparable across sets
+
+For every game, I scored the deck as the average rating of its nonbasic cards. To avoid a deck's own results leaking into its score, I split the drafts into two random halves and scored each half using ratings calculated only from the other half.
 
 ![Game win rate rises steadily with deck score in every set](bombs_img/deck_score_vs_wr.png)
-*Game win rate by deck score, relative to each set's average. Thin lines are individual sets, the thick line pools them.*
+*Game win rate by deck score, relative to each set's average. Thin lines are individual sets and the thick line pools them.*
 
-Deck score predicts wins cleanly. **One standard deviation of drafter deck quality is worth about 4.6 pp of game win rate**, and deck card strength explains about **a third** of the real spread in drafters' win rates (0.20 to 0.47 by set). The other two thirds is play skill, mulligans, synergy and everything else a card list doesn't capture.
+Deck score predicts wins well. A drafter whose decks are one standard deviation better than average wins about 4.6 pp more games, and deck card strength explains about a third of the real differences in drafters' win rates (between 0.20 and 0.47 depending on the set). The other two thirds comes from play skill, mulligans, synergy, and everything else a list of card ratings doesn't capture.
 
-### One point of rating isn't worth the same everywhere
-
-Here's the catch. The conversion from rating to win rate, the slope, varies a lot by set: **from 3.6 pp of win rate per pp of rating in Phyrexia: All Will Be One to 7.0 in Duskmourn.**
+The problem is that the conversion from rating to win rate is different in every set. One point of deck score is worth 3.6 pp of win rate in Phyrexia: All Will Be One and 7.0 pp in Duskmourn.
 
 ![Sets where decks look more different have flatter slopes](bombs_img/slope_vs_spread.png)
-*Each dot is a set. Where deck scores spread wider, each point of rating is worth less.*
+*Each dot is a set. In sets where deck scores are more spread out, each point of rating is worth less.*
 
-The slope is lowest exactly where decks *look* most different, and the two offset each other. A wider pool of opponents can't explain a 2× difference (a simple model gives 1 to 2%). The likely explanation is that **the rating scale itself stretches from set to set**: part of a card's GIH WR spread is which players pick it, which games it shows up in, and noise. When there's more of that, decks look more different without being more different. That matters for bombs.
+The conversion is lowest in the sets where decks look the most different from each other, and the two effects roughly cancel out. I checked whether a wider spread of opponents could explain this, but in a simple model it only accounts for 1 to 2%, not a factor of two. My best explanation is that the rating scale itself is stretched in some sets: part of the spread in GIH WR comes from which players pick a card, which games it shows up in, and noise, not from how good the card is. When there's more of that, decks look more different than they really are.
 
-## Part 3: The usual bomb rule, and why it breaks
+This matters for bombs, because the usual way of identifying them is based on these ratings.
 
-The standard way to call a card a bomb is to call it an outlier in its own set, using the **Tukey upper fence** (third quartile plus 1.5× the interquartile range). If ratings were normal, about one card per set would clear it. In fact 90 cards across 19 sets do, against about 19 expected: bombs really do stand apart.
+## The usual bomb rule, and why it doesn't work across sets
+
+The standard statistical way to call a card a bomb is to call it an outlier within its set. I used the Tukey upper fence: a card is a bomb if its rating is more than 1.5 interquartile ranges above the third quartile. If ratings were normally distributed, about one card per set would clear that bar. In practice 90 cards across the 19 sets do, compared with about 19 expected, so bombs really do stand apart from the rest of their sets.
 
 ![The right tail of card ratings is fatter than normal](bombs_img/fence_tail.png)
 
-But the fence measures each card against *its own set's spread*, and that spread is on a different scale in every set. Foundations has zero fence bombs; Lost Caverns and Avatar have ten each. Is that a real difference between sets, or a difference in rulers?
+The issue is that the fence compares each card with its own set's spread, and that spread is on a different scale in every set. Foundations has no fence bombs, while Lost Caverns and Avatar have ten each. From this alone, I can't tell whether that's a real difference between the sets or just a difference in the scale.
 
-## Part 4: Bombs in win rate, on one scale
+## Measuring bombs in win rate
 
-To fix it, I measured each card directly in the unit we actually care about: **game win rate**.
+To put every set on the same scale, I measured each card directly in terms of game win rate. For each card in each set, I ran a regression over every Premier Draft game:
 
-### The method
+> won ~ copies of the card + deck score without that card + controls
 
-For each card in each set, I ran a regression over every Premier Draft game:
+- The coefficient on copies of the card is the number I'm after: pp of game win rate per copy.
+- Bombs tend to be in decks that are good for other reasons too, so I included the deck's score with the card left out. That means the card is being compared with an average card from the same deck.
+- The controls are the drafter's overall win-rate bracket from 17Lands (so that "good players take this card" doesn't count as the card being strong), the deck's colors, whether the player was on the play or the draw, and how many rated cards the deck has.
 
-> **won** ~ copies of the card + deck score without that card + controls
+Standard errors are clustered by draft, cards that appeared in fewer than 500 decks are dropped, and the estimates are again shrunk toward the average for the card's set and rarity. I'll call the result a card's **impact**.
 
-- **Copies of the card** in the main deck. Its coefficient is the answer: pp of game win rate per copy.
-- **Deck score with the card left out.** Bombs tend to sit in decks that are good for other reasons too. Holding the rest of the deck's quality fixed means the card is compared with *an average card from the same deck*.
-- **Controls:** the drafter's overall win-rate bracket (from 17Lands), so "good players take this card" doesn't count as card strength; the deck's colors; play or draw; and how many rated cards the deck has.
+Across sets, the median best card is worth about 4.4 pp per copy, ranging from 3.2 in Foundations to 5.4 in Lost Caverns. The 5th-best card is worth about 3.1 pp and the 10th-best about 2.3. Commons average around −0.4, uncommons around 0, and rares and mythics that nobody called a bomb about +0.3. The best cards are also worth up to about 1.5 times what you'd get by converting their rating through the deck-score slope, and the worst cards cost less than their ratings suggest (they level off around −0.7 pp).
 
-Standard errors are clustered by draft, cards seen in fewer than 500 decks are dropped, and estimates are again shrunk toward the set-and-rarity average. I call the result a card's **impact**.
+With these numbers I could check the scale problem from earlier. If the sets with flat rating-to-win-rate conversions really had weaker cards, their best cards would have lower impact. They don't: the impact of each set's 1st, 5th and 10th best card is unrelated to the conversion or the rating spread (correlations between −0.10 and +0.15). So the differences between sets were in the scale, not in how strong the cards are.
 
-### What a card is worth
+### A definition of a bomb
 
-- **A set's best card: about +4.4 pp per copy** (median), from +3.2 in Foundations to +5.4 in Lost Caverns.
-- **5th best: +3.1. 10th best: +2.3.**
-- Commons sit around −0.4, uncommons around 0, and the median rare or mythic that nobody called a bomb is about +0.3.
+I defined a bomb as **a card worth at least 2.5 pp of game win rate per copy, compared with an average card in the same deck.**
 
-Top cards are also worth up to about 1.5× more than you'd get by converting their rating through the deck-score slope, and bad cards cost less (the direct estimate levels off around −0.7 pp).
+I chose 2.5 because it falls between a typical set's 5th- and 10th-best cards, and because it lines up well with what the Limited community thinks. I put together a list of the cards the community called bombs in each set, separating calls made before release (set reviews, early tier lists) from calls made after (retrospectives, draft guides). Of the cards called bombs both before and after release, 72% clear 2.5 pp, compared with 2% of all other rares and mythics. Cards that were hyped before release and then downgraded have a median impact of only 0.9 pp, and none of them clear the bar. Post-release opinion is partly based on 17Lands data, so agreement there isn't fully independent, but cards called bombs only before release still have a median impact of 2.2 pp.
 
-### The ruler, confirmed
-
-If sets with flat slopes really had weaker cards, their top cards' direct impact would be lower. It isn't: the impact of each set's 1st, 5th and 10th best card **doesn't correlate with the slope or the rating spread at all** (r between −0.10 and +0.15). The slope differences were a ruler, not a difference in card power.
-
-### The definition
-
-> **A bomb is a card worth at least 2.5 pp of game win rate per copy, compared with an average card of the same deck.**
-
-Why 2.5? It sits between a typical set's 5th and 10th best card, and it lines up with community opinion. I compiled a list of cards the Limited community called bombs in each set, separated into calls made *before* release (set reviews, early tier lists) and *after* (retrospectives, guides). Of the cards called bombs both before and after release, **72% clear 2.5 pp**. Of all the other rares and mythics, **2%** do. Cards hyped before release and then downgraded have a median impact of only +0.9, and *none* of them clear 2.5.
-
-(Post-release opinion is partly built from 17Lands data, so that agreement isn't independent. Pre-release-only calls land at a median of +2.2 pp: reviewers spot most bombs and miss on some.)
-
-This gives **153 bombs across 19 sets: median 8 per set**, 70 mythics and 83 rares. No common or uncommon makes it.
-
-The biggest bombs of the past four years:
+By this definition there are 153 bombs across the 19 sets, a median of 8 per set: 70 mythics and 83 rares, and no commons or uncommons. These are the ten strongest:
 
 | Card | Set | Impact (pp per copy) |
 |---|---|---|
@@ -108,122 +91,128 @@ The biggest bombs of the past four years:
 | Ugin, Eye of the Storms | TDM | +4.8 |
 | Sab-Sunen, Luxa Embodied | DFT | +4.8 |
 
-And how sets compare:
+And here's how the sets compare:
 
 | Bombs | Sets |
 |---|---|
-| 12–14 | **LCI (14)**, MOM, BLB, ECL (12) |
+| 12–14 | LCI (14), MOM, BLB, ECL (12) |
 | 10 | OTJ, DSK, TDM, TLA |
 | 6–8 | ONE, MKM (8); NEO, FIN, MSH (7); DFT, SOS (6) |
-| 3–5 | WOE (5); **FDN, EOE, TMT (3)** |
+| 3–5 | WOE (5); FDN, EOE, TMT (3) |
 
-Foundations is the clearest low end: its three bombs are Liliana, Dreadhorde General (+3.2), Curator of Destinies (+2.7) and Embercleave (+2.5), and its best card is the weakest #1 in the data. Lost Caverns of Ixalan is the opposite: 14 cards clear the bar, and 11 clear 3 pp.
+Foundations is the least bomb-heavy set in the data. Its three bombs are Liliana, Dreadhorde General (+3.2), Curator of Destinies (+2.7) and Embercleave (+2.5), and Liliana is the weakest best card of any set. Lost Caverns is at the other end, with 14 cards above 2.5 pp and 11 above 3.
 
-Comparing with the fence rule: 85 of the 90 fence bombs are also impact bombs, so the fence wasn't *wrong* about which cards are great. It was wrong about *how many*, because its bar moved with each set's ruler.
+85 of the 90 fence bombs from earlier are also bombs under this definition, so the fence did a good job of identifying great cards. Where it went wrong was in how many each set has.
 
-### How often do you actually see one?
+### How often do you see one?
 
-Using 17Lands draft logs (available for 17 of the 19 sets), I counted how often packs and pools contain a bomb.
+Using 17Lands draft logs, which are available for 17 of the 19 sets, I counted how often packs and pools contain a bomb.
 
 ![How often packs and pools contain a bomb, by set](bombs_img/bomb_frequency.png)
 
-Median across sets:
+For the median set:
 
-- **9% of opened packs contain a bomb.** About one pack in eleven.
-- **25%: you open at least one in your own three packs.**
-- **90%: someone at the 8-player table opens one.** On average there are about 2.2 bombs opened per pod.
-- **28% of 17Lands drafters end with a bomb in their pool. Only 4% get two.**
+- 9% of opened packs contain a bomb, or about one pack in eleven.
+- There's a 25% chance you open at least one in your own three packs.
+- There's a 90% chance someone at an 8-player table opens one, and about 2.2 bombs are opened per table on average.
+- 28% of 17Lands drafters end up with at least one bomb in their pool, and only 4% end up with two.
 
-So in a typical draft there are two or three bombs going around the table, and you have about a one-in-four shot at ending up with one. It ranges widely by set: in Foundations and Edge of Eternities only about 10% of drafters finish with a bomb, while in Bloomburrow and Lost Caverns it's over 40%. Across sets, the bomb count predicts the chance of finishing with one almost perfectly (r = 0.93).
+So a typical draft has two or three bombs going around the table, and you have about a one-in-four chance of ending up with one. This varies a lot by set. In Foundations and Edge of Eternities only about 10% of drafters finish with a bomb, while in Bloomburrow and Lost Caverns more than 40% do. Across sets, the number of bombs predicts the chance of finishing with one almost perfectly (r = 0.93).
 
-17Lands users usually end up with slightly more than their fair share of the table's bombs (about 1.09×). Avatar, Lorwyn Eclipsed and TMNT are exceptions at about 0.8, and I don't yet know why.
+17Lands users usually end up with slightly more than their fair share of the bombs opened at the table (about 1.09 times), which makes sense for above-average drafters. Avatar, Lorwyn Eclipsed and TMNT are exceptions at about 0.8, and I don't know why yet.
+
+### Do bombs reduce the impact of skill?
+
+With a consistent bomb count for every set, I could go back to the original question. If bombs add luck, then in bomb-heavy sets a drafter's results should depend less on how good they are and more on whether they happened to get a bomb.
+
+To measure skill, I used the 17Lands win-rate bracket, which is each user's game win rate across all of their 17Lands games. That bracket includes the games being analyzed, so for someone with only a few games it's mostly a measure of this draft's own result. To avoid that, I only kept users with at least 100 games. For each draft, I compared the draft's win rate with two things: the drafter's skill bracket, and whether the deck had zero, one, or two or more bombs. For each of these, I calculated what share of the real spread in draft results (after removing the noise of only playing a few games) it explains.
+
+![Skill share versus bomb count, and skill vs bomb shares by set](bombs_img/skill_vs_bombs.png)
+
+In the median set, skill explains about 37% of the real spread in draft results, and having bombs in your deck explains about 3%. Skill explains more than bombs in every set, by at least 6 times. A bomb in the deck is worth about 4 pp of draft win rate on average, holding skill fixed, which is real but small next to the gap between a weak and a strong drafter.
+
+More importantly, bomb-heavy sets don't reward skill any less. Across the 19 sets, the correlation between the number of bombs and the share explained by skill is −0.21, which isn't statistically significant (p = 0.40). The skill share also climbs steadily with release date, from about 0.33 for the older sets to about 0.5 for the most recent ones. I suspect that's partly due to how the bracket is calculated rather than a real change. After controlling for release date, the correlation with bomb count is +0.08. Using the share of drafters who actually ended up with a bomb in their deck instead of the bomb count gives the same answer (r = +0.01).
+
+I also checked whether bombs level the playing field within a set, meaning whether a bomb helps weaker drafters more than stronger ones. They don't seem to: the difference is inconsistent in direction from set to set, and close to zero on average.
+
+There are a few caveats. With 19 sets, I can rule out a large effect but not a small one. Ending up with a bomb isn't pure luck either, since good drafters are better at picking them and at reading which colors are open, so 3% is more of an upper bound on how much luck bombs add. And players with 100 or more games are more dedicated than the average 17Lands user.
 
 ---
 
-## Part 5: Prince or pauper?
+## Prince or pauper?
 
-Limited players sort formats on a **prince–pauper** axis:
+Limited players often describe formats as prince or pauper. In a prince format, rares decide games: commons and uncommons are fairly even in power, and you need to answer your opponent's rares or you lose. Theros Beyond Death and Crimson Vow are the usual examples, though neither is in my data. In a pauper format, commons and uncommons decide games through synergy, tempo, and efficient answers.
 
-- In a **prince** format, rares decide games. Commons and uncommons are fairly flat, and you have to answer the opponent's rares or lose. Theros Beyond Death and Crimson Vow are the textbook examples (neither is in my data).
-- In a **pauper** format, commons and uncommons decide games: synergy, tempo, efficient common removal.
-
-It's tempting to treat this as the same thing as being bomb-heavy. It isn't. **Bomb-heavy** is about the *count* of game-winning cards. **Prince** is about *where the difference between decks comes from*. A set can have lots of bombs and also strong commons that keep up, or few bombs and commons so flat that whatever rares you open still decide who has the better deck.
+It's easy to assume this is the same thing as being bomb-heavy, but it isn't. Being bomb-heavy is about how many game-winning cards a set has. Being prince is about where the differences between decks come from. A set can have lots of bombs and also strong commons and uncommons that keep up with them. A set can also have few real bombs but commons that are so even that whatever rares you open still decide who has the better deck.
 
 ### Measuring it
 
-Using each card's impact, I computed for every Premier Draft deck:
+Using each card's impact, I calculated two numbers for every Premier Draft deck: V, the total value of its cards, and R, the part of V that comes from rares and mythics. The **rare share** is Cov(R, V) / Var(V), which is the fraction of the difference in card value between decks that comes from rares and mythics.
 
-- **V** = the total value of its cards,
-- **R** = the part of V coming from rares and mythics.
-
-The **rare share** is Cov(R, V) / Var(V): the fraction of the deck-to-deck variation in card value that comes from rares and mythics. It and the common/uncommon share add up to one.
-
-Labels are relative to these 19 sets, so "prince" means "most rare-driven of these," not "as rare-driven as Theros": **prince** at a rare share of 0.36 or more, **pauper** at 0.28 or less.
+The labels below are relative to these 19 sets, so "prince" means "the most rare-driven of these sets," not "as rare-driven as Theros." I called sets with a rare share of 0.36 or more prince, and 0.28 or less pauper.
 
 | Label | Sets (rare share) |
 |---|---|
-| **Prince** | TLA (0.43), TDM (0.41), MKM (0.40), DSK (0.39), OTJ (0.38), MSH (0.37) |
+| Prince | TLA (0.43), TDM (0.41), MKM (0.40), DSK (0.39), OTJ (0.38), MSH (0.37) |
 | Middle | EOE (0.35), WOE (0.34), ECL, DFT (0.31), LCI (0.30), MOM (0.29), TMT (0.28) |
-| **Pauper** | BLB (0.26), FDN, SOS (0.25), FIN (0.24), ONE (0.20), NEO (0.19) |
+| Pauper | BLB (0.26), FDN, SOS (0.25), FIN (0.24), ONE (0.20), NEO (0.19) |
 
-In Avatar, rares and mythics account for 43% of what separates decks. In Neon Dynasty, 19%.
+In Avatar, rares and mythics account for 43% of the difference between decks. In Neon Dynasty, they account for 19%.
 
-### Prince is not bomb-heavy
+### Prince and bomb-heavy are different things
 
 ![Rare share versus bomb count](bombs_img/prince_vs_bombs.png)
-*Each set by its bomb count and its rare share. Dashed lines are the medians.*
+*Each set by its number of bombs and its rare share. The dashed lines are the medians.*
 
-Across sets, bomb count and rare share correlate at only **r = +0.19**. All four corners are filled:
+Across sets, the number of bombs and the rare share have a correlation of only 0.19, and every combination shows up:
 
-- **Prince and bomb-heavy:** Avatar, Tarkir: Dragonstorm, Duskmourn, Outlaws. Lots of bombs, and the commons don't keep up.
-- **Bomb-heavy but not prince:** Lost Caverns (the most bombs in the data at 14), March of the Machine, Lorwyn Eclipsed, Bloomburrow. Plenty of bombs, but the commons and uncommons are strong enough that they still drive most of the difference between decks. Bloomburrow, with 12 bombs, is *pauper*.
-- **Rare-driven without many bombs:** Marvel, Edge of Eternities and Wilds of Eldraine. Few true bombs, but flat commons, so whatever rares you open still separate decks.
-- **Neither:** Foundations, Strixhaven, Final Fantasy.
+- Prince and bomb-heavy: Avatar, Tarkir: Dragonstorm, Duskmourn and Outlaws. These have lots of bombs, and the commons don't keep up.
+- Bomb-heavy but not prince: Lost Caverns (the most bombs in the data), March of the Machine, Lorwyn Eclipsed and Bloomburrow. These have plenty of bombs, but the commons and uncommons are strong enough that they still account for most of the difference between decks. Bloomburrow has 12 bombs and is a pauper format.
+- Rare-driven without many bombs: Marvel, Edge of Eternities and Wilds of Eldraine. These have few real bombs, but even commons, so the rares you open still separate decks.
+- Neither: Foundations, Strixhaven and Final Fantasy.
 
 ### What makes a set prince?
 
-If "prince" just meant "rares are much stronger than commons," it would track how much better the *typical played* rare is than the typical played common. It barely does (r = 0.16). What matters instead:
+If being prince just meant that rares are much stronger than commons, the rare share would track how much better the typical played rare is than the typical played common. It barely does (r = 0.16). These are the things it does track:
 
 | Feature | Correlation with rare share |
 |---|---|
-| Spread of common/uncommon values | **−0.64** |
-| Gap between the best 10 rares and best 10 commons/uncommons | **+0.67** |
-| Strength of the best 10 commons/uncommons | **−0.50** |
+| Spread of common/uncommon values | −0.64 |
+| Gap between the best 10 rares and best 10 commons/uncommons | +0.67 |
+| Strength of the best 10 commons/uncommons | −0.50 |
 | Rares per deck | +0.49 |
 | Number of bombs | +0.19 |
 
-The strongest predictor isn't how good the rares are. It's **how flat the commons and uncommons are.** When commons all play at about the same level, drafting them well doesn't separate you from the next player, and the rares do the separating. When there are standout commons and uncommons, getting them matters as much as your rares.
+The strongest predictor isn't how good the rares are, but how even the commons and uncommons are. When the commons all play at about the same level, drafting them well doesn't set you apart from other players, so the rares end up doing it. When there are standout commons and uncommons, getting them matters as much as your rares do.
 
-There's also a mechanical factor: **Play Boosters** (Murders at Karlov Manor onward) put more rares in each pack. More rares per deck mechanically raises the rare share, and all six prince sets are Play Booster sets.
+There's also a mechanical factor. Play Boosters, starting with Murders at Karlov Manor, put more rares in each pack, and more rares per deck raises the rare share on its own. All six prince sets use Play Boosters.
 
-### One more axis: deep or shallow
+### Deep or shallow
 
-How far down do decks reach for their last playables? I measured it two ways: how far a deck's three weakest cards fall below its average, and how many on-color cards at least that good were left on the bench. The ranking:
-
-- **Deep:** ECL, TMT, TLA, WOE, LCI, TDM
-- **Shallow:** FIN, FDN, ONE, OTJ, SOS, BLB
+A related question is how far down decks have to reach for their last few playables. I measured this two ways: how far a deck's three weakest cards fall below its average card, and how many on-color cards at least as good as those were left in the drafter's pool. By that measure, the deepest sets are ECL, TMT, TLA, WOE, LCI and TDM, and the shallowest are FIN, FDN, ONE, OTJ, SOS and BLB.
 
 ![Depth versus rare share](bombs_img/depth_vs_prince.png)
 
-Nobody actually runs out: in every set, 98%+ of decks leave a comparable playable on the bench. Sets differ in *how good* the last cards are. And **pauper formats tend to be shallow** (r = +0.49 with rare share; five of the six pauper sets are shallow). When decks fill out with weak commons, which commons you got matters more. Depth isn't flatness or bomb count, though: Lorwyn Eclipsed has the widest common/uncommon spread and 12 bombs, and is still the deepest set.
+No set actually runs out of playables. In every set, more than 98% of decks leave at least one comparable card on the bench, so the difference between sets is how good the last few cards are. Pauper formats do tend to be shallow (r = 0.49 between depth and rare share, and five of the six pauper sets are shallow), which makes sense: when decks fill out with weak commons, which commons you got matters more. Depth is not the same as how even the commons are or how many bombs a set has, though. Lorwyn Eclipsed has the widest spread of common and uncommon values and 12 bombs, and it's still the deepest set.
 
 ---
 
-## Putting it together
+## Conclusions
 
-1. **A bomb is worth about 3 to 5 points of win rate per copy.** Over a Premier Draft run, that's real but not decisive. Deck card strength as a whole explains only about a third of the spread in drafters' results.
-2. **Bomb counts vary a lot by set, and it shows in your pool.** In Lost Caverns or Bloomburrow, about 40% of drafters end with a bomb. In Foundations or Edge of Eternities, about 10%. Calibrate how hard you chase a first-pick rare accordingly.
-3. **"This set has a lot of bombs" and "this set is decided by rares" are different claims.** Bloomburrow had 12 bombs and was still a commons format. Edge of Eternities had 3 and was among the most rare-driven. If you want to know whether to prioritise rares over strong commons, look at how flat the commons are, not at how many bombs there are.
-4. **Don't compare raw win-rate ratings across sets.** A point of GIH WR is worth twice as much in some sets as in others. If you want to compare cards across formats, measure them in win rate directly.
+Back to the original question of whether bomb-heavy sets add luck. Bomb counts do vary a lot by set, and that shows up in what people end up with: about 40% of drafters finish with a bomb in Lost Caverns or Bloomburrow, compared with about 10% in Foundations or Edge of Eternities. But a bomb is worth about 3 to 5 pp of win rate per copy, which is real but not decisive. Having bombs explains about 3% of the spread in draft results, against about 37% for skill, and bomb-heavy sets don't reward skill any less than other sets. At least among 17Lands users, the reputation of bomb-heavy sets as luck-driven doesn't hold up.
+
+But how many bombs a set has isn't the same as how much rares decide games. Bloomburrow had 12 bombs and was still decided mostly by commons, while Edge of Eternities had 3 and was among the most rare-driven sets. If you want to know whether opening rares matters more than drafting strong commons in a given format, how even the commons are tells you more than how many bombs there are.
+
+Finally, GIH WR ratings can't be compared directly across sets, because a point of GIH WR is worth twice as much in some sets as in others. To compare cards across formats, it's better to measure them in win rate directly.
 
 ---
 
 ### Methodology notes and caveats
 
-- **Data:** 17Lands Premier Draft, 19 sets (NEO to MSH), about 14 million games. No draft logs for NEO and ONE.
-- **Population:** 17Lands users are above-average drafters; results describe their games, not the average Arena player's.
-- **Selection:** build-arounds and hard-to-cast cards are measured in the decks that play them. A bomb can also pull you into its colors, which the estimate doesn't count.
-- **Skill control** includes the games being analyzed, so it slightly over-controls. True bomb values are, if anything, a bit higher.
-- **Labels** (prince/pauper, deep/shallow) are relative to these 19 sets, and neighbours often differ by 0.01. Treat the borders as soft.
+- Data: 17Lands Premier Draft, 19 sets from NEO to MSH, about 14 million games. Draft logs aren't available for NEO and ONE.
+- 17Lands users are above-average drafters, so these results describe their games rather than the average Arena player's.
+- Build-arounds and hard-to-cast cards are measured in the decks that play them. A bomb can also pull you into its colors, which the estimate doesn't account for.
+- The skill control includes the games being analyzed, so it slightly over-corrects. If anything, true bomb values are a bit higher.
+- The prince/pauper and deep/shallow labels are relative to these 19 sets, and neighbouring sets often differ by only 0.01, so the borders are soft.
 
-*All code and results are in the repo: the card ratings and deck scores in `notebooks/bombs.ipynb`, the win-rate impact model in `scripts/card_impact.py` and `notebooks/card_impact.ipynb`, the prince index in `scripts/prince_index.py`, and depth in `scripts/depth_index.py`.*
+*All code and results are in the repo: card ratings and deck scores in `notebooks/bombs.ipynb`, the win-rate impact model in `scripts/card_impact.py` and `notebooks/card_impact.ipynb`, skill vs bombs in `scripts/bomb_luck.py`, the prince index in `scripts/prince_index.py`, and depth in `scripts/depth_index.py`.*
