@@ -15,7 +15,8 @@ For every set and every rated card i, a linear probability model on games:
             the number of rated cards in the deck. The skill control is what separates "this card wins"
             from "good drafters take this card".
 
-Ratings for score_{-i} are cross-fitted exactly as in the bombs notebook (draft_id hash halves, seed 7). Games
+Ratings for score_{-i} are cross-fitted exactly as in the bombs notebook (draft_id hash halves, seed 7), and
+computed here from the game files, so the script doesn't need the notebook to have run first. Games
 come from drafts where every game has cover >= 0.9, the notebook's sample. Standard errors are clustered by
 draft_id. beta_i is then shrunk within set x rarity (empirical Bayes, as for the ratings) to `impact_eb`;
 bonus-sheet reprints share one prior pooled over all sets instead.
@@ -90,12 +91,12 @@ def run_set(s):
     seen = (aligned(g, "opening_hand_", names) + aligned(g, "drawn_", names)) > 0
     meta = g.select("draft_id", "won", "on_play", "main_colors", "user_game_win_rate_bucket")
     del g
-    full = pl.read_parquet(OUT / f"{s}.PremierDraft.cards.parquet")   # notebook's full-data ratings
-    rmap = dict(zip(full["name"], full["rarity"]))
-    rarity = np.array([rmap.get(n, "basic" if n in BASICS else "special") for n in names])
+    cm = card_metadata(names, s)
+    rarity = cm["rarity"].to_numpy().astype(object)
     rarity[np.isin(names, BASICS)] = "basic"
     won = flag(meta["won"])
     half = meta["draft_id"].hash(seed=7).to_numpy() % 2
+    norm_eb = half_ratings(won, seen, deck, rarity, np.ones(len(won), bool))   # full-data ratings, for `implied`
 
     # cross-fitted ratings: rows in half h use ratings from half 1-h
     rh = np.stack([half_ratings(won, seen, deck, rarity, half != h) for h in (0, 1)])   # [2, C]
@@ -132,7 +133,7 @@ def run_set(s):
         return X - C32 @ (P32 @ (C32.T @ X))
 
     y = {sp: resid(won[:, None].astype(np.float32), sp)[:, 0].astype(np.float64) for sp in "AB"}
-    cand = [j for j, n in enumerate(names) if n in rmap]
+    cand = np.flatnonzero(~np.isnan(norm_eb)).tolist()
     res = {sp: {} for sp in "AB"}
     for c0 in range(0, len(cand), CHUNK):
         J = cand[c0:c0 + CHUNK]
@@ -155,15 +156,15 @@ def run_set(s):
                 res[sp][j] = (beta[k] * 100, se[k] * 100)
         del N, Nr, Sm
     out = pl.DataFrame({
-        "set": s, "name": [names[j] for j in cand], "rarity": rarity[cand],
+        "set": s, "name": [names[j] for j in cand], "rarity": rarity[cand].tolist(),
         "games_in_deck": (deck[:, cand] > 0).sum(0).astype(np.int64),
         "beta_A": [res["A"][j][0] for j in cand], "se_A": [res["A"][j][1] for j in cand],
-        "beta_B": [res["B"][j][0] for j in cand], "se_B": [res["B"][j][1] for j in cand]})
-    out = out.join(full.select("name", "norm_eb"), on="name", how="left").with_columns(
-        (slope * (pl.col("norm_eb") - score.mean()) / K.mean()).alias("implied"),
-        pl.col("games_in_deck").truediv(G).alias("deck_share"))
+        "beta_B": [res["B"][j][0] for j in cand], "se_B": [res["B"][j][1] for j in cand],
+        "norm_eb": norm_eb[cand]})
+    out = out.with_columns((slope * (pl.col("norm_eb") - score.mean()) / K.mean()).alias("implied"),
+                           pl.col("games_in_deck").truediv(G).alias("deck_share"),
+                           pl.Series("is_bonus", cm["is_bonus"].to_numpy()[cand]))
     out = out.filter(pl.col("games_in_deck") >= 500)
-    out = out.with_columns(card_metadata(out["name"].to_list(), s)["is_bonus"])
     info = {"set": s, "games": G, "drafts": int(cl.max() + 1), "slope": slope, "mean_score": score.mean(),
             "mean_rated_cards": K.mean(), "cards": out.height}
     print(f"{s}: {G:,} games, {out.height} cards, slope {slope:.2f}, {time.time() - t0:.0f}s", flush=True)
