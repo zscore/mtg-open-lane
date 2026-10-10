@@ -44,7 +44,7 @@ The problem is that the conversion from rating to win rate is different in every
 
 The conversion is lowest in the sets where decks look the most different from each other, and the two effects roughly cancel out. I checked whether a wider spread of opponents could explain this, but in a simple model it only accounts for 1 to 2%, not a factor of two. My best explanation is that the rating scale itself is stretched in some sets: part of the spread in GIH WR comes from which players pick a card, which games it shows up in, and noise, not from how good the card is. When there's more of that, decks look more different than they really are.
 
-This matters for bombs, because the usual way of identifying them is based on these ratings.
+This matters for bombs. It means you can't pick a fixed rating cutoff, say 10 pp above the set's baseline, and call everything above it a bomb, because 10 pp of rating is worth a lot more win rate in Duskmourn than in ONE.
 
 ## The usual bomb rule, and why it doesn't work across sets
 
@@ -52,23 +52,40 @@ The standard statistical way to call a card a bomb is to call it an outlier with
 
 ![The right tail of card ratings is fatter than normal](bombs_img/fence_tail.png)
 
-The issue is that the fence compares each card with its own set's spread, and that spread is on a different scale in every set. Foundations has no fence bombs, while Lost Caverns and Avatar have ten each. From this alone, I can't tell whether that's a real difference between the sets or just a difference in the scale.
+The fence doesn't have the scale problem, since it measures each card in units of its own set's spread. But that's also its limitation: it's a relative measure. It asks how far a card stands out from the rest of its set, not how much win rate it's worth. A set with a wide spread among its ordinary cards gets a higher bar, so it can have cards that win a lot of games without any of them counting as outliers. Lorwyn Eclipsed is the clearest example: it has the widest spread of common and uncommon values in the data and only 2 fence bombs, but, as the next section shows, 12 cards worth at least 2.5 pp of win rate. So the fence counts (none in Foundations, ten each in Lost Caverns and Avatar) don't tell you how many game-winning cards a set has.
 
 ## Measuring bombs in win rate
 
 To put every set on the same scale, I measured each card directly in terms of game win rate. For each card in each set, I ran a regression over every Premier Draft game:
 
-> won ~ copies of the card + deck score without that card + controls
+![won_g = α + β_i · copies_i,g + γ · score_−i,g + δ · controls_g + ε_g](bombs_img/regression.png)
 
-- The coefficient on copies of the card is the number I'm after: pp of game win rate per copy.
-- Bombs tend to be in decks that are good for other reasons too, so I included the deck's score with the card left out. That means the card is being compared with an average card from the same deck.
-- The controls are the drafter's overall win-rate bracket from 17Lands (so that "good players take this card" doesn't count as the card being strong), the deck's colors, whether the player was on the play or the draw, and how many rated cards the deck has.
+Here g is a game and i is the card:
+
+- won is 1 if the game was won and 0 if it was lost.
+- copies is the number of copies of card i in the main deck. Its coefficient, β (beta), is the number I'm after: multiplied by 100, it's the pp of game win rate per copy.
+- score is the deck's score with card i left out. Bombs tend to be in decks that are good for other reasons too, so holding this fixed (through γ) means the card is being compared with an average card from the same deck.
+- controls are the drafter's overall win-rate bracket from 17Lands (so that "good players take this card" doesn't count as the card being strong), the deck's colors, whether the player was on the play or the draw, and how many rated cards the deck has.
+- α is the intercept and ε is the leftover noise.
 
 Standard errors are clustered by draft, cards that appeared in fewer than 500 decks are dropped, and the estimates are again shrunk toward the average for the card's set and rarity. I'll call the result a card's **impact**.
 
 Across sets, the median best card is worth about 4.4 pp per copy, ranging from 3.2 in Foundations to 5.4 in Lost Caverns. The 5th-best card is worth about 3.1 pp and the 10th-best about 2.3. Commons average around −0.4, uncommons around 0, and rares and mythics that nobody called a bomb about +0.3. The best cards are also worth up to about 1.5 times what you'd get by converting their rating through the deck-score slope, and the worst cards cost less than their ratings suggest (they level off around −0.7 pp).
 
-With these numbers I could check the scale problem from earlier. If the sets with flat rating-to-win-rate conversions really had weaker cards, their best cards would have lower impact. They don't: the impact of each set's 1st, 5th and 10th best card is unrelated to the conversion or the rating spread (correlations between −0.10 and +0.15). So the differences between sets were in the scale, not in how strong the cards are.
+With these numbers I could also check the rating-scale problem from earlier. If the sets with flat rating-to-win-rate conversions really had weaker cards, their best cards would have lower impact. They don't: the impact of each set's 1st, 5th and 10th best card is unrelated to the conversion or the rating spread (correlations between −0.10 and +0.15). So the differences between sets were in the scale, not in how strong the cards are.
+
+### How different is impact from GIH WR?
+
+Impact takes a lot more work to compute than GIH WR, so it's fair to ask how much it changes the picture.
+
+![Impact rises with GIH WR rating, steeper for the best cards](bombs_img/impact_vs_gih.png)
+*Each dot is a card. The dashed line is the 2.5 pp bomb cutoff used in the next section.*
+
+Mostly, they agree. Within a set, the correlation between a card's impact and its shrunk GIH WR rating is about 0.79 (from 0.68 in Secrets of Strixhaven to 0.84 in Duskmourn), and each pp of rating is worth about 0.2 pp of impact per copy. Where they disagree:
+
+- **The order in the middle.** The rank correlation is lower, about 0.69. Many cards sit within a pp or two of each other, and the two measures often order them differently. At the top and bottom they line up.
+- **The shape at the ends.** The relationship curves upward. The best cards are worth more than a straight line through the rest would predict, which is why converting ratings undersells bombs.
+- **Commons.** The correlation is 0.86–0.88 for rares and mythics and 0.68 for uncommons, but only 0.39 for commons. Commons' impacts sit in a narrow band, so a common's GIH WR says little about whether it actually wins more games than the common next to it.
 
 ### A definition of a bomb
 
@@ -102,7 +119,7 @@ And here's how the sets compare:
 
 Foundations is the least bomb-heavy set in the data. Its three bombs are Liliana, Dreadhorde General (+3.2), Curator of Destinies (+2.7) and Embercleave (+2.5), and Liliana is the weakest best card of any set. Lost Caverns is at the other end, with 14 cards above 2.5 pp and 11 above 3.
 
-85 of the 90 fence bombs from earlier are also bombs under this definition, so the fence did a good job of identifying great cards. Where it went wrong was in how many each set has.
+85 of the 90 fence bombs from earlier are also bombs under this definition, so the fence did a good job of identifying great cards. What it misses are strong cards in sets whose ordinary cards are also widely spread, like Lorwyn Eclipsed.
 
 ### How often do you see one?
 
@@ -216,3 +233,13 @@ Finally, GIH WR ratings can't be compared directly across sets, because a point 
 - The prince/pauper and deep/shallow labels are relative to these 19 sets, and neighbouring sets often differ by only 0.01, so the borders are soft.
 
 *All code and results are in the repo: card ratings and deck scores in `notebooks/bombs.ipynb`, the win-rate impact model in `scripts/card_impact.py` and `notebooks/card_impact.ipynb`, skill vs bombs in `scripts/bomb_luck.py`, the prince index in `scripts/prince_index.py`, and depth in `scripts/depth_index.py`.*
+
+### References
+
+The per-card win-rate regression is my own design rather than a method from a specific paper. It's similar in spirit to adjusted plus-minus in basketball, and each piece of it is standard:
+
+- Sill, J. (2010). "Improved NBA Adjusted +/- Using Regularization and Out-of-Sample Testing." *MIT Sloan Sports Analytics Conference.* The basketball analogue: crediting each player for game outcomes relative to their teammates.
+- Efron, B., & Morris, C. (1975). "Data Analysis Using Stein's Estimator and Its Generalizations." *Journal of the American Statistical Association*, 70(350), 311–319. The empirical Bayes shrinkage used for card ratings and impact estimates.
+- Angrist, J. D., & Pischke, J.-S. (2009). *Mostly Harmless Econometrics: An Empiricist's Companion.* Princeton University Press. Linear probability models and clustered standard errors.
+- Ramos (2026). "'Embarrassingly Causal': Causal Use of Associational Data in MTG Drafts." [arXiv:2604.18314](https://arxiv.org/abs/2604.18314). Why GIH WR on its own is a biased measure of a card's effect.
+- Tukey, J. W. (1977). *Exploratory Data Analysis.* Addison-Wesley. The upper-fence outlier rule.
