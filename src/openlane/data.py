@@ -91,6 +91,8 @@ class DraftTensors:
     n_picks:          picks per pack (13, 14 or 15 depending on the set).
     p1p1_missing:     the set's files never include P1P1 (TLA, TMT). pack[:, 0, 0] is then all
                       zeros; the P1P1 pick is recovered from the P1P2 pool.
+    maindeck[d, k, p]: 17Lands' pick_maindeck_rate, the share of the drafter's games with that pick
+                      in the main deck (NaN when unknown, e.g. a missing P1P1).
     """
 
     set_code: str
@@ -105,6 +107,7 @@ class DraftTensors:
     pick: np.ndarray
     n_picks: int = 14
     p1p1_missing: bool = False
+    maindeck: np.ndarray | None = None
 
     @property
     def color_matrix(self) -> np.ndarray:
@@ -134,7 +137,8 @@ def load_tensors(set_code: str, event: str = "PremierDraft", col_batch: int = 64
     names = [c[len("pack_card_"):] for c in pack_cols]
     C = len(names)
     keys = lf.select("draft_id", "draft_time", "pack_number", "pick_number", "pick", "rank",
-                     "user_game_win_rate_bucket", "user_n_games_bucket").with_row_index("row").collect()
+                     "user_game_win_rate_bucket", "user_n_games_bucket",
+                     "pick_maindeck_rate").with_row_index("row").collect()
 
     n_picks = int(keys["pick_number"].max()) + 1
     # some sets' files drop P1P1 from (almost) every draft; a stray draft that has it is skipped
@@ -160,6 +164,8 @@ def load_tensors(set_code: str, event: str = "PremierDraft", col_batch: int = 64
     idx = {n: i for i, n in enumerate(names)}
     pick = np.full(D * T, -1, np.int16)
     pick[dest] = np.array([idx[n] for n in keys["pick"].to_list()], dtype=np.int16)
+    maindeck = np.full(D * T, np.nan, np.float32)
+    maindeck[dest] = keys["pick_maindeck_rate"].cast(pl.Float32).fill_null(np.nan).to_numpy()
 
     per_draft = keys.filter(pl.Series(slot == slot.min()))   # one row per draft, in draft order
     if p1p1_missing:  # the only card in the P1P2 pool is the P1P1 pick
@@ -185,4 +191,5 @@ def load_tensors(set_code: str, event: str = "PremierDraft", col_batch: int = 64
         pick=pick.reshape(shape),
         n_picks=n_picks,
         p1p1_missing=p1p1_missing,
+        maindeck=maindeck.reshape(shape),
     )

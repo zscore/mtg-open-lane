@@ -38,8 +38,13 @@ TEXT_FLAGS = {
 SOURCE_NEED = {1: 7.0, 2: 10.0, 3: 12.0}  # coloured sources a 40-card deck wants for 1/2/3 pips of a colour
 
 
+# 17Lands column names whose non-ASCII letters were mangled to "?"
+NAME_FIXES = {"Bespoke B?": "Bespoke B\u014d"}
+
+
 def _scryfall(names: list[str], set_code: str) -> dict[str, dict]:
-    want, best = set(names), {}
+    fix = {NAME_FIXES[n]: n for n in names if n in NAME_FIXES}
+    want, best = set(names) | set(fix), {}
     with gzip.open(RAW / "scryfall_oracle_cards.jsonl.gz", "rt") as f:
         for line in f:
             c = json.loads(line)
@@ -50,7 +55,7 @@ def _scryfall(names: list[str], set_code: str) -> dict[str, dict]:
                 score = (c.get("set") == set_code.lower(), "arena" in c.get("games", []))
                 if k not in best or score > best[k][0]:
                     best[k] = (score, c)
-    return {k: c for k, (_, c) in best.items()}
+    return {fix.get(k, k): c for k, (_, c) in best.items()}
 
 
 def _pips(cost: str) -> dict[str, float]:

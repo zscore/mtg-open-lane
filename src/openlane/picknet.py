@@ -83,12 +83,21 @@ def collate(batch):
 
 class CardTable(nn.Module):
     """Card embeddings: learned per-card vectors, plus a projection of fixed card features. With
-    `ids=False` a card is only its features (an MLP of them), so the model can score unseen cards."""
+    `ids=False` a card is only its features (an MLP of them), so the model can score unseen cards.
+    `id_map` [n_cards] maps each card (a printing) to a name id: printings that share a name (reprints,
+    basic lands) then share one learned vector, while their features stay per printing."""
 
-    def __init__(self, n_cards: int, d: int, feats: np.ndarray | None = None, ids: bool = True):
+    def __init__(self, n_cards: int, d: int, feats: np.ndarray | None = None, ids: bool = True,
+                 id_map: np.ndarray | None = None):
         super().__init__()
         self.ids = ids
-        if ids:
+        self.register_buffer("id_map", None)
+        if ids and id_map is not None:
+            m = torch.as_tensor(np.asarray(id_map), dtype=torch.long)
+            n_names = int(m.max()) + 1
+            self.emb = nn.Embedding(n_names + 1, d, padding_idx=n_names)
+            self.id_map = torch.cat([m, m.new_full((1,), n_names)])
+        elif ids:
             self.emb = nn.Embedding(n_cards + 1, d, padding_idx=n_cards)
         if feats is not None:
             f = torch.as_tensor(feats, dtype=torch.float32)
@@ -100,7 +109,7 @@ class CardTable(nn.Module):
             self.feats = None
 
     def forward(self) -> torch.Tensor:
-        w = self.emb.weight if self.ids else 0
+        w = (self.emb.weight if self.id_map is None else self.emb(self.id_map)) if self.ids else 0
         if self.feats is not None:
             w = w + self.proj(self.feats)
         if not self.ids:  # padding row stays zero
@@ -186,11 +195,18 @@ class PickNet(nn.Module):
     def __init__(self, n_cards: int, n_picks: int, d: int = 128, heads: int = 4, hist_layers: int = 3,
                  pack_layers: int = 2, dropout: float = 0.1, feats: np.ndarray | None = None,
                  ids: bool = True, n_ctx: int = 0, history: bool = True, others: bool = True,
-                 cross: bool = True):
+                 cross: bool = True, id_map: np.ndarray | None = None, n_sets: int = 0,
+                 pack_drop: float = 0.0, deck_head: bool = False):
         super().__init__()
         T = N_PACKS * n_picks
         self.history, self.use_others, self.n_ctx = history, others, n_ctx
-        self.cards = CardTable(n_cards, d, feats, ids)
+        self.n_sets, self.pack_drop = n_sets, pack_drop
+        self.cards = CardTable(n_cards, d, feats, ids, id_map)
+        if n_sets:
+            self.set_emb = nn.Embedding(n_sets, d)
+            nn.init.normal_(self.set_emb.weight, std=0.02)
+        if deck_head:
+            self.deck_q, self.deck_k = nn.Linear(d, d), nn.Linear(d, d)
         self.pack_bag, self.pick_in, self.oth_bag, self.pool_bag = (nn.Linear(d, d) for _ in range(4))
         self.pos = nn.Embedding(T, d)
         self.copies = nn.Embedding(4, d)
@@ -206,18 +222,27 @@ class PickNet(nn.Module):
         self.register_buffer("causal", torch.triu(torch.ones(T, T, dtype=torch.bool), 1))
         self.C = n_cards
 
-    def forward(self, idx, cnt, pick, oidx, ocnt, ctx):
+    def forward(self, idx, cnt, pick, oidx, ocnt, ctx, sid=None, return_state=False):
+        """sid [B]: set index (with n_sets). return_state also returns the history states and card
+        table, for deck_logits. In training, `pack_drop` hides the shown pack and what the others took
+        from the history tokens of that share of drafts (puder's pack dropout); the candidates are
+        always the pack."""
         B, T, P = idx.shape
         tab = self.cards()
         e_pick = F.embedding(pick, tab)
         prev = torch.cat([torch.zeros_like(e_pick[:, :1]), e_pick[:, :-1]], 1)  # card taken at t-1
-        h = self.pos.weight[None, :T] + self.pack_bag(bag(tab, idx, cnt))
+        keep = 1.0
+        if self.training and self.pack_drop > 0:
+            keep = (torch.rand(B, 1, 1, device=idx.device) >= self.pack_drop).to(tab.dtype)
+        h = self.pos.weight[None, :T] + keep * self.pack_bag(bag(tab, idx, cnt))
         if self.n_ctx:
             h = h + self.ctx_mlp(ctx)[:, None]
+        if self.n_sets:
+            h = h + self.set_emb(sid.long())[:, None]
         if self.history:
             h = h + self.pick_in(prev)
             if self.use_others:
-                h = h + self.oth_bag(bag(tab, oidx, ocnt))
+                h = h + keep * self.oth_bag(bag(tab, oidx, ocnt))
             h = self.hist(h, mask=self.causal[:T, :T], is_causal=True)
         else:  # pool so far as a bag, no history attention
             pool = (torch.cumsum(e_pick, 1) - e_pick) / torch.arange(T, device=h.device).clamp(min=1)[None, :, None]
@@ -229,7 +254,14 @@ class PickNet(nn.Module):
         see = ~self.causal[:T, :T]
         for blk in self.blocks:
             x = blk(x, pad, h, see)
-        return self.head(x).squeeze(-1)
+        logit = self.head(x).squeeze(-1)
+        return (logit, h, tab) if return_state else logit
+
+    def deck_logits(self, h, tab, pick):
+        """[B, T, T] logit that pick j ends up in the main deck, from history state t (puder's
+        deck-inclusion head). State t has seen picks < t, so only j < t is meaningful."""
+        q, k = self.deck_q(h), self.deck_k(F.embedding(pick, tab))
+        return q @ k.transpose(1, 2) / q.shape[-1] ** 0.5
 
 
 MODELS = {"rating": RatingModel, "pool": PoolModel, "picknet": PickNet}
