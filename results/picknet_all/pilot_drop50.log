@@ -1,0 +1,25 @@
+pilot_drop50: 32 shards, train 1,721,328 drafts, val 4,000 [0s]
+params 1,995,777 cfg {'d': 128, 'heads': 4, 'hist_layers': 3, 'pack_layers': 2, 'dropout': 0.05, 'batch': 64, 'lr': 0.001, 'wd': 0.01, 'steps': 3500, 'warmup': 0.03, 'amp': 0, 'pack_drop': 0.5, 'deck_w': 0.3, 'sets': '', 'events': 'PremierDraft,TradDraft', 'max_train': 0, 'val_every': 1000, 'val_drafts': 4000, 'ckpt_every': 1000, 'resume': 1, 'bench': 0, 'name': 'pilot_drop50', 'seed': 0, 'test_sets': 'MSH'} device mps
+  step 200/3500 nll 1.4629 deck 0.6268 lr 9.98e-04 157 drafts/s [1 min]
+  step 400/3500 nll 1.0037 deck 0.5323 lr 9.81e-04 160 drafts/s [3 min]
+  step 600/3500 nll 0.9438 deck 0.4784 lr 9.48e-04 161 drafts/s [4 min]
+  step 800/3500 nll 0.9205 deck 0.4542 lr 9.00e-04 161 drafts/s [5 min]
+  step 1000/3500 nll 0.9032 deck 0.4416 lr 8.38e-04 161 drafts/s [7 min]
+  VAL step 1000: nll 0.8804 top1 0.6615 *
+  step 1200/3500 nll 0.8945 deck 0.4344 lr 7.64e-04 159 drafts/s [8 min]
+  step 1400/3500 nll 0.8865 deck 0.4243 lr 6.82e-04 159 drafts/s [9 min]
+  step 1600/3500 nll 0.8780 deck 0.4176 lr 5.93e-04 159 drafts/s [11 min]
+  step 1800/3500 nll 0.8734 deck 0.4127 lr 5.01e-04 160 drafts/s [12 min]
+  step 2000/3500 nll 0.8680 deck 0.4094 lr 4.09e-04 160 drafts/s [13 min]
+  VAL step 2000: nll 0.8440 top1 0.6730 *
+  step 2200/3500 nll 0.8621 deck 0.4056 lr 3.20e-04 159 drafts/s [15 min]
+  step 2400/3500 nll 0.8580 deck 0.4049 lr 2.37e-04 159 drafts/s [16 min]
+  step 2600/3500 nll 0.8519 deck 0.4004 lr 1.63e-04 159 drafts/s [17 min]
+  step 2800/3500 nll 0.8523 deck 0.3979 lr 1.01e-04 159 drafts/s [19 min]
+  step 3000/3500 nll 0.8527 deck 0.3969 lr 5.24e-05 159 drafts/s [20 min]
+  VAL step 3000: nll 0.8271 top1 0.6808 *
+  step 3200/3500 nll 0.8486 deck 0.3948 lr 1.90e-05 159 drafts/s [21 min]
+  step 3400/3500 nll 0.8511 deck 0.3981 lr 2.10e-06 159 drafts/s [23 min]
+  VAL step 3500: nll 0.8255 top1 0.6812 *
+TEST MSH: nll 0.8636 top1 0.6680 non-forced 0.6425
+done [0.39 h]

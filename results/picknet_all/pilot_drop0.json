@@ -1,0 +1,66 @@
+{
+ "cfg": {
+  "d": 128,
+  "heads": 4,
+  "hist_layers": 3,
+  "pack_layers": 2,
+  "dropout": 0.05,
+  "batch": 64,
+  "lr": 0.001,
+  "wd": 0.01,
+  "steps": 3500,
+  "warmup": 0.03,
+  "amp": 0,
+  "pack_drop": 0,
+  "deck_w": 0.3,
+  "sets": "",
+  "events": "PremierDraft,TradDraft",
+  "max_train": 0,
+  "val_every": 1000,
+  "val_drafts": 4000,
+  "ckpt_every": 1000,
+  "resume": 1,
+  "bench": 0,
+  "name": "pilot_drop0",
+  "seed": 0,
+  "test_sets": "MSH"
+ },
+ "params": 1995777,
+ "train_drafts": 1721328,
+ "best_val_nll": 0.8252053748697018,
+ "history": [
+  {
+   "step": 1000,
+   "val_nll": 0.8786653800113238,
+   "val_top1": 0.6618172001079882,
+   "minutes": 6.620956047375997
+  },
+  {
+   "step": 2000,
+   "val_nll": 0.8425493879267031,
+   "val_top1": 0.6743318234994151,
+   "minutes": 13.351604247093201
+  },
+  {
+   "step": 3000,
+   "val_nll": 0.8265795166828523,
+   "val_top1": 0.680229174790773,
+   "minutes": 20.080262899398804
+  },
+  {
+   "step": 3500,
+   "val_nll": 0.8252053748697018,
+   "val_top1": 0.6809310975792663,
+   "minutes": 23.464986912409465
+  }
+ ],
+ "test": {
+  "MSH": {
+   "nll": 0.8618410081633778,
+   "top1": 0.6682328391908648,
+   "top1_nonforced": 0.6427122883593929,
+   "picks": 432264
+  }
+ },
+ "seconds": 1415.1263427734375
+}
