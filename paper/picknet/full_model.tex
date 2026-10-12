@@ -1,0 +1,156 @@
+% Every learned layer of PickNet for one draft (all_d256_ep2). \input by architecture.tex.
+{\def\fT{\fontsize{5}{6}\selectfont}\def\fS{\fontsize{7}{8}\selectfont}\def\fF{\fontsize{8}{9.5}\selectfont}
+\def\fN{\fontsize{10}{12}\selectfont}\def\fL{\fontsize{12}{14}\selectfont}
+\begin{tikzpicture}[
+  font=\fS,
+  L/.style={draw=cblue!80!black,fill=cblue!9,rounded corners=1.5pt,align=center,inner sep=2.5pt,text width=#1},
+  L/.default=2.3cm,
+  O/.style={draw=black!40,fill=white,rounded corners=1.5pt,align=center,inner sep=2.5pt,text width=#1},
+  O/.default=2.3cm,
+  T/.style={fill=black!7,rounded corners=1.5pt,align=center,inner sep=2.5pt,text width=#1},
+  T/.default=2.3cm,
+  plus/.style={circle,draw=black!60,fill=white,inner sep=0pt,minimum size=3.4mm,font=\fF},
+  a/.style={-{Stealth[length=4pt]},draw=black!60,semithick},
+  ln/.style={draw=black!60,semithick},
+  res/.style={-{Stealth[length=4pt]},draw=black!40,semithick,rounded corners=3pt},
+  hb/.style={-{Stealth[length=4pt]},draw=cblue!70!black,thick,rounded corners=3pt},
+  grp/.style={draw=black!35,dashed,rounded corners=4pt,inner sep=5pt},
+  hd/.style={font=\fF\bfseries,anchor=west,inner sep=0pt},
+  gl/.style={font=\fS\bfseries,anchor=north west,inner sep=0pt,align=left},
+]
+\def\pn#1{\\{\fT\color{cblue!75!black}#1}}
+\def\shape#1{{\ttfamily[#1]}}
+\def\lk{{\color{corange}$\blacklozenge$}}
+
+% ------------------------------------------------------------ 1. card table
+\node[hd] at (0,0) {1\quad Card table};
+\node[T=3.4cm] (F) at (1.9,-0.8) {fixed features $\mathbf F$ \shape{5318, 465}\\Scryfall facts + rules-text embedding};
+\node[L=3.0cm] (WF) at (6.1,-0.8) {$W_{\text{feat}}$: Linear 465$\to$256, no bias\pn{119,040}};
+\node[T=3.4cm] (NID) at (1.9,-1.85) {name id of each printing\\5,318 printings $\to$ 5,094 names};
+\node[L=3.0cm] (NE) at (6.1,-1.85) {name embedding\\5,095 $\times$ 256 (+ empty row)\pn{1,304,320}};
+\node[plus] (pa) at (8.7,-1.325) {+};
+\node[T=4.3cm,draw=corange,fill=corange!10] (TAB) at (12.0,-1.325)
+  {\lk\ \textbf{card table} \shape{5318, 256}\\one vector $\mathbf e_c$ per printing,\\looked up wherever \lk\ appears below};
+\draw[a] (F) -- (WF);
+\draw[a] (NID) -- (NE);
+\draw[a] (WF.east) -- (pa);
+\draw[a] (NE.east) -- (pa);
+\draw[a] (pa) -- (TAB);
+
+% ------------------------------------------------------------ 2. history tokens
+\node[hd] at (0,-2.8) {2\quad History tokens: one per pick slot, $t = 0,\dots,44$};
+\foreach \k/\x in {1/1.35,2/4.1,3/6.85,4/9.6,5/12.35,6/15.1} \coordinate (c\k) at (\x,0);
+\node[T] (i1) at (c1|-0,-3.55) {slot index $t$};
+\node[T] (i2) at (c2|-0,-3.55) {pack shown at $t$\\\shape{45, 15} ids + copies};
+\node[T] (i3) at (c3|-0,-3.55) {pick made at $t$\\\shape{45}};
+\node[T] (i4) at (c4|-0,-3.55) {what the others took\\\shape{45, 8} ids + copies};
+\node[T] (i5) at (c5|-0,-3.55) {draft facts \shape{18}\\rank, skill, time, \ldots};
+\node[T] (i6) at (c6|-0,-3.55) {set id\\(one of 17)};
+\node[O] (o2) at (c2|-0,-4.5) {\lk\ look up,\\count-weighted mean};
+\node[O] (o3) at (c3|-0,-4.5) {\lk\ look up, shift one\\slot later (zero at $t{=}0$)};
+\node[O] (o4) at (c4|-0,-4.5) {\lk\ look up,\\count-weighted mean};
+\node[L] (l1) at (c1|-0,-5.6) {position embedding\\45 $\times$ 256\pn{11,520}};
+\node[L] (l2) at (c2|-0,-5.6) {{\ttfamily pack\_bag}\\Linear 256$\to$256\pn{65,792}};
+\node[L] (l3) at (c3|-0,-5.6) {{\ttfamily pick\_in}\\Linear 256$\to$256\pn{65,792}};
+\node[L] (l4) at (c4|-0,-5.6) {{\ttfamily oth\_bag}\\Linear 256$\to$256\pn{65,792}};
+\node[L] (l5) at (c5|-0,-5.6) {{\ttfamily ctx\_mlp}\\18$\to$256, GELU, 256$\to$256\pn{70,656}};
+\node[L] (l6) at (c6|-0,-5.6) {set embedding\\17 $\times$ 256\pn{4,352}};
+\draw[a] (i1) -- (l1);
+\foreach \k in {2,3,4} {\draw[a] (i\k) -- (o\k); \draw[a] (o\k) -- (l\k);}
+\draw[a] (i5) -- node[right,font=\fT,align=left]{copied to\\all 45 slots} (l5);
+\draw[a] (i6) -- node[right,font=\fT,align=left]{copied to\\all 45 slots} (l6);
+\node[plus] (pt) at (c2|-0,-6.75) {+};
+\draw[a] (l2) -- (pt);
+\draw[ln] (l1.south) |- (pt.west);
+\draw[ln] (l6.south) |- (pt.east);
+\foreach \k in {3,4,5} \draw[ln] (l\k.south) -- (l\k.south|-pt.center);
+\node[font=\fT,above right=0pt and 1pt] at (pt.east) {add all six};
+
+% ------------------------------------------------------------ 3. history encoder (left column)
+\def\xc{4.1}
+\node[T=3.4cm] (x) at (\xc,-7.45) {history tokens $\mathbf x$ \shape{45, 256}};
+\draw[a] (pt) -- (x);
+\node[L=2.0cm] (eln1) at (\xc,-8.6) {LayerNorm\pn{512}};
+\node[L=4.7cm] (esa) at (\xc,-9.6) {\textbf{causal self-attention}, 8 heads of 32\\$W_{QKV}$ 256$\to$768,\; $W_O$ 256$\to$256\\token $t$ attends to tokens $0..t$ only\pn{263,168}};
+\node[plus] (ep1) at (\xc,-10.55) {+};
+\node[L=2.0cm] (eln2) at (\xc,-11.15) {LayerNorm\pn{512}};
+\node[L=4.7cm] (emlp) at (\xc,-12.0) {\textbf{MLP} on each token: Linear 256$\to$1024,\\GELU, Linear 1024$\to$256\pn{525,568}};
+\node[plus] (ep2) at (\xc,-12.85) {+};
+\draw[a] (x) -- (eln1); \draw[a] (eln1) -- (esa); \draw[a] (esa) -- (ep1);
+\draw[a] (ep1) -- (eln2); \draw[a] (eln2) -- (emlp); \draw[a] (emlp) -- (ep2);
+\draw[res] (\xc,-8.13) -| (6.95,-9.0) |- (ep1.east);
+\draw[res] (\xc,-10.82) -| (6.95,-11.5) |- (ep2.east);
+\begin{scope}[on background layer]
+\node[grp,fill=cblue!3,fit={(eln1)(esa)(emlp)(ep2)(7.05,-8.05)(1.2,-8.1)}] (enc) {};
+\end{scope}
+\node[gl] at ([shift={(4pt,-4pt)}]enc.north west) {history encoder\\layer {\fN$\times 4$}\\\textcolor{cblue!75!black}{\fT 789,760 each}};
+\node[L=2.6cm] (fln) at (\xc,-13.75) {final LayerNorm\pn{512}};
+\draw[a] (ep2) -- (fln);
+\node[T=3.0cm,fill=cblue!22] (h) at (\xc,-15.05) {\textbf{history states} $\mathbf h$ \shape{45, 256}\\$\mathbf h_t$ = the drafter at pick $t$};
+\draw[a] (fln) -- (h);
+
+% ------------------------------------------------------------ 4. candidate tokens (right column)
+\def\xr{12.6}
+\node[hd] at (8.75,-7.05) {3\quad Candidate tokens: one per card in each pack};
+\node[T=2.2cm] (ccnt) at (\xr,-7.6) {copies of each card\\\shape{45, 15}};
+\node[T=2.2cm] (cidx) at (15.1,-7.6) {cards in pack $t$\\\shape{45, 15} ids};
+\node[L=2.2cm] (sp) at (10.1,-8.6) {{\ttfamily state\_proj}\\Linear 256$\to$256\pn{65,792}};
+\node[L=2.2cm] (cp) at (\xr,-8.6) {copies embedding\\4 $\times$ 256 (1, 2, 3+)\pn{1,024}};
+\node[O=2.2cm] (clk) at (15.1,-8.6) {\lk\ look up each card's $\mathbf e_c$};
+\draw[a] (ccnt) -- (cp); \draw[a] (cidx) -- (clk);
+\node[plus] (pc) at (\xr,-9.55) {+};
+\draw[a] (sp) |- node[pos=0.3,left,font=\fT,align=right]{$\mathbf h_t$ copied to\\every card of\\pack $t$} (pc.west); \draw[a] (cp) -- (pc); \draw[a] (clk) |- (pc.east);
+\node[T=4.4cm] (z) at (\xr,-10.15) {candidate tokens $\mathbf z$ \shape{45, 15, 256}};
+\draw[a] (pc) -- (z);
+
+% ------------------------------------------------------------ 5. deck head (left column, training only)
+\node[O=1.9cm] (dpk) at (6.85,-16.0) {\lk\ look up every pick \shape{45, 256}};
+\node[L=2.0cm] (wq) at (\xc,-17.0) {$W_q$ on $\mathbf h_t$\\Linear 256$\to$256\pn{65,792}};
+\node[L=1.9cm] (wk) at (6.85,-17.0) {$W_k$ on pick $j$\\Linear 256$\to$256\pn{65,792}};
+\node[O=2.4cm] (dot) at (5.45,-17.95) {dot product $\div\sqrt{256}$};
+\node[T=5.0cm] (dl) at (4.6,-18.7) {deck logits \shape{45, 45}: will pick $j$ make the\\main deck? (scored for $j < t$ only)};
+\node[O=5.0cm] (bce) at (4.6,-19.6) {binary cross-entropy vs.\ the 17Lands deck rate,\\weighted $(t{+}1)/45$ (later states count more)};
+\draw[a] (h) -- (wq);
+\draw[a] (dpk) -- (wk);
+\draw[a] (wq) |- (dot); \draw[a] (wk) |- (dot);
+\draw[a] (dot) -- (dot|-dl.north); \draw[a] (dl) -- (bce);
+\begin{scope}[on background layer]
+\node[grp,fill=caqua!6,draw=caqua!70!black,fit={(dpk)(wq)(wk)(dot)(dl)(bce)(1.4,-15.7)}] (deck) {};
+\end{scope}
+\node[gl,anchor=north west] at ([shift={(4pt,-4pt)}]deck.north west) {deck head\\(training only)\\\textcolor{cblue!75!black}{\fT 131,584}};
+
+% ------------------------------------------------------------ 5. pack decoder (right column)
+\node[L=2.0cm] (dln1) at (\xr,-11.15) {LayerNorm\pn{512}};
+\node[L=5.0cm] (dsa) at (\xr,-12.1) {\textbf{self-attention within the pack}, 8 heads\\$W_{QKV}$ 256$\to$768,\; $W_O$ 256$\to$256\\each card sees the other cards of its own pack\pn{263,168}};
+\node[plus] (dp1) at (\xr,-13.05) {+};
+\node[L=2.0cm] (dln2) at (\xr,-13.75) {LayerNorm\pn{512}};
+\node[L=5.4cm] (dca) at (\xr,-15.05) {\textbf{cross-attention to history}, 8 heads\\queries from $\mathbf z$: $W_Q$ 256$\to$256;\; $W_O$ 256$\to$256\\keys, values from $\mathbf h$: $W_{KV}$ 256$\to$512\\a card in pack $t$ sees $\mathbf h_0..\mathbf h_t$ only\pn{263,168}};
+\node[plus] (dp2) at (\xr,-16.1) {+};
+\node[L=2.0cm] (dln3) at (\xr,-16.8) {LayerNorm\pn{512}};
+\node[L=5.0cm] (dmlp) at (\xr,-17.65) {\textbf{MLP} on each card: Linear 256$\to$1024,\\GELU, Linear 1024$\to$256\pn{525,568}};
+\node[plus] (dp3) at (\xr,-18.5) {+};
+\draw[a] (z) -- (dln1); \draw[a] (dln1) -- (dsa); \draw[a] (dsa) -- (dp1);
+\draw[a] (dp1) -- (dln2); \draw[a] (dln2) -- (dca); \draw[a] (dca) -- (dp2);
+\draw[a] (dp2) -- (dln3); \draw[a] (dln3) -- (dmlp); \draw[a] (dmlp) -- (dp3);
+\draw[res] (\xr,-10.65) -| (15.95,-11.5) |- (dp1.east);
+\draw[res] (\xr,-13.3) -| (15.95,-14.0) |- (dp2.east);
+\draw[res] (\xr,-16.38) -| (15.95,-17.1) |- (dp3.east);
+\begin{scope}[on background layer]
+\node[grp,fill=cblue!3,fit={(dln1)(dsa)(dca)(dmlp)(dp3)(16.05,-10.6)(9.3,-11)}] (dec) {};
+\end{scope}
+\node[gl] at ([shift={(4pt,-4pt)}]dec.north west) {pack-decoder\\block {\fN$\times 3$}\\\textcolor{cblue!75!black}{\fT 1,053,440 each}};
+
+% the history states feed state_proj and every decoder block's cross-attention
+\draw[hb] (h.east) -- node[above,font=\fT,text=cblue!70!black,pos=0.4,align=center]{same $\mathbf h$ to\\all 3 blocks} (dca.west);
+\draw[hb] (8.3,-15.05) -- (8.3,-8.6) -- (sp.west);
+\fill[cblue!70!black] (8.3,-15.05) circle (1.3pt);
+
+% ------------------------------------------------------------ 6. scoring + loss
+\node[L=5.0cm] (head) at (\xr,-19.4) {\textbf{scoring head}: LayerNorm, Linear 256$\to$256,\\GELU, Linear 256$\to$1\pn{66,561}};
+\node[T=5.0cm] (lg) at (\xr,-20.25) {logits \shape{45, 15}: one score per card in each pack};
+\node[O=5.0cm] (sm) at (\xr,-21.05) {softmax over the cards in pack $t$ only;\\negative log-likelihood of the human's pick};
+\draw[a] (dp3) -- (head); \draw[a] (head) -- (lg); \draw[a] (lg) -- (sm);
+\node[T=7.0cm,fill=corange!12,draw=corange] (loss) at (8.5,-22.15) {\textbf{loss} = mean pick NLL over valid picks $+\;0.3\times$ deck BCE};
+\draw[a] (sm) |- (loss.east);
+\draw[a] (bce) |- (loss.west);
+\end{tikzpicture}}

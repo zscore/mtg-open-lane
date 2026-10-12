@@ -47,7 +47,7 @@ def others_taken(t: DraftTensors) -> np.ndarray:
 
 class PickDataset(torch.utils.data.Dataset):
     """Sparse per-draft arrays: pack tokens [T, P], copies, target slot [T], picked card [T],
-    others-taken tokens [T, 7], context [F], loss mask [T]."""
+    others-taken tokens [T, 10], context [F], loss mask [T]."""
 
     def __init__(self, t: DraftTensors, drafts: np.ndarray, ctx: np.ndarray | None = None,
                  oth: np.ndarray | None = None):

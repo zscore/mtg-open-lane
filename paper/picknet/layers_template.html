@@ -1,0 +1,505 @@
+<title>PickNet, Layer by Layer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,650&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --bg: #f3f5f8; --surface: #ffffff; --ink: #17202b; --muted: #5b6776; --line: #c8d0da;
+  --w: #2a62a6; --w-bg: #e2ebf7;
+  --d-bg: #e9edf2;
+  --m: #b85a14; --m-bg: #fbe8d8;
+  --k: #127a69; --k-bg: #d9f0ea;
+  --o: #6a48b0; --o-bg: #ebe4f7;
+  --code-bg: #e9edf2;
+  --s1: #2a62a6; --s2: #b85a14;
+  --serif: "Source Serif 4", Georgia, serif;
+  --sans: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #10151c; --surface: #171f29; --ink: #e3e8ee; --muted: #98a5b4; --line: #334050;
+    --w: #86b4ee; --w-bg: #1b2b41; --d-bg: #212a35;
+    --m: #f0a061; --m-bg: #3a2616; --k: #5fcab5; --k-bg: #15322c; --o: #b9a0f0; --o-bg: #2a2140;
+    --code-bg: #1b232e; --s1: #4f8ddc; --s2: #d8783a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #10151c; --surface: #171f29; --ink: #e3e8ee; --muted: #98a5b4; --line: #334050;
+  --w: #86b4ee; --w-bg: #1b2b41; --d-bg: #212a35;
+  --m: #f0a061; --m-bg: #3a2616; --k: #5fcab5; --k-bg: #15322c; --o: #b9a0f0; --o-bg: #2a2140;
+  --code-bg: #1b232e; --s1: #4f8ddc; --s2: #d8783a;
+}
+body { background: var(--bg); color: var(--ink); font: 17px/1.6 var(--sans); padding: 0 20px; }
+main { max-width: 900px; margin: 0 auto; padding-block: 48px 96px; }
+.prose { max-width: 68ch; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 650; line-height: 1.2; text-wrap: balance; }
+h1 { font-size: 2.6rem; margin: 0 0 12px; letter-spacing: -0.01em; }
+h2 { font-size: 1.85rem; margin: 72px 0 8px; padding-top: 24px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.25rem; margin: 40px 0 6px; }
+.eyebrow { font: 600 0.78rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+.lede { font-size: 1.15rem; color: var(--muted); max-width: 62ch; }
+p, li { max-width: 68ch; }
+code { font: 0.86em var(--mono); background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre { font: 13.5px/1.55 var(--mono); background: var(--code-bg); padding: 16px 18px; border-radius: 8px; overflow-x: auto; }
+pre code { background: none; padding: 0; font-size: inherit; }
+a { color: var(--w); }
+figure { margin: 28px 0 32px; }
+.fig { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 12px; }
+.fig svg { display: block; width: 100%; height: auto; margin: 0 auto; color: var(--ink); }
+figcaption { font-size: 0.93rem; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+figcaption b { color: var(--ink); }
+.dims { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 24px 0; }
+.dims div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.dims b { font: 600 1.15rem var(--mono); display: block; }
+.dims span { font-size: 0.88rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.92rem; color: var(--muted); margin: 8px 0 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.sw { width: 16px; height: 12px; border-radius: 3px; border: 1.3px solid; display: inline-block; }
+.sw.w { background: var(--w-bg); border-color: var(--w); }
+.sw.d { background: var(--d-bg); border-color: var(--muted); }
+.sw.op { background: var(--surface); border-color: var(--muted); }
+.sw.m { background: var(--m-bg); border-color: var(--m); }
+.sw.k { background: var(--k-bg); border-color: var(--k); }
+.sw.o { background: var(--o-bg); border-color: var(--o); }
+.note { border-left: 3px solid var(--m); background: var(--surface); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 24px 0; max-width: 72ch; }
+.note p { margin: 0.4em 0; }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 0.95rem; min-width: 520px; width: 100%; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+td.n { font: 0.9rem var(--mono); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.sum td { font-weight: 700; border-top: 2px solid var(--ink); }
+ol.qs li { margin-bottom: 8px; }
+
+/* svg */
+.box-w { fill: var(--w-bg); stroke: var(--w); stroke-width: 1.3; }
+.box-d { fill: var(--d-bg); stroke: var(--muted); stroke-width: 1.1; }
+.box-op { fill: var(--surface); stroke: var(--muted); stroke-width: 1.1; }
+.box-m { fill: var(--m-bg); stroke: var(--m); stroke-width: 1.3; }
+.box-k { fill: var(--k-bg); stroke: var(--k); stroke-width: 1.3; }
+.box-o { fill: var(--o-bg); stroke: var(--o); stroke-width: 1.3; }
+.lbl { font-family: var(--sans); font-size: 13.5px; font-weight: 600; fill: var(--ink); }
+.sub { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.sub-k { font-family: var(--mono); font-size: 11.5px; font-weight: 600; fill: var(--k); }
+.pc { font-family: var(--mono); font-size: 11.5px; fill: var(--w); }
+.tiny { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+.lgd { font-family: var(--sans); font-size: 13px; fill: var(--ink); }
+.axis { font-family: var(--sans); font-size: 13px; font-weight: 600; fill: var(--ink); }
+.colhead { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; fill: var(--muted); text-transform: uppercase; }
+.grp-lbl { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; fill: var(--muted); }
+.grp-sub { font-family: var(--sans); font-size: 12px; fill: var(--muted); }
+.cell-t { font-family: var(--mono); font-size: 9.5px; fill: var(--m); }
+.edge { stroke: currentColor; stroke-width: 1.3; fill: none; }
+.skip { stroke: var(--muted); stroke-width: 1.3; fill: none; color: var(--muted); }
+.grad { stroke: var(--k); stroke-width: 1.4; stroke-dasharray: 6 4; fill: none; color: var(--k); }
+.grp { fill: none; stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.sep { stroke: var(--ink); stroke-width: 1.2; }
+.cell-on { fill: var(--w-bg); stroke: var(--w); stroke-width: 0.8; }
+.cell-off { fill: var(--m-bg); stroke: var(--line); stroke-width: 0.8; }
+.cell-faint { fill: var(--d-bg); stroke: var(--line); stroke-width: 0.8; }
+.cell-blank { fill: var(--surface); stroke: var(--line); stroke-width: 0.8; }
+.cell-k { fill: var(--k); stroke: var(--surface); stroke-width: 0.8; }
+.k0 { fill-opacity: 0.22; } .k1 { fill-opacity: 0.36; } .k2 { fill-opacity: 0.52; } .k3 { fill-opacity: 0.7; } .k4 { fill-opacity: 0.88; }
+.hl { fill: none; stroke: var(--ink); stroke-width: 2; }
+.nn-edge { stroke: var(--line); stroke-width: 1; }
+.nn-hi { stroke: var(--w); stroke-width: 2.2; }
+.nn-hi2 { stroke: var(--w); stroke-width: 2.2; stroke-dasharray: 5 3; }
+.op-sym { font-family: var(--sans); font-size: 22px; fill: var(--muted); text-anchor: middle; }
+.gridl { stroke: var(--line); stroke-width: 0.8; stroke-opacity: 0.6; }
+.axis0 { stroke: var(--muted); stroke-width: 1; }
+.s-relu { stroke: var(--s1); stroke-width: 2; fill: none; stroke-dasharray: 7 4; stroke-linecap: round; }
+.s-gelu { stroke: var(--s2); stroke-width: 2; fill: none; stroke-linecap: round; }
+.dot-relu { fill: var(--s1); stroke: var(--surface); stroke-width: 2; }
+.dot-gelu { fill: var(--s2); stroke: var(--surface); stroke-width: 2; }
+.xhair { stroke: var(--muted); stroke-width: 1; }
+.chart-wrap { position: relative; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; font: 12.5px/1.45 var(--mono); color: var(--ink); box-shadow: 0 2px 8px rgb(0 0 0 / 0.12); white-space: nowrap; }
+.tip i { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
+table.act { min-width: 480px; margin-top: 12px; }
+table.act td:first-child { font-weight: 600; }
+table.act th:not(:first-child) { text-align: right; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps li { margin-bottom: 10px; }
+@media (max-width: 520px) { body { font-size: 16px; } h1 { font-size: 2rem; } h2 { font-size: 1.5rem; } }
+</style>
+
+<main>
+<p class="eyebrow">PickNet · src/openlane/picknet.py · all-sets config</p>
+<h1>PickNet, Layer by Layer</h1>
+<p class="lede">The three learned parts of PickNet drawn out in full: the history encoder, the deck head and the pack decoder. Every box with weights shows its tensor shape and its parameter count for the 8.4M all-sets model.</p>
+
+<div class="dims">
+  <div><b>B</b><span>drafts in a batch (128)</span></div>
+  <div><b>T = 45</b><span>pick slots: 3 packs × 15</span></div>
+  <div><b>P = 15</b><span>card slots in a pack</span></div>
+  <div><b>d = 256</b><span>width of every vector</span></div>
+  <div><b>h = 8</b><span>attention heads</span></div>
+  <div><b>d<sub>h</sub> = 32</b><span>width of one head (256 / 8)</span></div>
+</div>
+
+<figure>
+  <div class="fig">{{OVERVIEW}}</div>
+  <ul class="legend">
+    <li><span class="sw w"></span>trained weights</li>
+    <li><span class="sw d"></span>data / tensors</li>
+    <li><span class="sw op"></span>fixed operation</li>
+    <li><span class="sw m"></span>mask</li>
+    <li><span class="sw k"></span>deck head</li>
+    <li><span class="sw o"></span>output</li>
+  </ul>
+  <figcaption><b>The whole model.</b> The encoder turns the draft so far into one state per pick. The decoder scores the cards in the current pack using those states. The deck head is a second training target on the same states and is not used to make picks.</figcaption>
+</figure>
+
+<!-- ===================================================== 1 -->
+<h2 id="encoder">1 · The history encoder</h2>
+<div class="prose">
+<p>Input: 45 tokens per draft, shape <code>[B, 45, 256]</code>. Token <i>t</i> is the sum of the slot's position vector, the bag of pack <i>t</i>, the card taken at <i>t−1</i>, the bag of cards the other drafters took, the context MLP and the set vector. At this point each token only knows its own slot.</p>
+<p>The encoder is <code>nn.TransformerEncoderLayer(256, 8, 1024, 0.05, batch_first=True, norm_first=True)</code> stacked 4 times, each copy with its own weights. One layer is drawn below.</p>
+</div>
+
+<figure>
+  <div class="fig">{{ENC}}</div>
+  <figcaption><b>One history encoder layer, repeated 4 times.</b> Pre-LN means LayerNorm is applied to the input of each sublayer, and the plain <code>x</code> goes around it on the residual line. The only place tokens exchange information is the <code>Q·Kᵀ</code> step; everything else works on each token separately.</figcaption>
+</figure>
+
+<h3>Step by step, with shapes</h3>
+<div class="prose">
+<ol>
+<li><b>LayerNorm 1.</b> For each of the B×45 tokens, subtract the mean of its 256 numbers, divide by their standard deviation, then apply learned scale γ and shift β (256 each).</li>
+<li><b>W_qkv.</b> One <code>Linear(256, 768)</code> produces Q, K and V at once. That is the same as three 256×256 maps, packed together for speed.</li>
+<li><b>Split heads.</b> Reshape each of Q, K, V from <code>[B, 45, 256]</code> to <code>[B, 8, 45, 32]</code>. Each head gets a 32-number slice and works independently.</li>
+<li><b>Scores.</b> <code>Q Kᵀ / √32</code> gives <code>[B, 8, 45, 45]</code>: for each head, how strongly token <i>t</i> matches token <i>j</i>. Dividing by √32 keeps the scores at unit scale, so the softmax does not saturate.</li>
+<li><b>Causal mask.</b> Scores above the diagonal (<i>j &gt; t</i>) become −∞, so they get zero weight after the softmax.</li>
+<li><b>Softmax</b> across each row. Row <i>t</i> is now a set of weights over tokens 0…<i>t</i> that sum to 1.</li>
+<li><b>A · V.</b> Each token takes the weighted average of the values it attends to. Shape <code>[B, 8, 45, 32]</code>.</li>
+<li><b>Concat + W_o.</b> Put the 8 heads back side by side (<code>[B, 45, 256]</code>), then a <code>Linear(256, 256)</code> mixes what the heads found.</li>
+<li><b>Dropout, then add</b> to the residual stream: <code>x = x + attn(LN1(x))</code>.</li>
+<li><b>MLP.</b> <code>x = x + Linear(1024→256)(Dropout(ReLU(Linear(256→1024)(LN2(x)))))</code>, applied to each token on its own. Default activation in PyTorch's encoder layer is ReLU. <a href="#mlp">Section 4</a> takes the MLP apart.</li>
+</ol>
+</div>
+
+<figure>
+  <div class="fig">{{CAUSAL}}</div>
+  <figcaption><b>The causal mask, first 10 of 45 tokens.</b> In code it is <code>torch.triu(ones(T, T), 1)</code>: True above the diagonal. For <code>nn.TransformerEncoder</code>, <b>True means blocked</b>. The diagonal stays open, so no row is all −∞ and the softmax never returns NaN.</figcaption>
+</figure>
+
+<div class="prose">
+<p>After the 4th layer the stream goes through <code>hist_norm</code>, a final LayerNorm. Pre-LN layers never normalise the residual stream itself, so this last norm puts <code>h</code> on a steady scale before the decoder and deck head read it. GPT-2 has the same final norm.</p>
+</div>
+
+<!-- ===================================================== 2 -->
+<h2 id="deck">2 · The deck head</h2>
+<div class="prose">
+<p>A training aid taken from puder's model. From state <i>t</i>, it predicts which of the cards already picked will end up in the drafter's main deck. It gives the encoder a second, denser signal: to answer well, <code>h_t</code> has to know the drafter's colours and plan, which is exactly what helps the pick. It is switched on by <code>deck_w = 0.3</code> and ignored at inference.</p>
+</div>
+
+<figure>
+  <div class="fig">{{DECK}}</div>
+  <figcaption><b>Deck head data flow.</b> Two linear maps, one dot product: the logit for (state <i>t</i>, pick <i>j</i>) is <code>deck_q(h_t) · deck_k(card_j) / 16</code>. The target is 17Lands' <code>pick_maindeck_rate</code>, the share of the drafter's games with that card in the main deck, so it is a soft label between 0 and 1.</figcaption>
+</figure>
+
+<figure>
+  <div class="fig">{{DECKGRID}}</div>
+  <figcaption><b>Which cells of the 45×45 logit grid are trained.</b> Pick <i>j</i> first shows up in token <i>j+1</i>, so state <i>t</i> has seen it only when <i>t &gt; j</i>. Later states get more weight, <code>(t+1)/45</code>, because they have more of the draft to go on. Missing targets (rate 255 in the shards) are skipped.</figcaption>
+</figure>
+
+<pre><code># picknet.py
+def deck_logits(self, h, tab, pick):
+    q, k = self.deck_q(h), self.deck_k(F.embedding(pick, tab))   # [B,45,256] each
+    return q @ k.transpose(1, 2) / q.shape[-1] ** 0.5          # [B,45,45]
+
+# train_picknet_all.py
+m = (t &gt; j) &amp; valid[:, :, None] &amp; known[:, None, :]
+w = m * ((t + 1) / T)
+bce = F.binary_cross_entropy_with_logits(dl, y[:, None, :].expand_as(dl), reduction="none")
+deck = (bce * w).sum() / w.sum()
+loss = nll + 0.3 * deck</code></pre>
+
+<div class="prose">
+<p>This is a <b>bilinear</b> head: no attention, no softmax across cards. Each (t, j) cell is its own yes/no question, which is why the loss is binary cross-entropy and not a softmax. Because <code>deck_k</code> reads the shared card table, its gradient also shapes the card vectors.</p>
+</div>
+
+<!-- ===================================================== 3 -->
+<h2 id="decoder">3 · The pack decoder</h2>
+<div class="prose">
+<p>Now the model scores the cards it could take. Every pick slot has up to 15 candidates, so the decoder works on a 4-D tensor <code>[B, 45, 15, 256]</code>: all 45 picks of a draft are scored in one pass.</p>
+<p>The encoder made one vector per <i>pick</i>, <code>h_t</code>, summing up what the drafter knew at that moment. The decoder makes one vector per <i>candidate card</i> and asks of each: "given this drafter, and given the other cards in this pack, how likely is a human to take this one?" It does that in four stages:</p>
+<ol>
+<li><b>Build a token per card</b>: card identity + number of copies + the drafter's state at that pick.</li>
+<li><b>Let the cards in a pack compare</b> with each other (self-attention).</li>
+<li><b>Let each card look back at the draft</b> up to that pick (cross-attention to <code>h</code>).</li>
+<li><b>Turn each card into one number</b>, then softmax over the pack to get pick probabilities.</li>
+</ol>
+<p>Stages 2 and 3, plus an MLP, form one decoder block, and the block is repeated 3 times. Shape stays <code>[B, 45, 15, 256]</code> from the first stage until the score head squeezes it to <code>[B, 45, 15]</code>.</p>
+</div>
+
+<h3>Building the candidate tokens</h3>
+<figure>
+  <div class="fig">{{CAND}}</div>
+  <figcaption><b>Each candidate card starts as three vectors added together.</b> The card's own vector from the shared card table, a vector for how many copies are in the pack (1 to 4+), and <code>state_proj(h_t)</code>, the drafter's state at that slot, copied to all 15 cards. No position vector is added, so the order of cards in the pack means nothing.</figcaption>
+</figure>
+
+<div class="prose">
+<ol>
+<li><b>Card vector.</b> <code>idx</code> is <code>[B, 45, 15]</code>: the card id in each slot of each pack, with a padding id for empty slots. Looking it up in the card table gives <code>[B, 45, 15, 256]</code>. This is the same table the encoder used for its bags, so a card means the same thing on both sides. The padding row is all zeros.</li>
+<li><b>Copies vector.</b> <code>cnt</code> is how many copies of that card are in the pack. It is clamped to 3 and looked up in <code>copies</code>, a 4-row table: row 0 for empty slots, then 1, 2 and 3+ copies. Same shape as the card vector.</li>
+<li><b>State vector.</b> <code>state_proj</code> is a <code>Linear(256, 256)</code> applied to <code>h</code> (<code>[B, 45, 256]</code>). Adding a new axis gives <code>[B, 45, 1, 256]</code>, which broadcasts across the 15 cards. Every card at pick <i>t</i> now carries the same summary of the drafter: colours, curve, what has been flowing. The projection lets the model put that summary in a different subspace from the card vectors so the two don't blur together.</li>
+<li><b>Add the three.</b> <code>x = card + copies + state</code>, shape <code>[B, 45, 15, 256]</code>. At this point a card knows who it is and who is drafting it, but not what else is in the pack.</li>
+<li><b>Pad mask.</b> <code>pad = cnt &gt; 0</code>, shape <code>[B, 45, 15]</code>, True for real cards. Packs shrink as the round goes on, from a full pack at the first pick down to one card at the last, so later rows are mostly padding. One edge case: if a pack is entirely empty (a missing P1P1 in the logs), slot 0 is marked real anyway so attention never sees a row with nothing to attend to. That pick is excluded from the loss.</li>
+</ol>
+</div>
+
+<h3>One decoder block, repeated 3 times</h3>
+<figure>
+  <div class="fig">{{DEC}}</div>
+  <figcaption><b>Three pre-LN sublayers, each with a residual add.</b> Self-attention lets the cards in a pack compare with each other. Cross-attention lets each card look things up in the history. The MLP processes each card on its own, here with GELU. Every block reads the same <code>h</code>.</figcaption>
+</figure>
+
+<h3>Step by step, with shapes</h3>
+<div class="prose">
+<p><b>Sublayer 1: self-attention within the pack.</b></p>
+<ol>
+<li><b>LayerNorm 1</b> on each card's 256 numbers.</li>
+<li><b>W_qkv.</b> <code>Linear(256, 768)</code> gives Q, K and V together, <code>[B, 45, 15, 768]</code>.</li>
+<li><b>One pack per row.</b> Reshape to <code>[B·45, 15, 768]</code>. The batch axis now counts packs, not drafts, so attention can only mix cards that are in the same pack at the same pick.</li>
+<li><b>Split heads.</b> <code>[B·45, 8, 15, 32]</code> for each of Q, K, V.</li>
+<li><b>Scores.</b> <code>Q Kᵀ / √32</code> gives <code>[B·45, 8, 15, 15]</code>: how much each card wants to read each other card in its pack.</li>
+<li><b>Pad mask.</b> <code>pad</code> is reshaped to <code>[B·45, 1, 1, 15]</code> and broadcast over heads and query rows, so every card ignores the empty slots as keys. There is no causal mask here: a pack is a set, and every card may see every other card.</li>
+<li><b>Softmax, then A · V</b>: <code>[B·45, 8, 15, 32]</code>.</li>
+<li><b>Concat + W_o.</b> Heads back side by side and reshape to <code>[B, 45, 15, 256]</code>, then <code>o1 = Linear(256, 256)</code>.</li>
+<li><b>Dropout, then add</b> to the residual: <code>x = x + selfattn(LN1(x))</code>.</li>
+</ol>
+<p><b>Sublayer 2: cross-attention to the history.</b></p>
+<ol start="10">
+<li><b>LayerNorm 2</b>, then <b>queries</b> from the cards: <code>q2 = Linear(256, 256)</code>.</li>
+<li><b>Flatten the cards.</b> Reshape to <code>[B, 45·15, 256] = [B, 675, 256]</code>, then split heads to <code>[B, 8, 675, 32]</code>. Now each draft is one long list of 675 card queries.</li>
+<li><b>Keys and values</b> from the history: <code>kv2 = Linear(256, 512)</code> on <code>h</code>, split into K and V, each <code>[B, 8, 45, 32]</code>. No LayerNorm here because <code>h</code> already went through <code>hist_norm</code>. Since <code>h</code> is the same in every block, each block just learns a different way to read it.</li>
+<li><b>Scores.</b> <code>[B, 8, 675, 45]</code>: how much each card wants to read each of the 45 history states.</li>
+<li><b>Causal mask.</b> <code>see</code> is <code>[45, 45]</code> with True on and below the diagonal. <code>repeat_interleave(15, 0)</code> copies each row 15 times to make <code>[675, 45]</code>: row 15·<i>t</i>+<i>c</i> is card <i>c</i> at pick <i>t</i>, and it gets row <i>t</i> of the mask. So a card at pick <i>t</i> can read states 0…<i>t</i> and nothing later.</li>
+<li><b>Softmax, then A · V</b>: <code>[B, 8, 675, 32]</code>.</li>
+<li><b>Concat + W_o.</b> Back to <code>[B, 45, 15, 256]</code>, then <code>o2 = Linear(256, 256)</code>.</li>
+<li><b>Dropout, then add</b>: <code>x = x + crossattn(LN2(x), h)</code>.</li>
+</ol>
+<p><b>Sublayer 3: MLP.</b></p>
+<ol start="18">
+<li><code>x = x + Dropout(Linear(1024→256)(Dropout(GELU(Linear(256→1024)(LN3(x))))))</code>, on each card by itself. This is where the card turns what it gathered in steps 1–17 into new features. The encoder's MLP uses ReLU; this one uses GELU (<a href="#mlp">section 4</a> compares them).</li>
+</ol>
+<p>The output has the same shape as the input, <code>[B, 45, 15, 256]</code>, so it goes straight into the next block. After 3 blocks each card has compared itself with its pack three times and looked back at the draft three times, each round building on the last.</p>
+</div>
+
+<h3>Why each step is there</h3>
+
+<div class="prose">
+<p><b>Self-attention within the pack.</b> The tensor is reshaped to <code>[B·45, 15, 256]</code>, so each pack becomes its own tiny sequence of 15 tokens and packs never see each other. This answers questions like "is this the only red card here?" A card's value depends on what else it is competing with.</p>
+<p><b>Cross-attention to the history.</b> Queries come from the cards, keys and values from the history states. The 45×15 cards are flattened into one axis of 675 queries, and the 45-row mask is repeated 15 times (<code>repeat_interleave</code>) so every card at slot <i>t</i> gets row <i>t</i>. The state <code>h_t</code> already went into each card through <code>state_proj</code>. Cross-attention adds the option to look up specific earlier moments, such as the picks where the drafter took a creature at this mana value.</p>
+</div>
+
+<figure>
+  <div class="fig">{{PATTERNS}}</div>
+  <figcaption><b>Who can attend to whom.</b> Left: within one pack, real cards attend to real cards; empty slots are masked as keys. Rows for empty slots still get computed, but they are never scored. Right: a card at slot <i>t</i> may read history states 0…<i>t</i>; both cards shown per slot get the same row of the mask.</figcaption>
+</figure>
+
+<div class="note">
+<p><b>Mask convention flips between the two halves.</b> The encoder uses <code>nn.TransformerEncoder</code>, where a boolean mask value of <b>True means blocked</b>, so it gets <code>causal</code> (True above the diagonal).</p>
+<p>The decoder calls <code>F.scaled_dot_product_attention</code> directly, where <b>True means allowed</b>. So it gets <code>pad = cnt &gt; 0</code> and <code>see = ~causal</code>. Mixing these up is a common bug: the model trains fine while peeking at the future.</p>
+</div>
+
+<pre><code># Block.forward, picknet.py
+q, k, v = self._heads(self.qkv(self.ln1(x)).reshape(B * T, P, 3 * d)).chunk(3, -1)  # [BT, 8, 15, 32]
+a = F.scaled_dot_product_attention(q, k, v, attn_mask=pad.reshape(B * T, 1, 1, P))
+x = x + self.drop(self.o1(a.transpose(1, 2).reshape(B, T, P, d)))
+
+q = self._heads(self.q2(self.ln2(x)).reshape(B, T * P, d))     # [B, 8, 675, 32]
+k, v = self._heads(self.kv2(mem)).chunk(2, -1)                 # [B, 8, 45, 32]
+m = mem_mask.repeat_interleave(P, 0)                           # [675, 45]
+a = F.scaled_dot_product_attention(q, k, v, attn_mask=m)
+x = x + self.drop(self.o2(a.transpose(1, 2).reshape(B, T, P, d)))
+
+return x + self.drop(self.mlp(self.ln3(x)))</code></pre>
+
+<h3>From card vectors to a pick probability</h3>
+<figure>
+  <div class="fig">{{HEAD}}</div>
+  <figcaption><b>Score head and loss.</b> A small MLP gives each card one number. Empty slots get −∞, and a softmax over the pack turns the numbers into a probability for each card. The loss is the negative log-probability of the card the human actually took, averaged over the valid picks. This is a conditional logit: the model only ever chooses among the cards that are really there.</figcaption>
+</figure>
+
+<div class="prose">
+<ol>
+<li><b>Score MLP.</b> <code>head = LayerNorm → Linear(256, 256) → GELU → Linear(256, 1)</code>, on each card by itself. Then drop the last axis: <code>[B, 45, 15, 256] → [B, 45, 15]</code>. Each number is a raw score (a logit) for that card at that pick. On its own the number means nothing; only differences within a pack matter.</li>
+<li><b>Mask empty slots.</b> Where <code>cnt == 0</code>, set the logit to −∞, so those slots get probability 0.</li>
+<li><b>Log-softmax over the 15 slots.</b> Each row of 15 becomes log-probabilities that sum (as probabilities) to 1. A pack with 3 cards left is a 3-way choice.</li>
+<li><b>Pick out the human's card.</b> <code>target</code> (<code>[B, 45]</code>) is the slot the human took. <code>gather</code> pulls out its log-probability, and the negative of that is the loss for that pick: near 0 if the model gave the card high probability, large if it thought the card unlikely.</li>
+<li><b>Average.</b> Mean over every valid pick in the batch (missing P1P1s are skipped). That is <code>nll</code>; the training loss is <code>nll + 0.3 · deck</code>.</li>
+</ol>
+<p>At inference the same pass runs and the model's pick is just the card with the highest probability. Because all 45 picks are scored together and the masks stop any pick from seeing the future, one forward pass gives the same answers as running the model 45 times, one pick at a time.</p>
+</div>
+
+
+<!-- ===================================================== 4 -->
+<h2 id="mlp">4 · Inside the MLP</h2>
+<div class="prose">
+<p>Every encoder layer and every decoder block ends with the same small network: <code>Linear(256 → 1024)</code>, an activation, <code>Linear(1024 → 256)</code>. It holds two thirds of each layer's weights, so it is worth knowing exactly what it computes.</p>
+<p>Attention moves information <b>between</b> tokens. The MLP then works on each token <b>alone</b>: it reads one 256-number vector and writes back a 256-number change, with no idea what the other tokens hold. A common way to say it: attention is communication, the MLP is computation.</p>
+</div>
+
+<h3>One hidden unit at a time</h3>
+<figure>
+  <div class="fig">{{NEURONS}}</div>
+  <figcaption><b>A shrunken MLP: 4 → 6 → 4 instead of 256 → 1024 → 256.</b> Every input feeds every hidden unit, and every hidden unit feeds every output, which is what "fully connected" means. Unit 3 is highlighted: its incoming weights decide <i>when</i> it turns on, its outgoing weights decide <i>what</i> it adds to the output.</figcaption>
+</figure>
+
+<div class="prose">
+<p>Follow one hidden unit <i>i</i> through the computation. It is the whole MLP, repeated 1024 times and summed:</p>
+<ol class="steps">
+<li><b>Measure.</b> Take a dot product of the input <code>z</code> with row <i>i</i> of W1 and add a bias: <code>s_i = w_i · z + b_i</code>. This is one number saying how well <code>z</code> matches the pattern <code>w_i</code>.</li>
+<li><b>Gate.</b> Pass it through the activation: <code>a_i = ReLU(s_i) = max(0, s_i)</code>. If the pattern is absent (<code>s_i ≤ 0</code>), the unit is off and contributes nothing.</li>
+<li><b>Write.</b> Multiply column <i>i</i> of W2 by <code>a_i</code> and add it to the output. Column <i>i</i> is a fixed 256-number direction that this unit always writes along; only the amount changes.</li>
+</ol>
+<p>So the output is <code>b2 + Σᵢ aᵢ · W2[:, i]</code>: a sum of up to 1024 stored vectors, each switched on and scaled by how strongly its pattern appears. That is why people describe MLP layers as <b>key–value memories</b>: rows of W1 are keys, columns of W2 are values. In this model a unit might learn to fire on "many red picks and we're in pack 2" and write a direction that later layers read as "committed to red". That is an illustration of the kind of thing units do; it isn't something measured in this model.</p>
+</div>
+
+<h3>The same thing as matrices</h3>
+<figure>
+  <div class="fig">{{MATRIX}}</div>
+  <figcaption><b>In practice it is two matrix multiplies over all tokens at once.</b> Stack every token as a row of Z: N = B·45 in the encoder, B·45·15 in the decoder. Every row is multiplied by the same W1 and W2, which is what "per token" means in code. PyTorch stores <code>Linear.weight</code> as <code>[out, in]</code> and computes <code>z @ weight.T + bias</code>; the figure draws the transposed shape so the multiply reads left to right.</figcaption>
+</figure>
+
+<pre><code>hidden = z @ W1.T + b1        # [N, 256]  @ [256, 1024] -> [N, 1024]   262,144 weights + 1,024 biases
+hidden = relu(hidden)         # elementwise, no weights; GELU in the decoder
+hidden = dropout(hidden)      # 5% of hidden units zeroed, training only
+out    = hidden @ W2.T + b2   # [N, 1024] @ [1024, 256] -> [N, 256]    262,144 weights + 256 biases
+x      = x + dropout(out)     # residual add: the MLP writes a change, it does not replace x</code></pre>
+
+<h3>A worked example with real numbers</h3>
+<div class="prose">
+<p>A 2 → 3 → 2 MLP, small enough to do by hand. Input <code>z = [1, 2]</code>.</p>
+</div>
+<div class="tbl">
+<table>
+<thead><tr><th>Unit</th><th>Row of W1, bias</th><th>s = w · z + b</th><th>ReLU(s)</th><th>Column of W2</th><th>Adds to output</th></tr></thead>
+<tbody>
+<tr><td>a1</td><td class="n">[1, 0.5], 0</td><td class="n">1 + 1 + 0 = 2</td><td class="n">2</td><td class="n">[0.5, −1]</td><td class="n">[1, −2]</td></tr>
+<tr><td>a2</td><td class="n">[−1, 1], −2</td><td class="n">−1 + 2 − 2 = −1</td><td class="n">0</td><td class="n">[1, 1]</td><td class="n">[0, 0]</td></tr>
+<tr><td>a3</td><td class="n">[0.5, −1], 1</td><td class="n">0.5 − 2 + 1 = −0.5</td><td class="n">0</td><td class="n">[−2, 0.5]</td><td class="n">[0, 0]</td></tr>
+<tr class="sum"><td colspan="5">Sum of writes + b2 = [0, 0.1]</td><td class="n">[1, −1.9]</td></tr>
+</tbody>
+</table>
+</div>
+<div class="prose">
+<p>Only unit 1 fired, so the output is just its write vector times 2, plus the bias. Feed in a different <code>z</code> and a different set of units fires, giving a different sum. That input-dependent switching is the whole source of the MLP's power.</p>
+</div>
+
+<h3>Why the activation is not optional</h3>
+<div class="prose">
+<p>Remove the ReLU and the two layers collapse into one:</p>
+</div>
+<pre><code>W2 (W1 z + b1) + b2  =  (W2 W1) z + (W2 b1 + b2)  =  W z + b      # one 256×256 linear map</code></pre>
+<div class="prose">
+<p>All 525,568 weights would then do the job of a single 256×256 matrix, and the 1024-wide middle would buy nothing. Stacking linear maps is still linear. The activation is what lets the network represent "if this, then that": unit 1 fires and unit 2 doesn't.</p>
+</div>
+
+<h3>ReLU and GELU</h3>
+<figure>
+  <div class="fig chart-wrap" id="act-wrap">{{ACT}}<div class="tip" id="act-tip" hidden></div></div>
+  <figcaption><b>The two activations used in PickNet.</b> The encoder uses ReLU (PyTorch's default for <code>TransformerEncoderLayer</code>); the decoder, score head and context MLP use GELU. Hover over the chart to read values.</figcaption>
+  {{ACTTABLE}}
+</figure>
+<div class="prose">
+<ul>
+<li><b>ReLU</b> = <code>max(0, x)</code>. Cheap, and exactly zero for negative inputs. A unit whose input is negative for every example gets zero gradient and can never recover: a <b>dead ReLU</b>.</li>
+<li><b>GELU</b> = <code>x · Φ(x)</code>, where Φ is the standard normal CDF. It weights the input by "how likely is it to be positive". It is smooth, lets a little negative signal and gradient through, and is the default in BERT and GPT-2.</li>
+<li><b>SwiGLU</b>, used in LLaMA and most recent LLMs, replaces the activation with a gate: <code>(Swish(z W_a) ⊙ z W_b) W_2</code>. That needs three matrices instead of two, so the hidden width is usually cut to about 8/3·d to keep the weight count the same.</li>
+</ul>
+</div>
+
+<h3>Why 4× wider in the middle</h3>
+<div class="prose">
+<p>Each hidden unit is one pattern detector with one write direction. 1024 units means 1024 patterns per layer. The 4× ratio comes from the original Transformer paper (512 → 2048) and has stuck because it works; it is a convention, not a law. The cost is weights: 2 · 256 · 1024 ≈ 524k, against 4 · 256² ≈ 262k for attention. That is why the MLP is about two thirds of every layer in the table below.</p>
+</div>
+
+<h3>Every MLP in PickNet</h3>
+<div class="tbl">
+<table>
+<thead><tr><th>Where</th><th>Shape</th><th>Activation</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td>History encoder, each of 4 layers</td><td class="n">256 → 1024 → 256</td><td>ReLU</td><td>turn what attention gathered into features of the drafter's state</td></tr>
+<tr><td>Pack decoder, each of 3 blocks</td><td class="n">256 → 1024 → 256</td><td>GELU</td><td>combine a card's own vector, its pack rivals and the history into features of "how good is this pick"</td></tr>
+<tr><td>Score head</td><td class="n">256 → 256 → 1</td><td>GELU</td><td>squeeze each card's final vector down to one logit</td></tr>
+<tr><td>Context MLP (<code>ctx_mlp</code>)</td><td class="n">n_ctx → 256 → 256</td><td>GELU</td><td>turn rank, skill, date and format numbers into one token ingredient</td></tr>
+<tr><td>Card table, features-only mode</td><td class="n">n_feats → 512 → 256</td><td>GELU</td><td>build a card vector from its features when there are no learned ids</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ===================================================== params -->
+<h2 id="params">Where the weights are</h2>
+<div class="tbl">
+<table>
+<thead><tr><th>Part</th><th>Per copy</th><th>Copies</th><th>Total</th></tr></thead>
+<tbody>
+<tr><td>History encoder layer (attention 263,168 + MLP 525,568 + 2 norms)</td><td class="n">789,760</td><td class="n">4</td><td class="n">3,159,040</td></tr>
+<tr><td>hist_norm</td><td class="n">512</td><td class="n">1</td><td class="n">512</td></tr>
+<tr><td>Deck head (deck_q + deck_k)</td><td class="n">131,584</td><td class="n">1</td><td class="n">131,584</td></tr>
+<tr><td>state_proj + copies embedding</td><td class="n">66,816</td><td class="n">1</td><td class="n">66,816</td></tr>
+<tr><td>Decoder block (self-attn 263,168 + cross-attn 263,168 + MLP 525,568 + 3 norms)</td><td class="n">1,053,440</td><td class="n">3</td><td class="n">3,160,320</td></tr>
+<tr><td>Score head</td><td class="n">66,561</td><td class="n">1</td><td class="n">66,561</td></tr>
+<tr class="sum"><td>Drawn on this page</td><td></td><td></td><td class="n">6,584,833</td></tr>
+</tbody>
+</table>
+</div>
+<div class="prose">
+<p>The remaining 1.77M are the input side (card table, bag projections, position, set and context vectors) plus a 65,792-weight pool layer that only the no-history ablation uses. A useful check is that a transformer layer has about 12·d² weights: 4d² in attention (Q, K, V, O) and 8d² in a 4× MLP. With d = 256 that is 786k, close to the 789,760 counted here. A decoder block adds a second attention, so it has about 16·d².</p>
+</div>
+
+<h2 id="quiz">Questions to practise on this model</h2>
+<ol class="qs">
+<li>Why does token <i>t</i> contain pick <i>t−1</i> and not pick <i>t</i>? What breaks if you shift it by one?</li>
+<li>Why is the diagonal of the causal mask left open, and what would a fully masked row do to the softmax?</li>
+<li>The decoder adds <code>state_proj(h_t)</code> to each card <i>and</i> cross-attends to all of <code>h</code>. What does each path give that the other does not?</li>
+<li>Why is there no position embedding on the candidate cards? What property does that give the decoder?</li>
+<li>Why is the deck head trained with binary cross-entropy while the pick uses a softmax?</li>
+<li>Why weight later states more in the deck loss?</li>
+<li>Self-attention in the decoder costs O(P²) per slot and cross-attention O(P·T). Which dominates here, and how does that compare to the encoder's O(T²)?</li>
+<li>Name both mask conventions in PyTorch and say which call in this file uses which.</li>
+<li>What happens to an MLP if you delete the activation? Show it with the algebra.</li>
+<li>What is a dead ReLU, and how does GELU avoid it?</li>
+<li>Why does the MLP hold most of a transformer layer's weights?</li>
+</ol>
+</main>
+<script>
+(function () {
+  var wrap = document.getElementById("act-wrap"), tip = document.getElementById("act-tip");
+  var hit = document.getElementById("act-hit");
+  if (!wrap || !hit) return;
+  var svgEl = hit.ownerSVGElement, xl = document.getElementById("act-x");
+  var d1 = document.getElementById("act-d1"), d2 = document.getElementById("act-d2");
+  var X0 = +hit.dataset.x0, X1 = +hit.dataset.x1, Y0 = +hit.dataset.y0, Y1 = +hit.dataset.y1;
+  var lo = +hit.dataset.lo, hi = +hit.dataset.hi;
+  function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
+    var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return s * y; }
+  function gelu(x) { return 0.5 * x * (1 + erf(x / Math.SQRT2)); }
+  function sy(y) { return Y0 - (y - lo) / (hi - lo) * (Y0 - Y1); }
+  function show(on) { [xl, d1, d2].forEach(function (e) { e.setAttribute("visibility", on ? "visible" : "hidden"); }); tip.hidden = !on; }
+  hit.addEventListener("pointermove", function (ev) {
+    var pt = svgEl.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    var p = pt.matrixTransform(svgEl.getScreenCTM().inverse());
+    var x = Math.round(((p.x - X0) / (X1 - X0) * 6 - 3) * 20) / 20;
+    var px = X0 + (x + 3) / 6 * (X1 - X0), r = Math.max(0, x), g = gelu(x);
+    xl.setAttribute("x1", px); xl.setAttribute("x2", px);
+    d1.setAttribute("cx", px); d1.setAttribute("cy", sy(r));
+    d2.setAttribute("cx", px); d2.setAttribute("cy", sy(g));
+    tip.innerHTML = "x = " + x.toFixed(2) + "<br><i style=\"background:var(--s1)\"></i>ReLU " + r.toFixed(3) +
+                    "<br><i style=\"background:var(--s2)\"></i>GELU " + g.toFixed(3);
+    show(true);
+    var wr = wrap.getBoundingClientRect(), left = ev.clientX - wr.left + 14;
+    if (left + tip.offsetWidth > wr.width - 8) left = ev.clientX - wr.left - tip.offsetWidth - 14;
+    tip.style.left = left + "px"; tip.style.top = (ev.clientY - wr.top - 10) + "px";
+  });
+  hit.addEventListener("pointerleave", function () { show(false); });
+})();
+</script>
+

@@ -1,0 +1,29 @@
+\begin{tabular}{lr cccc cccc cccc}
+\toprule
+ & test picks & \multicolumn{4}{c}{top-1 $\uparrow$} & \multicolumn{4}{c}{non-forced top-1 $\uparrow$} & \multicolumn{4}{c}{NLL $\downarrow$} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}\cmidrule(lr){11-14}
+set & (k) & rating & pool & puder & PickNet & rating & pool & puder & PickNet & rating & pool & puder & PickNet \\
+\midrule
+BLB & 904 & .452 & .659 & \textbf{.725} & .714 & .406 & .630 & \textbf{.702} & .690 & 1.425 & .915 & .736 & \textbf{.731} \\
+DFT & 889 & .473 & .650 & -- & \textbf{.711} & .433 & .623 & -- & \textbf{.689} & 1.370 & .945 & -- & \textbf{.741} \\
+DSK & 1056 & .475 & .665 & .711 & \textbf{.722} & .435 & .639 & .689 & \textbf{.700} & 1.358 & .901 & .737 & \textbf{.711} \\
+ECL & 566 & .450 & .669 & -- & \textbf{.717} & .403 & .640 & -- & \textbf{.692} & 1.413 & .881 & -- & \textbf{.723} \\
+EOE & 611 & .477 & .651 & -- & \textbf{.711} & .433 & .621 & -- & \textbf{.687} & 1.350 & .938 & -- & \textbf{.738} \\
+FDN & 825 & .483 & .666 & .716 & \textbf{.724} & .443 & .640 & .695 & \textbf{.702} & 1.355 & .905 & .753 & \textbf{.708} \\
+FIN & 884 & .466 & .651 & -- & \textbf{.709} & .425 & .624 & -- & \textbf{.687} & 1.391 & .942 & -- & \textbf{.745} \\
+LCI & 911 & .468 & .643 & .679 & \textbf{.701} & .430 & .618 & .657 & \textbf{.679} & 1.412 & .969 & .810 & \textbf{.774} \\
+MKM & 922 & .474 & .644 & .692 & \textbf{.706} & .430 & .614 & .666 & \textbf{.681} & 1.363 & .948 & .803 & \textbf{.751} \\
+MOM & 1387 & -- & -- & .689 & \textbf{.701} & -- & -- & .666 & \textbf{.680} & -- & -- & .805 & \textbf{.769} \\
+MSH & 432 & .497 & .644 & -- & \textbf{.699} & .459 & .617 & -- & \textbf{.676} & 1.324 & .954 & -- & \textbf{.775} \\
+OTJ & 1230 & .497 & .652 & .697 & \textbf{.707} & .458 & .625 & .674 & \textbf{.684} & 1.317 & .934 & .788 & \textbf{.751} \\
+SOS & 677 & .467 & .671 & -- & \textbf{.715} & .426 & .645 & -- & \textbf{.693} & 1.393 & .872 & -- & \textbf{.731} \\
+TDM & 638 & .477 & .643 & -- & \textbf{.689} & .436 & .615 & -- & \textbf{.665} & 1.368 & .942 & -- & \textbf{.796} \\
+TLA & 632 & .477 & .649 & -- & \textbf{.704} & .436 & .621 & -- & \textbf{.680} & 1.358 & .943 & -- & \textbf{.759} \\
+TMT & 198 & -- & -- & -- & \textbf{.721} & -- & -- & -- & \textbf{.698} & -- & -- & -- & \textbf{.716} \\
+WOE & 1044 & -- & -- & .684 & \textbf{.694} & -- & -- & .660 & \textbf{.670} & -- & -- & .790 & \textbf{.785} \\
+\midrule
+8 shared$^a$ &  & -- & -- & .699 & \textbf{.708} & -- & -- & .676 & \textbf{.686} & -- & -- & .778 & \textbf{.749} \\
+14 sets$^b$ &  & .474 & .654 & -- & \textbf{.710} & .433 & .627 & -- & \textbf{.687} & 1.371 & .928 & -- & \textbf{.744} \\
+all 17$^b$ & 13807 & -- & -- & -- & \textbf{.708} & -- & -- & -- & \textbf{.685} & -- & -- & -- & \textbf{.749} \\
+\bottomrule
+\end{tabular}

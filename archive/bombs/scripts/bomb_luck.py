@@ -14,7 +14,7 @@ Per set:
     bomb x skill  : change in skill slope (per 10 pp) for drafts with >= 1 bomb. Negative = bombs level the field.
     P(deck bomb)  : share of drafts whose deck has >= 1 bomb
 
-Only users with user_n_games_bucket >= 100 are kept. The skill bucket is computed from all the user's games, these
+Only users with user_n_games_bucket >= 100 are kept. Run with --plot to redraw the charts from the saved CSV. The skill bucket is computed from all the user's games, these
 included, so for low-volume users it is mostly this draft's own result. Output: results/bombs/bomb_luck.csv.
 """
 import sys
@@ -82,29 +82,58 @@ def plot(d):
         "font.size": 10, "legend.frameon": False,
     })
     nb = pl.read_csv(OUT / "bombs_impact.csv").group_by("set").agg(pl.len().alias("bombs"))
-    d = d.join(nb, on="set", how="left")
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-    ax = axes[0]
-    ax.scatter(d["bombs"], d["skill share"], color=BLUE, s=45, zorder=3)
-    for s, x, y in zip(d["set"], d["bombs"], d["skill share"]):
-        ax.annotate(s, (x, y), xytext=(4, -10 if s == "TMT" else 3), textcoords="offset points", fontsize=8, color=MUTED)
-    ax.set_xlabel("bombs in the set (cards ≥ 2.5 pp of game win rate)")
-    ax.set_ylabel("share of real spread in draft results explained by skill")
-    ax.set_title("Bomb-heavy sets don't reward skill less", loc="left")
-    ax = axes[1]
-    x = np.arange(d.height)
-    ax.bar(x - 0.2, d["skill share"], width=0.4, color=BLUE, label="drafter skill (17Lands win-rate bracket)")
-    ax.bar(x + 0.2, d["bomb share"], width=0.4, color=ORANGE, label="bombs in the deck")
-    ax.set_xticks(x, d["set"], rotation=60)
-    ax.set_ylabel("share of real spread in draft results")
-    ax.set_title("Skill explains far more than bombs, in every set", loc="left")
-    ax.legend(loc="upper left")
+    d = d.join(nb, on="set", how="left", maintain_order="left")
+
+    # By set: share of the real spread in draft results explained by skill vs by bombs, in release order
+    skill, bomb = 100 * d["skill share"].to_numpy(), 100 * d["bomb share"].to_numpy()
+    y = np.arange(d.height)[::-1]
+    h = 0.36
+    fig, ax = plt.subplots(figsize=(8.5, 9))
+    ax.barh(y + h / 2 + 0.02, skill, height=h, color=BLUE, label="drafter skill (17Lands win-rate bracket)")
+    ax.barh(y - h / 2 - 0.02, bomb, height=h, color=ORANGE, label="bombs in the deck (0 / 1 / 2+)")
+    for yi, sv, bv, nbomb in zip(y, skill, bomb, d["bombs"]):
+        ax.text(sv + 0.6, yi + h / 2 + 0.02, f"{sv:.0f}%", va="center", fontsize=8, color=INK)
+        ax.text(bv + 0.6, yi - h / 2 - 0.02, f"{bv:.0f}%", va="center", fontsize=8, color=MUTED)
+        ax.text(66, yi, f"{nbomb}", va="center", ha="right", fontsize=9, color=MUTED)
+        ax.text(74, yi, f"{sv / bv:.0f}×", va="center", ha="right", fontsize=9, color=INK)
+    top = d.height - 0.4
+    ax.text(66, top, "bombs\nin set", va="bottom", ha="right", fontsize=8, color=MUTED)
+    ax.text(74, top, "skill ÷\nbombs", va="bottom", ha="right", fontsize=8, color=MUTED)
+    ax.set_yticks(y, d["set"])
+    ax.tick_params(axis="y", length=0)
+    ax.set_ylim(-0.6, d.height + 0.6)
+    ax.set_xlim(0, 75)
+    ax.set_xticks(range(0, 61, 10), [f"{t}%" for t in range(0, 61, 10)])
+    ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_bounds(0, 60)
+    ax.grid(axis="y", visible=False)
+    ax.set_xlabel("share of the real spread in draft win rate explained (game-count noise removed)")
+    ax.set_title("Skill explains far more of draft results than bombs, in every set", loc="left", pad=28)
+    ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), ncol=2, fontsize=9, handlelength=1.2)
     fig.tight_layout()
     fig.savefig(OUT / "bomb_luck.png", dpi=110)
     fig.savefig(ROOT / "blog" / "bombs_img" / "skill_vs_bombs.png", dpi=110)
+    plt.close(fig)
+
+    # Across sets: skill share vs number of bombs
+    fig, ax = plt.subplots(figsize=(6.5, 4.8))
+    ax.scatter(d["bombs"], skill, color=BLUE, s=45, zorder=3)
+    for s, x, yv in zip(d["set"], d["bombs"], skill):
+        ax.annotate(s, (x, yv), xytext=(4, -10 if s in ("TMT", "DSK") else 3), textcoords="offset points", fontsize=8, color=MUTED)
+    ax.set_xlabel("bombs in the set (cards ≥ 2.5 pp of game win rate)")
+    ax.set_ylabel("share explained by skill")
+    ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0f}%")
+    ax.set_title("Bomb-heavy sets don't reward skill less", loc="left")
+    fig.tight_layout()
+    fig.savefig(OUT / "bomb_luck_by_bombs.png", dpi=110)
+    fig.savefig(ROOT / "blog" / "bombs_img" / "skill_share_vs_bombs.png", dpi=110)
+    plt.close(fig)
 
 
 if __name__ == "__main__":
+    if "--plot" in sys.argv:  # redraw from the saved results
+        plot(pl.read_csv(OUT / "bomb_luck.csv"))
+        sys.exit()
     bi = pl.read_csv(OUT / "bombs_impact.csv")
     sets = bi["set"].unique(maintain_order=True).to_list()
     order = pl.read_csv(OUT / "deck_score_summary_gih.csv")["set"].to_list()

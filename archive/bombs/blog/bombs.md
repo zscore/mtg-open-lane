@@ -142,17 +142,24 @@ So a typical draft has two or three bombs going around the table, and you have a
 
 With a consistent bomb count for every set, I could go back to the original question. If bombs add luck, then in bomb-heavy sets a drafter's results should depend less on how good they are and more on whether they happened to get a bomb.
 
-To measure skill, I used the 17Lands win-rate bracket, which is each user's game win rate across all of their 17Lands games. That bracket includes the games being analyzed, so for someone with only a few games it's mostly a measure of this draft's own result. To avoid that, I only kept users with at least 100 games. For each draft, I compared the draft's win rate with two things: the drafter's skill bracket, and whether the deck had zero, one, or two or more bombs. For each of these, I calculated what share of the real spread in draft results (after removing the noise of only playing a few games) it explains.
+To measure skill, I used the 17Lands win-rate bracket, which is each user's game win rate across all of their 17Lands games, rounded into buckets. That bracket includes the games being analyzed, so for someone with only a few games it's mostly a measure of this draft's own result. To avoid that, I only kept users with at least 100 games. I also only kept drafts with at least 3 games.
 
-![Skill share versus bomb count, and skill vs bomb shares by set](bombs_img/skill_vs_bombs.png)
+Then I asked how much of the difference between one draft's result and another's each factor accounts for. The first step is to set aside the part of that difference nothing could predict. A draft is only a handful of games, so the same player with the same deck can easily go 3-0 one time and 1-3 the next. With a true win rate of p over n games, that coin-flip luck alone adds about p(1 − p)/n to the variance of draft win rates. Subtracting it from the observed variance leaves the real spread in draft results: a standard deviation of about 9 to 11 pp of win rate, depending on the set.
+
+Next, for each set, I fit two separate regressions of draft win rate. One uses the drafter's skill bracket, fit as a smooth curve so it can bend at the extremes. The other uses whether the deck had zero, one, or two or more bombs. The share each one explains is the variance of its predictions divided by the real spread. This is an R², except it's measured against the real spread instead of the raw one, so game-to-game luck that nothing could predict doesn't drag it down.
+
+![Share of draft results explained by skill and by bombs, by set](bombs_img/skill_vs_bombs.png)
+*How much of the real spread in draft win rate (after removing the luck of playing only a few games) each factor explains, by set in release order. The right-hand columns show how many bombs the set has and how many times more skill explains than bombs.*
 
 In the median set, skill explains about 37% of the real spread in draft results, and having bombs in your deck explains about 3%. Skill explains more than bombs in every set, by at least 6 times. A bomb in the deck is worth about 4 pp of draft win rate on average, holding skill fixed, which is real but small next to the gap between a weak and a strong drafter.
 
 More importantly, bomb-heavy sets don't reward skill any less. Across the 19 sets, the correlation between the number of bombs and the share explained by skill is −0.21, which isn't statistically significant (p = 0.40). The skill share also climbs steadily with release date, from about 0.33 for the older sets to about 0.5 for the most recent ones. I suspect that's partly due to how the bracket is calculated rather than a real change. After controlling for release date, the correlation with bomb count is +0.08. Using the share of drafters who actually ended up with a bomb in their deck instead of the bomb count gives the same answer (r = +0.01).
 
+![Skill share versus number of bombs in the set](bombs_img/skill_share_vs_bombs.png)
+
 I also checked whether bombs level the playing field within a set, meaning whether a bomb helps weaker drafters more than stronger ones. They don't seem to: the difference is inconsistent in direction from set to set, and close to zero on average.
 
-There are a few caveats. With 19 sets, I can rule out a large effect but not a small one. Ending up with a bomb isn't pure luck either, since good drafters are better at picking them and at reading which colors are open, so 3% is more of an upper bound on how much luck bombs add. And players with 100 or more games are more dedicated than the average 17Lands user.
+There are a few caveats. With 19 sets, I can rule out a large effect but not a small one. Ending up with a bomb isn't pure luck either, since good drafters are better at picking them and at reading which colors are open, so 3% is more of an upper bound on how much luck bombs add. Because the two regressions are fit separately, part of the bomb share is really skill, so the two shares overlap and shouldn't be added together. And players with 100 or more games are more dedicated than the average 17Lands user.
 
 ---
 
