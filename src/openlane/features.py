@@ -17,7 +17,7 @@ from dataclasses import dataclass
 import numpy as np
 import polars as pl
 
-from .data import COLORS, N_PACKS, N_SEATS, RARITIES, DraftTensors
+from mtgdata.data import COLORS, N_PACKS, N_SEATS, RARITIES, DraftTensors
 
 
 def n_wheel(t: DraftTensors) -> int:

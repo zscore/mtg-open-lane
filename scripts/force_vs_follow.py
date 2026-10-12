@@ -27,10 +27,10 @@ import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from openlane.data import COLORS, N_SEATS, ROOT, load_tensors  # noqa: E402
-from openlane.nn import draft_context, sparse  # noqa: E402
-from openlane.picknet import load_model  # noqa: E402
-from train_picknet import splits_for  # noqa: E402
+from mtgdata.data import COLORS, FEATURES, N_SEATS, load_tensors  # noqa: E402
+from mtgdata.encode import draft_context, sparse, splits_for  # noqa: E402
+from picknet.model import load_model  # noqa: E402
+from openlane import ROOT  # noqa: E402
 
 PAIRS = [(i, j) for i in range(5) for j in range(i + 1, 5)]
 
@@ -119,8 +119,7 @@ def card_gih(set_code, names, first_test, draft_id):
         cv = pl.read_csv(p)
         g = dict(zip(cv["name"], cv["gih_wr"]))
         return np.array([g.get(n, np.nan) for n in names])
-    from openlane.deckstrength import game_win_rates
-    from openlane.games import game_path
+    from mtgdata.games import game_win_rates, game_path
     games = pl.read_parquet(game_path(set_code))
     train_ids = pl.Series(draft_id[:first_test]).implode()  # drafts are sorted by time
     return game_win_rates(games.filter(pl.col("draft_id").is_in(train_ids)), names)["gih_wr"]
@@ -138,7 +137,7 @@ def main(set_code="MSH", n_tables="2000", name="picknet", dev=None):
     gih = card_gih(set_code, t.names, test.min(), t.draft_id)
     gih = np.where(np.isnan(gih), np.nanquantile(gih, 0.10), gih)
     import pickle
-    alsa = pickle.load(open(ROOT / "data" / "features" / f"{set_code}.PremierDraft" / "meta.pkl", "rb"))["stats"].alsa
+    alsa = pickle.load(open(FEATURES / f"{set_code}.PremierDraft" / "meta.pkl", "rb"))["stats"].alsa
     rng = np.random.default_rng(0)
     tables = rng.choice(test, (n_tables, N_SEATS), replace=True)
     opened = t.pack[tables][:, :, :, 0]

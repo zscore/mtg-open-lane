@@ -15,7 +15,8 @@ import polars as pl
 from sklearn.linear_model import LogisticRegression
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import ROOT  # noqa: E402
+from openlane import ROOT  # noqa: E402
+from mtgdata.data import FEATURES  # noqa: E402
 from openlane.evaluate import metrics, metrics_by  # noqa: E402
 from openlane.features import CARD_FEATURES, PACK_FEATURES, SIGNAL_FEATURES  # noqa: E402
 
@@ -34,7 +35,7 @@ def alsa_design(df: pl.DataFrame, n_wheel: int) -> np.ndarray:
 
 def main(set_code: str, event: str = "PremierDraft", *kv: str):
     opts = {"max_train": 60000, "quick": 0} | {k: int(v) for k, v in (a.split("=") for a in kv)}
-    feat_dir = ROOT / "data" / "features" / f"{set_code}.{event}"
+    feat_dir = FEATURES / f"{set_code}.{event}"
     out = ROOT / "results" / f"{set_code}.{event}"
     (out / "models").mkdir(parents=True, exist_ok=True)
     train_drafts = pickle.load(open(feat_dir / "meta.pkl", "rb"))["splits"]["train"]

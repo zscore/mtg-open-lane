@@ -17,10 +17,12 @@ import torch
 import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import ROOT, load_tensors  # noqa: E402
+from mtgdata.data import FEATURES, load_tensors  # noqa: E402
+from mtgdata.encode import card_features, draft_context  # noqa: E402
+from openlane import ROOT  # noqa: E402
 from openlane.evaluate import metrics  # noqa: E402
 from openlane.features import wheel_tensors  # noqa: E402
-from openlane.nn import DraftDataset, WheelNet, card_features, collate, draft_context  # noqa: E402
+from openlane.nn import DraftDataset, WheelNet, collate  # noqa: E402
 
 DEV = "mps" if torch.backends.mps.is_available() else "cpu"
 
@@ -67,7 +69,7 @@ def main(set_code: str, epochs: str = "8", event: str = "PremierDraft", *kv: str
     epochs = int(epochs)
     cfg, tr = parse(list(kv))
     torch.manual_seed(0)
-    feat_dir = ROOT / "data" / "features" / f"{set_code}.{event}"
+    feat_dir = FEATURES / f"{set_code}.{event}"
     out = ROOT / "results" / f"{set_code}.{event}"
     splits = pickle.load(open(feat_dir / "meta.pkl", "rb"))["splits"]
     t = load_tensors(set_code, event)

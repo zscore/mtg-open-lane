@@ -11,7 +11,7 @@ import numpy as np
 import polars as pl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import ROOT  # noqa: E402
+from openlane import ROOT  # noqa: E402
 from openlane.evaluate import metrics, metrics_by  # noqa: E402
 
 KEYS = ["draft_idx", "pack_number", "pick_number", "card"]

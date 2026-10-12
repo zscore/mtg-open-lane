@@ -1,10 +1,9 @@
 .venv/
-data/
+/data
 results/**/models/
 results/**/*.parquet
 __pycache__/
 .DS_Store
-papers/*.pdf
 results/**/*.npz
 disk-cleanup/
 .ipynb_checkpoints/

@@ -14,7 +14,8 @@ import numpy as np
 import polars as pl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import ROOT  # noqa: E402
+from openlane import ROOT  # noqa: E402
+from mtgdata.data import FEATURES  # noqa: E402
 from openlane.evaluate import metrics  # noqa: E402
 
 KEY = ["draft_idx", "pack_number", "pick_number", "card"]
@@ -22,7 +23,7 @@ KEY = ["draft_idx", "pack_number", "pick_number", "card"]
 
 def load(set_code: str, models: list[str]):
     out = ROOT / "results" / f"{set_code}.PremierDraft"
-    feat = pl.read_parquet(ROOT / "data" / "features" / f"{set_code}.PremierDraft" / "test.parquet",
+    feat = pl.read_parquet(FEATURES / f"{set_code}.PremierDraft" / "test.parquet",
                            columns=KEY + ["ata", "rarity", "pool_share_card", "pool_n", "wheeled"])
     base = pl.read_parquet(out / "test_predictions.parquet", columns=KEY + ["alsa_ata_logreg", "lgbm_all"])
     df = feat.join(base, on=KEY)

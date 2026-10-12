@@ -23,10 +23,12 @@ import torch
 import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import ROOT, load_tensors  # noqa: E402
+from mtgdata.data import load_tensors  # noqa: E402
+from mtgdata.encode import card_features, draft_context  # noqa: E402
+from openlane import ROOT  # noqa: E402
 from openlane.evaluate import metrics  # noqa: E402
 from openlane.features import wheel_tensors  # noqa: E402
-from openlane.nn import DraftDataset, WheelNet, card_features, collate, draft_context  # noqa: E402
+from openlane.nn import DraftDataset, WheelNet, collate  # noqa: E402
 
 DEV = "mps" if torch.backends.mps.is_available() else "cpu"
 MIN_WEEK = 3000

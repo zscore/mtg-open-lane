@@ -25,8 +25,8 @@ import polars as pl
 from scipy.optimize import minimize
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import COLORS, ROOT, load_tensors  # noqa: E402
-from openlane.data import download  # noqa: E402
+from mtgdata.data import COLORS, FEATURES, download, load_tensors  # noqa: E402
+from openlane import ROOT  # noqa: E402
 
 PAIRS = [a + b for i, a in enumerate(COLORS) for b in COLORS[i + 1:]]
 
@@ -53,7 +53,7 @@ def onehot(v, n=None):
 
 def run(set_code: str) -> dict:
     t = load_tensors(set_code)
-    meta = pickle.load(open(ROOT / "data" / "features" / f"{set_code}.PremierDraft" / "meta.pkl", "rb"))
+    meta = pickle.load(open(FEATURES / f"{set_code}.PremierDraft" / "meta.pkl", "rb"))
     assert (meta["draft_id"] == t.draft_id).all()
     alsa = meta["stats"].alsa
     col = t.color_matrix

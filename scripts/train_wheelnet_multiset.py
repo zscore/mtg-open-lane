@@ -20,12 +20,13 @@ import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from openlane.data import ROOT, load_tensors  # noqa: E402
+from mtgdata.data import load_tensors  # noqa: E402
+from mtgdata.encode import card_inputs, draft_context, splits_for  # noqa: E402
+from openlane import ROOT  # noqa: E402
 from openlane.evaluate import metrics  # noqa: E402
 from openlane.features import wheel_tensors  # noqa: E402
-from openlane.nn import DraftDataset, WheelNet, collate, draft_context  # noqa: E402
+from openlane.nn import DraftDataset, WheelNet, collate  # noqa: E402
 from train_nn import DEV, flat, predict, value  # noqa: E402
-from train_picknet import card_inputs, splits_for  # noqa: E402
 
 SETS14 = ["OTJ", "DSK", "FDN", "DFT", "TDM", "FIN", "SOS", "MSH"]
 

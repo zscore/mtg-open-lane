@@ -8,7 +8,8 @@ import numpy as np
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from openlane.data import ROOT, load_tensors  # noqa: E402
+from mtgdata.data import FEATURES, load_tensors  # noqa: E402
+from openlane import ROOT  # noqa: E402
 from openlane.features import build_examples, fit_card_stats, wheel_tensors  # noqa: E402
 
 CHUNK = 4000
@@ -27,7 +28,7 @@ def main(set_code: str, event: str = "PremierDraft"):
     splits = {"train": np.arange(0, cut1), "val": np.arange(cut1, cut2), "test": np.arange(cut2, D)}
     stats = fit_card_stats(t, splits["train"], passed, back)
 
-    out = ROOT / "data" / "features" / f"{set_code}.{event}"
+    out = FEATURES / f"{set_code}.{event}"
     out.mkdir(parents=True, exist_ok=True)
     with open(out / "meta.pkl", "wb") as f:
         pickle.dump({"names": t.names, "meta": t.meta, "stats": stats, "draft_id": t.draft_id,
