@@ -115,11 +115,15 @@ def head_inputs(m, x7, npk):
     passed, mask, label = wheel_targets(idx, cnt, pick, npk)
     lp = logit.masked_fill(cnt == 0, float("-inf")).log_softmax(-1)[:, wp]       # [B,21,P]
     took = (idx[:, wp] == pick[:, wp, None]).float().argmax(-1, keepdim=True)
-    lpc = lp.clamp(min=-30)
+    lpc = lp.nan_to_num(nan=-30.0, neginf=-30.0).clamp(min=-30)
     lpt = torch.gather(lpc, 2, took).expand_as(lpc)
     P = idx.shape[-1]
     ctx_t = torch.cat([h[:, wp], F.embedding(pick[:, wp], tab)], -1)[:, :, None].expand(-1, -1, P, -1)
     f = torch.cat([x[:, wp], ctx_t, lpc[..., None], lpt[..., None], passed.clamp(max=3).float()[..., None]], -1)
+    # an empty pack (P1P1 missing) has an all -inf log-softmax, i.e. NaN; zero every unscored token, since a
+    # NaN input poisons the weight gradients even when its loss is masked out
+    f = f.masked_fill(~mask[..., None], 0)
+    assert torch.isfinite(f).all(), "non-finite wheel-head input"
     return f, mask, label
 
 
