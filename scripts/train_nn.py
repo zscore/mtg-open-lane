@@ -71,6 +71,7 @@ def main(set_code: str, epochs: str = "8", event: str = "PremierDraft", *kv: str
     torch.manual_seed(0)
     feat_dir = FEATURES / f"{set_code}.{event}"
     out = ROOT / "results" / f"{set_code}.{event}"
+    (out / "models").mkdir(parents=True, exist_ok=True)
     splits = pickle.load(open(feat_dir / "meta.pkl", "rb"))["splits"]
     t = load_tensors(set_code, event)
     passed, back = wheel_tensors(t)
