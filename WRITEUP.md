@@ -1,4 +1,4 @@
-# mtg-open-lane: what we found
+# wheelnet: what we found
 
 17Lands Premier Draft data, 15 sets (~1.9M drafts). Every model uses a chronological split: train on the first 70% of
 drafts, test on the last 15%. MSH is the development set, and results were replicated on up to 15 sets. The full

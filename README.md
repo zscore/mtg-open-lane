@@ -1,4 +1,4 @@
-# mtg-open-lane
+# wheelnet
 
 **Will this card wheel?** A model that predicts whether a card you pass in a Magic draft will come
 back to you 8 picks later, based on the pack contents and the signals you have seen so far, and an
