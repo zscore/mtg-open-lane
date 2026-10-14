@@ -1,0 +1,24 @@
+\begin{tabular}{lrrrc ccc cc cc c cc}
+\toprule
+ & drafts & pack & test ex. & wheel & \multicolumn{3}{c}{log loss $\downarrow$} & \multicolumn{2}{c}{vs ALSA (\%) $\uparrow$} & \multicolumn{2}{c}{AUC $\uparrow$} & best card & \multicolumn{2}{c}{ECE, top 3 $\downarrow$} \\
+\cmidrule(lr){6-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}\cmidrule(lr){13-13}\cmidrule(lr){14-15}
+set & (k) & size & (M) & rate & ALSA & GBM & WheelNet & GBM & WheelNet & ALSA & WheelNet & vs ALSA (\%) & ALSA & WheelNet \\
+\midrule
+BLB & 155 & 13 & 3.46 & 0.300 & 0.4991 & 0.4691 & \textbf{0.4622} & +6.0 & \textbf{+7.4} & 0.783 & \textbf{0.821} & +11.6 & 0.017 & \textbf{0.005} \\
+DFT & 141 & 14 & 4.00 & 0.333 & 0.4608 & 0.4266 & \textbf{0.4239} & +7.4 & \textbf{+8.0} & 0.832 & \textbf{0.862} & +13.7 & 0.019 & \textbf{0.005} \\
+DSK & 168 & 14 & 4.73 & 0.334 & 0.4542 & 0.4191 & \textbf{0.4159} & +7.7 & \textbf{+8.4} & 0.838 & \textbf{0.868} & +14.2 & 0.018 & \textbf{0.004} \\
+ECL & 99 & 13 & 2.06 & 0.290 & 0.4911 & 0.4648 & \textbf{0.4508} & +5.4 & \textbf{+8.2} & 0.785 & \textbf{0.826} & +12.8 & 0.018 & \textbf{0.003} \\
+FDN & 131 & 14 & 3.69 & 0.334 & 0.4614 & 0.4241 & \textbf{0.4202} & +8.1 & \textbf{+8.9} & 0.832 & \textbf{0.865} & +16.6 & 0.021 & \textbf{0.004} \\
+FIN & 140 & 14 & 3.98 & 0.333 & 0.4771 & 0.4420 & \textbf{0.4375} & +7.4 & \textbf{+8.3} & 0.820 & \textbf{0.853} & +14.4 & 0.025 & \textbf{0.007} \\
+LCI & 135 & 15 & 4.68 & 0.364 & 0.4860 & 0.4484 & \textbf{0.4434} & +7.7 & \textbf{+8.8} & 0.824 & \textbf{0.858} & +14.5 & 0.029 & \textbf{0.009} \\
+MKM & 158 & 13 & 3.53 & 0.300 & 0.4814 & 0.4519 & \textbf{0.4487} & +6.1 & \textbf{+6.8} & 0.802 & \textbf{0.833} & +12.8 & 0.021 & \textbf{0.004} \\
+MSH & 69 & 14 & 1.95 & 0.333 & 0.4629 & 0.4315 & \textbf{0.4249} & +6.8 & \textbf{+8.2} & 0.831 & \textbf{0.862} & +14.1 & 0.024 & \textbf{0.004} \\
+OTJ & 195 & 14 & 5.51 & 0.334 & 0.4472 & 0.4085 & \textbf{0.4058} & +8.7 & \textbf{+9.3} & 0.845 & \textbf{0.876} & +16.7 & 0.026 & \textbf{0.008} \\
+SOS & 107 & 14 & 3.05 & 0.333 & 0.4691 & 0.4284 & \textbf{0.4150} & +8.7 & \textbf{+11.5} & 0.824 & \textbf{0.869} & +14.8 & 0.021 & \textbf{0.003} \\
+TDM & 101 & 14 & 2.87 & 0.333 & 0.4574 & 0.4262 & \textbf{0.4177} & +6.8 & \textbf{+8.7} & 0.840 & \textbf{0.869} & +14.5 & 0.021 & \textbf{0.003} \\
+TLA & 103 & 14 & 2.71 & 0.324 & 0.4596 & 0.4267 & \textbf{0.4214} & +7.2 & \textbf{+8.3} & 0.829 & \textbf{0.861} & +13.4 & 0.021 & \textbf{0.002} \\
+TMT & 32 & 14 & 0.84 & 0.325 & 0.4625 & 0.4250 & \textbf{0.4173} & +8.1 & \textbf{+9.8} & 0.829 & \textbf{0.866} & +16.1 & 0.025 & \textbf{0.005} \\
+\midrule
+mean & & & & 0.326 & 0.4693 & 0.4352 & \textbf{0.4289} & +7.3 & \textbf{+8.6} & 0.822 & \textbf{0.856} & +14.3 & 0.022 & \textbf{0.005} \\
+\bottomrule
+\end{tabular}

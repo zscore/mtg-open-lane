@@ -1,0 +1,145 @@
+% Every learned layer of WheelNet for one MSH draft (wheelnet_time). \input by architecture.tex.
+{\def\fT{\fontsize{5}{6}\selectfont}\def\fS{\fontsize{7}{8}\selectfont}\def\fF{\fontsize{8}{9.5}\selectfont}
+\def\fN{\fontsize{10}{12}\selectfont}\def\fL{\fontsize{12}{14}\selectfont}
+\begin{tikzpicture}[
+  font=\fS,
+  L/.style={draw=cblue!80!black,fill=cblue!9,rounded corners=1.5pt,align=center,inner sep=2.5pt,text width=#1},
+  L/.default=2.3cm,
+  O/.style={draw=black!40,fill=white,rounded corners=1.5pt,align=center,inner sep=2.5pt,text width=#1},
+  O/.default=2.3cm,
+  T/.style={fill=black!7,rounded corners=1.5pt,align=center,inner sep=2.5pt,text width=#1},
+  T/.default=2.3cm,
+  plus/.style={circle,draw=black!60,fill=white,inner sep=0pt,minimum size=3.4mm,font=\fF},
+  a/.style={-{Stealth[length=4pt]},draw=black!60,semithick},
+  ln/.style={draw=black!60,semithick},
+  res/.style={-{Stealth[length=4pt]},draw=black!40,semithick,rounded corners=3pt},
+  hb/.style={-{Stealth[length=4pt]},draw=cblue!70!black,thick,rounded corners=3pt},
+  grp/.style={draw=black!35,dashed,rounded corners=4pt,inner sep=5pt},
+  hd/.style={font=\fF\bfseries,anchor=west,inner sep=0pt},
+  gl/.style={font=\fS\bfseries,anchor=north west,inner sep=0pt,align=left},
+]
+\def\pn#1{\\{\fT\color{cblue!75!black}#1}}
+\def\shape#1{{\ttfamily[#1]}}
+\def\lk{{\color{corange}$\blacklozenge$}}
+
+% ------------------------------------------------------------ 1. card table
+\node[hd] at (0,0) {1\quad Card table};
+\node[T=3.4cm] (F) at (1.9,-0.8) {fixed attributes $\mathbf F$ \shape{340, 14}\\colours, rarity, mana value, creature, bonus};
+\node[L=3.0cm] (WF) at (6.1,-0.8) {$W_{\text{feat}}$: Linear 14$\to$192, no bias\pn{2,688}};
+\node[T=3.4cm] (NID) at (1.9,-1.85) {card id\\339 MSH cards + 1 empty};
+\node[L=3.0cm] (NE) at (6.1,-1.85) {card embedding\\340 $\times$ 192\pn{65,280}};
+\node[plus] (pa) at (8.7,-1.325) {+};
+\node[T=4.3cm,draw=corange,fill=corange!10] (TAB) at (12.0,-1.325)
+  {\lk\ \textbf{card table} \shape{340, 192}\\one vector $\mathbf e_c$ per card,\\looked up wherever \lk\ appears below};
+\draw[a] (F) -- (WF);
+\draw[a] (NID) -- (NE);
+\draw[a] (WF.east) -- (pa);
+\draw[a] (NE.east) -- (pa);
+\draw[a] (pa) -- (TAB);
+
+% ------------------------------------------------------------ 2. history tokens
+\node[hd] at (0,-2.8) {2\quad History tokens: one per pick slot, $t = 0,\dots,41$};
+\foreach \k/\x in {1/1.6,2/4.9,3/8.2,4/11.5,5/14.8} \coordinate (c\k) at (\x,0);
+\node[T] (i1) at (c1|-0,-3.55) {slot index $t$};
+\node[T] (i2) at (c2|-0,-3.55) {pack shown at $t$\\\shape{42, 14} ids + copies};
+\node[T] (i3) at (c3|-0,-3.55) {pick made at $t$\\\shape{42}};
+\node[T] (i4) at (c4|-0,-3.55) {what the others took\\\shape{42, 13} ids + copies};
+\node[T] (i5) at (c5|-0,-3.55) {draft context \shape{2}\\days into the format};
+\node[O] (o2) at (c2|-0,-4.5) {\lk\ look up,\\count-weighted mean};
+\node[O] (o3) at (c3|-0,-4.5) {\lk\ look up\\(same slot, no shift)};
+\node[O] (o4) at (c4|-0,-4.5) {\lk\ look up,\\count-weighted mean};
+\node[L] (l1) at (c1|-0,-5.6) {position embedding\\42 $\times$ 192\pn{8,064}};
+\node[L] (l2) at (c2|-0,-5.6) {{\ttfamily bag}\\Linear 192$\to$192\pn{37,056}};
+\node[L] (l3) at (c3|-0,-5.6) {{\ttfamily taken}\\Linear 192$\to$192\pn{37,056}};
+\node[L] (l4) at (c4|-0,-5.6) {{\ttfamily others}\\Linear 192$\to$192\pn{37,056}};
+\node[L] (l5) at (c5|-0,-5.6) {{\ttfamily draft\_ctx}\\2$\to$192, GELU, 192$\to$192\pn{37,632}};
+\draw[a] (i1) -- (l1);
+\foreach \k in {2,3,4} {\draw[a] (i\k) -- (o\k); \draw[a] (o\k) -- (l\k);}
+\draw[a] (i5) -- node[right,font=\fT,align=left]{copied to\\all 42 slots} (l5);
+\node[plus] (pt) at (c2|-0,-6.75) {+};
+\draw[a] (l2) -- (pt);
+\draw[ln] (l1.south) |- (pt.west);
+\draw[ln] (l5.south) |- (pt.east);
+\foreach \k in {3,4} \draw[ln] (l\k.south) -- (l\k.south|-pt.center);
+\node[font=\fT,above right=0pt and 1pt] at (pt.east) {add all five};
+
+% ------------------------------------------------------------ 3. history encoder (left column)
+\def\xc{4.1}
+\node[T=3.4cm] (x) at (\xc,-7.45) {history tokens $\mathbf x$ \shape{42, 192}};
+\draw[a] (pt) -- (x);
+\node[L=2.0cm] (eln1) at (\xc,-8.6) {LayerNorm\pn{384}};
+\node[L=4.7cm] (esa) at (\xc,-9.6) {\textbf{causal self-attention}, 6 heads of 32\\$W_{QKV}$ 192$\to$576,\; $W_O$ 192$\to$192\\token $t$ attends to tokens $0..t$ only\pn{148,224}};
+\node[plus] (ep1) at (\xc,-10.55) {+};
+\node[L=2.0cm] (eln2) at (\xc,-11.15) {LayerNorm\pn{384}};
+\node[L=4.7cm] (emlp) at (\xc,-12.0) {\textbf{MLP} on each token: Linear 192$\to$768,\\ReLU, Linear 768$\to$192\pn{295,872}};
+\node[plus] (ep2) at (\xc,-12.85) {+};
+\draw[a] (x) -- (eln1); \draw[a] (eln1) -- (esa); \draw[a] (esa) -- (ep1);
+\draw[a] (ep1) -- (eln2); \draw[a] (eln2) -- (emlp); \draw[a] (emlp) -- (ep2);
+\draw[res] (\xc,-8.13) -| (6.95,-9.0) |- (ep1.east);
+\draw[res] (\xc,-10.82) -| (6.95,-11.5) |- (ep2.east);
+\begin{scope}[on background layer]
+\node[grp,fill=cblue!3,fit={(eln1)(esa)(emlp)(ep2)(7.05,-8.05)(1.2,-8.1)}] (enc) {};
+\end{scope}
+\node[gl] at ([shift={(4pt,-4pt)}]enc.north west) {history encoder\\layer {\fN$\times 4$}\\\textcolor{cblue!75!black}{\fT 444,864 each}};
+\node[L=2.6cm] (fln) at (\xc,-13.75) {final LayerNorm\pn{384}};
+\draw[a] (ep2) -- (fln);
+\node[T=3.0cm,fill=cblue!22] (h) at (\xc,-15.05) {\textbf{history states} $\mathbf h$ \shape{42, 192}\\$\mathbf h_t$ = the drafter just after pick $t$};
+\draw[a] (fln) -- (h);
+\node[O=3.6cm] (sel) at (\xc,-16.35) {keep the 18 wheel-eligible slots\\$t \in \{0..5,\,14..19,\,28..33\}$};
+\node[T=3.0cm] (hs) at (\xc,-17.35) {wheel states \shape{18, 192}};
+\draw[a] (h) -- (sel); \draw[a] (sel) -- (hs);
+
+% ------------------------------------------------------------ 4. passed-card tokens (right column)
+\def\xr{12.6}
+\node[hd] at (8.75,-7.05) {3\quad Passed-card tokens: one per distinct card passed at each wheel pick};
+\node[T=1.8cm] (wpi) at (11.6,-7.6) {which wheel pick\\(0..17)};
+\node[T=1.8cm] (ccnt) at (13.6,-7.6) {copies per card\\\shape{18, 13}};
+\node[T=1.8cm] (cidx) at (15.55,-7.6) {cards passed\\\shape{18, 13} ids};
+\node[L=1.8cm] (sp) at (9.6,-8.6) {state projection\\192$\to$192\pn{37,056}};
+\node[L=1.8cm] (wp) at (11.6,-8.6) {wheel-pick emb.\\18 $\times$ 192\pn{3,456}};
+\node[L=1.8cm] (cp) at (13.6,-8.6) {copies emb.\\4 $\times$ 192\pn{768}};
+\node[O=1.8cm] (clk) at (15.55,-8.6) {\lk\ look up each card's $\mathbf e_c$};
+\draw[a] (wpi) -- (wp); \draw[a] (ccnt) -- (cp); \draw[a] (cidx) -- (clk);
+\node[plus] (pc) at (\xr,-9.55) {+};
+\draw[a] (sp.south) |- (pc.west);
+\draw[a] (wp.south) -- (pc.north west);
+\draw[a] (cp.south) -- (pc.north east);
+\draw[a] (clk.south) |- (pc.east);
+\node[font=\fT,align=left,anchor=north west] at (8.75,-9.55) {$\mathbf h_t$ copied to every\\card passed at $t$};
+\node[T=4.4cm] (z) at (\xr,-10.15) {passed-card tokens $\mathbf z$ \shape{234, 192}\\(18 packs $\times$ 13 slots, one sequence)};
+\draw[a] (pc) -- (z);
+\draw[hb] (hs.east) -- (8.3,-17.35) -- (8.3,-8.6) -- (sp.west);
+\fill[cblue!70!black] (8.3,-15.05) circle (1.3pt);
+
+% ------------------------------------------------------------ 5. pack decoder (right column)
+\node[L=2.0cm] (dln1) at (\xr,-11.15) {LayerNorm\pn{384}};
+\node[L=5.0cm] (dsa) at (\xr,-12.1) {\textbf{self-attention within the passed pack}, 6 heads\\$W_{QKV}$ 192$\to$576,\; $W_O$ 192$\to$192\\block-diagonal: a card sees only its own pack\pn{148,224}};
+\node[plus] (dp1) at (\xr,-13.05) {+};
+\node[L=2.0cm] (dln2) at (\xr,-13.75) {LayerNorm\pn{384}};
+\node[L=5.4cm] (dca) at (\xr,-15.05) {\textbf{cross-attention to history}, 6 heads\\queries from $\mathbf z$: $W_Q$ 192$\to$192;\; $W_O$ 192$\to$192\\keys, values from all 42 $\mathbf h$: $W_{KV}$ 192$\to$384\\a card passed at $t$ sees $\mathbf h_0..\mathbf h_t$ only\pn{148,224}};
+\node[plus] (dp2) at (\xr,-16.1) {+};
+\node[L=2.0cm] (dln3) at (\xr,-16.8) {LayerNorm\pn{384}};
+\node[L=5.0cm] (dmlp) at (\xr,-17.65) {\textbf{MLP} on each card: Linear 192$\to$768,\\ReLU, Linear 768$\to$192\pn{295,872}};
+\node[plus] (dp3) at (\xr,-18.5) {+};
+\draw[a] (z) -- (dln1); \draw[a] (dln1) -- (dsa); \draw[a] (dsa) -- (dp1);
+\draw[a] (dp1) -- (dln2); \draw[a] (dln2) -- (dca); \draw[a] (dca) -- (dp2);
+\draw[a] (dp2) -- (dln3); \draw[a] (dln3) -- (dmlp); \draw[a] (dmlp) -- (dp3);
+\draw[res] (\xr,-10.65) -| (15.95,-11.5) |- (dp1.east);
+\draw[res] (\xr,-13.3) -| (15.95,-14.0) |- (dp2.east);
+\draw[res] (\xr,-16.38) -| (15.95,-17.1) |- (dp3.east);
+\begin{scope}[on background layer]
+\node[grp,fill=cblue!3,fit={(dln1)(dsa)(dca)(dmlp)(dp3)(16.05,-10.6)(9.3,-11)}] (dec) {};
+\end{scope}
+\node[gl] at ([shift={(4pt,-4pt)}]dec.north west) {pack-decoder\\block {\fN$\times 3$}\\\textcolor{cblue!75!black}{\fT 593,472 each}};
+
+% the full history states feed every decoder block's cross-attention
+\draw[hb] (h.east) -- node[above,font=\fT,text=cblue!70!black,pos=0.45,align=center]{same $\mathbf h$ to\\all 3 blocks} (dca.west);
+
+% ------------------------------------------------------------ 6. scoring + loss
+\node[L=5.0cm] (head) at (\xr,-19.4) {\textbf{scoring head}: LayerNorm, Linear 192$\to$192,\\GELU, Linear 192$\to$1\pn{37,633}};
+\node[T=5.0cm] (lg) at (\xr,-20.25) {logits \shape{3, 6, 13}: one score per passed card};
+\node[O=5.0cm] (sm) at (\xr,-21.05) {sigmoid per card (not a softmax):\\P(at least one copy comes back 8 picks later)};
+\draw[a] (dp3) -- (head); \draw[a] (head) -- (lg); \draw[a] (lg) -- (sm);
+\node[T=7.0cm,fill=corange!12,draw=corange] (loss) at (8.5,-22.15) {\textbf{loss} = mean binary cross-entropy over every real passed card};
+\draw[a] (sm) |- (loss.east);
+\end{tikzpicture}}
