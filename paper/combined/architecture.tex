@@ -21,9 +21,9 @@
   box/.default=cgray,
 }
 
-\title{\Large\bfseries One Network for Picks and Wheels\\[2pt]\large The architecture of a combined PickNet + WheelNet}
+\title{\Large\bfseries TableNet: One Network for Picks and Wheels\\[2pt]\large The architecture of a combined PickNet + WheelNet}
 \author{Design note. Companion to \emph{How PickNet Works} and \emph{How WheelNet Works}}
-\date{\small October 2026 \quad\textperiodcentered\quad Status: proposed; frozen probe implemented, full run pending}
+\date{\small October 2026 \quad\textperiodcentered\quad Status: step 1 (frozen PickNet, wheel head only) done; step 2 not started}
 
 \begin{document}
 \maketitle
@@ -31,10 +31,11 @@
 \noindent PickNet predicts which card a drafter takes. WheelNet predicts which of the cards they pass will
 come back eight picks later. The two models read almost the same input, and they are built from the same
 parts: a card table, a causal history encoder over one token per pick, and a decoder over the cards in a
-pack. This note describes one network that does both jobs: a shared trunk with a \emph{pick head} and a
-\emph{wheel head}. It reuses the terms of the two companion guides (history token $\mathbf x_t$, history
+pack. This note describes \textbf{TableNet}, one network that does both jobs: a shared trunk with a
+\emph{pick head} and a \emph{wheel head}. The name is the point of it: the pick head models you, and the
+wheel head models what the rest of the table leaves behind. It reuses the terms of the two companion guides (history token $\mathbf x_t$, history
 state $\mathbf h_t$, candidate token, passed-card token, bag, draft context, wheel-eligible pick), and only
-explains what is new. Code: \code{scripts/probe\_picknet\_wheel.py} in the wheelnet repo (the frozen probe,
+explains what is new. Code: \code{scripts/train\_tablenet.py} in the wheelnet repo (step 1,
 Section~\ref{sec:plan}); the trunk is \code{PickNet} in \code{picknet/src/picknet/model.py}.
 
 {\small\setlength{\parskip}{0pt}\tableofcontents}
@@ -42,7 +43,7 @@ Section~\ref{sec:plan}); the trunk is \code{PickNet} in \code{picknet/src/pickne
 % =====================================================================
 \section{The job, and why one network}
 
-For every draft, the combined network outputs two things in one forward pass:
+For every draft, TableNet outputs two things in one forward pass:
 
 \begin{enumerate}
 \item \textbf{Pick probabilities} at every slot: a softmax over the cards in pack $t$, exactly as PickNet.
@@ -62,7 +63,7 @@ the others took, and both get their labels from the same 17Lands rows. Every dra
 42 slots and wheel labels for 189 passed cards (18 wheel-eligible picks, 13 down to 8 passed cards
 each).
 \item \textbf{One model to run live.} The overlay in the project's open list wants ``what should I take''
-and ``what will come back'' at the same moment. Section~\ref{sec:counterfactual} shows the combined network
+and ``what will come back'' at the same moment. Section~\ref{sec:counterfactual} shows TableNet
 can also answer the question a drafter actually asks: \emph{if I take A, will B wheel?}
 \end{itemize}
 
@@ -94,7 +95,7 @@ accuracy as a failure (Section~\ref{sec:loss}).
 \draw[arr,rounded corners=3pt] (hist.east) -- ++(4.3,0) |- ([yshift=-0.45cm]wheel.south) -- (wheel.south);
 \node[font=\footnotesize,anchor=south] at ([xshift=2.4cm]hist.east) {$\mathbf h_t$};
 \end{tikzpicture}
-\caption{The combined network. Blue: PickNet's trunk, unchanged. Orange: PickNet's own scoring head.
+\caption{TableNet. Blue: PickNet's trunk, unchanged. Orange: PickNet's own scoring head.
 Green: the new wheel head. The card taken at $t$ enters only the wheel head (Section~\ref{sec:timing}).}
 \label{fig:big}
 \end{figure}
@@ -206,9 +207,9 @@ minus one copy of the card taken:
 \item If you took one of two copies of A, A keeps its token, with ``copies passed'' $=1$.
 \end{itemize}
 
-So the passed-card token for card $c$ starts from PickNet's final candidate token for $c$ (looked up by
-matching card ids within the pack; both lists are sorted by card id). Each passed-card token is the
-concatenation
+So the passed-card tokens are simply PickNet's candidate slots of pack $t$ whose ``copies passed''
+(copies shown minus one if it is the card taken) is at least 1, and each starts from that slot's final
+candidate token. Each passed-card token is the concatenation
 
 \[
 \mathbf u_{t,c} \;=\; \big[\;\underbrace{\mathbf z^{\text{final}}_{t,c}}_{\text{candidate token}},\;
@@ -227,8 +228,8 @@ this card here''. A card the drafter had a 40\% chance of taking is unlikely to 
 
 \begin{enumerate}
 \item \textbf{Input projection.} Linear $3d+3 \to d_w$, plus a learned \emph{wheel-pick embedding}
-($18\times d_w$, one per wheel-eligible pick, as WheelNet's \code{pick\_pos}). Pick 1 and pick 6 of a pack
-have very different base rates (46\% and 12.5\% of passed cards wheel on MSH).
+($21\times d_w$: 3 packs $\times$ up to 7 wheel-eligible picks, so 13-, 14- and 15-card packs all fit;
+as WheelNet's \code{pick\_pos}). Pick 1 and pick 6 of a pack have very different base rates (46\% and 12.5\% of passed cards wheel on MSH).
 \item \textbf{Optional self-attention over the passed cards} ($L$ layers, $L=0$ or $1$). Passed cards
 shield each other: a card is more likely to wheel when it travels with better cards. PickNet's decoder
 already compared the candidates, but it compared them \emph{with} your pick still in the pack. One layer
@@ -244,32 +245,32 @@ pick 1 on MSH), even though nothing tells it that size.
 \begin{center}\small
 \begin{tabular}{lrr}
 \toprule
-wheel head, trunk $d=128$, $d_w=192$ & $L=0$ & $L=1$ \\
+wheel head, trunk $d=256$, $d_w=256$ & $L=0$ & $L=1$ \\
 \midrule
-input projection ($387\to192$) and wheel-pick embedding & 77,952 & 77,952 \\
-self-attention layer over passed cards & --- & 444,864 \\
-scoring head & 37,633 & 37,633 \\
+input projection ($771\to256$) and wheel-pick embedding & 203,008 & 203,008 \\
+self-attention layer over passed cards & --- & 789,760 \\
+scoring head & 66,561 & 66,561 \\
 \midrule
-total & 115,585 & 560,449 \\
+total & 269,569 & 1,059,329 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent For scale: the features-only WheelNet it would replace has 4,051,009 parameters, and the PickNet
-trunk it reads has 1,400,065.
+\noindent For scale: a per-set WheelNet has 3.9M parameters (one per set), the features-only multi-set WheelNet
+4.05M, and the all-sets PickNet trunk the head reads 8.48M.
 
 % =====================================================================
 \section{``If I take A, will B wheel?''}\label{sec:counterfactual}
 
 WheelNet answers ``given the pick you made, which passed cards come back?''. In a live draft you want that
 answer \emph{before} you pick, for each card you might take. Because pick $t$ enters only the wheel head,
-the combined network can answer it cheaply:
+TableNet can answer it cheaply:
 
 \begin{enumerate}
 \item Run the trunk once for the draft so far. This gives $\mathbf h_t$, the candidate tokens of pack
 $t$ and the pick probabilities.
 \item For each card A in the pack, run only the wheel head with $\mathbf e_{\text{pick}_t} = \mathbf e_A$
-and the passed set ``pack minus one A''. That is one small head call per candidate, about 0.1M parameters.
+and the passed set ``pack minus one A''. That is one small head call per candidate, 0.3M--1.1M parameters.
 \end{enumerate}
 
 \noindent The result is a table: rows are ``what I take'', columns are ``what I hope wheels'', cells are
@@ -303,50 +304,102 @@ model). The trunk keeps PickNet's; the wheel head uses 0.1.
 \end{itemize}
 
 % =====================================================================
-\section{The plan: three steps, each one a go/no-go}\label{sec:plan}
-
-All comparisons use the MSH features-only \code{multiset\_plus\_target} setting: 7 other sets at 20,000
-drafts each, plus MSH's own training drafts, 5\% held out for early stopping, tested on MSH's last 15\% of
-drafts. PickNet and WheelNet were both trained this way with the same seed, so they saw the same drafts.
+\section{The plan: two steps, each one a go/no-go}\label{sec:plan}
 
 \begin{center}\small
-\begin{tabular}{p{3.4cm}p{6.2cm}p{4.6cm}}
+\begin{tabular}{p{3.0cm}p{6.6cm}p{4.6cm}}
 \toprule
 step & what changes & go if \\
 \midrule
-\textbf{1. Frozen probe} (implemented) & PickNet trunk frozen; train only the wheel head, $L=0$ and $L=1$. About 1 hour each. &
-wheel log loss within 1\% of WheelNet (0.4188 $\to$ $\le$0.4230) \\
-\textbf{2. Joint fine-tune} & Start from PickNet's weights; train trunk + both heads with the loss above; trunk at a lower learning rate than the head. &
-wheel at least ties WheelNet, pick top-1 within 0.1 pt of PickNet \\
-\textbf{3. All-sets model} & Add the wheel head to the 8.4M all-sets PickNet and fine-tune on all sets. &
-same as step 2, per set \\
+\textbf{1. Frozen trunk} (done) & The all-sets PickNet (\code{frahob\_freeze}: \code{all\_d256\_ep3} with FRA
+and HOB card vectors fitted, 8.48M parameters, 70.9\% pick top-1) is frozen. Only the wheel head trains: $L=0$
+and $L=1$ side by side on the same frozen forward pass. &
+wheel log loss within 1\% of the per-set WheelNet on most sets \\
+\textbf{2. Joint fine-tune} & Start from step 1; train trunk + both heads with the loss above, trunk at a
+lower learning rate than the head. &
+wheel at least ties WheelNet; pick top-1 within 0.1 pt of PickNet on every set \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent Baselines (MSH test):
+\paragraph{Step 1 setup.} Data comes straight from PickNet's all-sets shards: all 19 Premier sets, up to
+15,000 training drafts each (285,000 in all), 1,000 validation drafts per set for early stopping, and every
+test draft of every set. The train/val/test splits are the chronological 70/15/15 splits WheelNet uses;
+the draft lists were checked to be identical set by set. Wheel labels are computed from the shards (the
+cards passed at $t$ against the pack shown at $t+8$), so 13-, 14- and 15-card sets all work. Two epochs,
+AdamW, learning rate $10^{-3}$ one-cycle, batch 64; about 43 minutes per epoch on an M-series laptop GPU.
+Pick accuracy cannot change in this step, because the trunk and the pick head are frozen.
+
+Two checks run before training: \code{trunk()} reproduces \code{PickNet.forward}'s pick logits exactly, and
+blanking every input after slot $t$ leaves the wheel head's inputs at $t$ unchanged (the leakage guard from
+Section~\ref{sec:timing}).
+
+\paragraph{Baselines.} Each set's own WheelNet (the per-set transformer, 3.9M parameters, trained only on
+that set). For FRA (Reality Fracture, one week of data) and HOB (The Hobbit), which had no WheelNet yet,
+the shipped \code{wheelnet\_time} configuration is trained for this comparison. On MSH there are also the
+features-only multi-set WheelNet (log loss 0.4188) and \code{wheelnet\_time} (0.4218).
+
+\paragraph{Step 1 results.} Test log loss on each set's chronological test drafts (lower is better). The
+example counts match WheelNet's test predictions exactly on all 16 sets that have one, so each row compares
+the two models on the same passed cards. EOE, MOM and WOE had no WheelNet. Final validation log loss, pooled
+over the 19 sets: $L=0$ 0.4412, $L=1$ 0.4353.
 
 \begin{center}\small
-\begin{tabular}{lrrrr}
+\begin{tabular}{lcrrrr}
 \toprule
-model & params & wheel log loss & wheel AUC & pick top-1 \\
+set & pack & WheelNet & TableNet $L=0$ & TableNet $L=1$ & $L=1$ vs WheelNet \\
 \midrule
-WheelNet, features-only multiset & 4,051,009 & 0.4188 & 0.866 & --- \\
-PickNet, features-only multiset & 1,400,065 & --- & --- & 68.6\% \\
-frozen probe, $L=0$ & 115,585 trained & \emph{pending} & \emph{pending} & 68.6\% (unchanged) \\
-frozen probe, $L=1$ & 560,449 trained & \emph{pending} & \emph{pending} & 68.6\% (unchanged) \\
+BLB & 13 & 0.4622 & 0.4762 & 0.4711 & +1.9\% \\
+DFT & 14 & 0.4239 & 0.4295 & 0.4238 & $-$0.0\% \\
+DSK & 14 & 0.4159 & 0.4237 & 0.4177 & +0.4\% \\
+ECL & 13 & 0.4508 & 0.4647 & 0.4583 & +1.7\% \\
+EOE & 13 & --- & 0.4506 & 0.4453 & --- \\
+FDN & 14 & 0.4202 & 0.4306 & 0.4249 & +1.1\% \\
+FIN & 14 & 0.4375 & 0.4467 & 0.4410 & +0.8\% \\
+FRA & 14 & 0.4330 & 0.4405 & 0.4350 & +0.4\% \\
+HOB & 14 & 0.4171 & 0.4318 & 0.4245 & +1.8\% \\
+LCI & 15 & 0.4434 & 0.4547 & 0.4492 & +1.3\% \\
+MKM & 13 & 0.4487 & 0.4558 & 0.4501 & +0.3\% \\
+MOM & 15 & --- & 0.4463 & 0.4406 & --- \\
+MSH & 14 & 0.4249 & 0.4319 & 0.4267 & +0.4\% \\
+OTJ & 14 & 0.4058 & 0.4149 & 0.4088 & +0.7\% \\
+SOS & 14 & 0.4150 & 0.4302 & 0.4220 & +1.7\% \\
+TDM & 14 & 0.4177 & 0.4275 & 0.4207 & +0.7\% \\
+TLA & 14 & 0.4214 & 0.4306 & 0.4245 & +0.7\% \\
+TMT & 14 & 0.4173 & 0.4259 & 0.4201 & +0.7\% \\
+WOE & 14 & --- & 0.4707 & 0.4650 & --- \\
+\midrule
+\multicolumn{5}{l}{mean over the 16 sets with a WheelNet (median 0.7\%; within 1\% on 10 of 16)} & +0.9\% \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent\textbf{How to read step 1.} If the frozen probe gets close to WheelNet, PickNet's representation
+\noindent\textbf{Reading the results.}
+\begin{itemize}
+\item \textbf{Close, and it passes the bar on most sets.} A head of 1.06M parameters on a frozen pick model
+gets within 1\% of a dedicated 3.9M-parameter WheelNet on 10 of 16 sets, ties it on DFT, and is never more
+than 1.9\% behind. Most of what the wheel task needs is already in PickNet's representation.
+\item \textbf{The attention layer earns its place.} $L=1$ beats $L=0$ on every set, by 0.005--0.008 in log
+loss (1--2\%). Letting the passed cards re-compare after your pick is gone matters.
+\item \textbf{The gap is not about data size.} Its correlation with the set's training-draft count is 0.03.
+FRA (one week) is 0.4\% behind and HOB (six weeks) 1.8\%; BLB, ECL, HOB and SOS are the four largest gaps and
+share no pack size or data size.
+\item \textbf{The baselines are not the newest WheelNet.} The older sets' WheelNets have no draft context. On
+MSH, days-into-format context alone is worth 0.7\% (0.4249 $\to$ 0.4218) and the multi-set WheelNet another
+0.7\% (0.4188). Against those, TableNet's step 1 is 1.2\% and 1.9\% behind on MSH. FRA and HOB's baselines
+already have that context.
+\end{itemize}
+
+\noindent Verdict: step 1 says go. The frozen trunk gets most of the way; step 2 (unfreezing it) is the test
+of whether the last 1--2\% can be had without costing pick accuracy.
+
+\noindent\textbf{How to read step 1.} If the frozen head gets close to WheelNet, PickNet's representation
 already contains what the wheel task needs, and step 2 should be easy. If it falls well short, the gap shows
 how much the wheel task needs features that picks alone don't teach. That doesn't kill the idea, since step 2
 lets the trunk learn them, but it makes negative transfer to picks more likely.
 
-Smoke test so far: on 300 drafts per set and one epoch, the $L=1$ probe reaches 0.472 test log loss (AUC
-0.825). This only shows the pipeline runs end to end. The trunk check passed: \code{trunk()} reproduces
-\code{PickNet.forward}'s pick logits.
+An earlier, smaller version of step 1 is \code{scripts/probe\_picknet\_wheel.py}: the same head on the MSH
+features-only PickNet, for a like-for-like comparison with the features-only multi-set WheelNet.
 
 % =====================================================================
 \section{What is shared and what differs}
@@ -354,17 +407,17 @@ Smoke test so far: on 300 drafts per set and one epoch, the $L=1$ probe reaches 
 \begin{center}\small
 \begin{tabular}{p{3.3cm}p{3.6cm}p{3.6cm}p{3.6cm}}
 \toprule
-part & PickNet & WheelNet & combined \\
+part & PickNet & WheelNet & TableNet \\
 \midrule
 card table & features (+ name ids in all-sets) & features or ids, tied bags & PickNet's \\
 history token & pack $t$, pick $t-1$ & pack $t$, pick $t$ & PickNet's (pick $t-1$) \\
-positions & 45 or 42 history slots & 42 history + 18 wheel picks & PickNet's + wheel-pick embedding in the head \\
+positions & 45 or 42 history slots & 42 history + 18 wheel picks & PickNet's 45 + 21 wheel picks in the head \\
 history encoder & causal, 3--4 layers & causal, 4 layers & PickNet's \\
-pack tokens & all cards in pack $t$ & distinct passed cards & candidates; passed cards gathered from them \\
+pack tokens & all cards in pack $t$ & distinct passed cards & candidate slots with copies passed $\ge1$ \\
 pack decoder & per-pack self-attn + cross-attn to $\mathbf h_{\le t}$ & block-diagonal self-attn + cross-attn to $\mathbf h_{\le t}$ & PickNet's \\
 output & softmax over pack & sigmoid per passed card & both \\
 extra heads & deck head (all-sets) & none & deck head + wheel head \\
-width, dropout & $d$=128 or 256, 0.1 / 0.05 & $d$=192, 0.2 & trunk's; head $d_w$=192, 0.1 \\
+width, dropout & $d$=128 or 256, 0.1 / 0.05 & $d$=192, 0.2 & trunk's; head $d_w$=256, 0.1 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -372,22 +425,21 @@ width, dropout & $d$=128 or 256, 0.1 / 0.05 & $d$=192, 0.2 & trunk's; head $d_w$
 % =====================================================================
 \section{Shapes, for one batch}
 
-For the MSH probe: $B=128$ drafts, $T=42$ slots, $P=15$ candidate positions, $M=13$ passed-card positions,
-18 wheel-eligible picks, trunk $d=128$, head $d_w=192$.
+For step 1: $B=64$ drafts, $T=45$ slots (3 packs $\times$ 15, the all-sets layout), $P=15$ candidate
+positions, 21 wheel slots (3 packs $\times$ 7; a 14-card set uses 6 per pack, the rest are masked), trunk
+$d=256$, head $d_w=256$.
 
 \begin{center}\small
 \begin{tabular}{lll}
 \toprule
-stage & shape & code (\code{probe\_picknet\_wheel.py}) \\
+stage & shape & code (\code{train\_tablenet.py}) \\
 \midrule
-history states $\mathbf h$ & \shape{B, 42, 128} & \code{trunk()} \\
-final candidate tokens & \shape{B, 42, 15, 128} & \code{trunk()} \\
-pick log-probs & \shape{B, 42, 15} & \code{trunk()}, then \code{log\_softmax} \\
-\quad at the 18 wheel picks & \shape{B, 18, 15, \ldots} & index with \code{WP} \\
-passed-card ids & \shape{B, 18, 13} & \code{widx} \\
-slot of each passed card in the pack & \shape{B, 18, 13} & \code{slot} \\
-head input $\mathbf u$ & \shape{B, 18, 13, 387} & \code{z} before \code{self.inp} \\
-wheel logits & \shape{B, 3, 6, 13} & \code{WheelProbe.forward} \\
+history states $\mathbf h$ & \shape{B, 45, 256} & \code{trunk()} \\
+final candidate tokens & \shape{B, 45, 15, 256} & \code{trunk()} \\
+pick log-probs & \shape{B, 45, 15} & \code{trunk()}, then \code{log\_softmax} \\
+copies passed, token mask, label & \shape{B, 21, 15} each & \code{wheel\_targets()} \\
+head input $\mathbf u$ & \shape{B, 21, 15, 771} & \code{head\_inputs()} \\
+wheel logits & \shape{B, 21, 15} & \code{WheelHead.forward} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -410,8 +462,8 @@ pick log-prob, the spell's pick log-prob, and its copies count. Project, add the
 \item \textbf{Output.} 11 sigmoids. Four cards come back at pick 11, so these should sum to about 4.
 \end{enumerate}
 
-\noindent In training all of this happens for all 42 slots, 18 wheel picks and $B$ drafts in one pass.
-Nothing at slots 3--41 is read for this prediction. Slot 10 (pick 11) holds its answer.
+\noindent In training all of this happens for all 45 slots, all wheel picks and $B$ drafts in one pass.
+Nothing at slots 3--44 is read for this prediction. Slot 10 (pick 11) holds its answer.
 
 % =====================================================================
 \section{FAQ}
@@ -435,6 +487,6 @@ instead of 6. The wheel labels need all picks of a pack present, and the current
 
 \paragraph{What about Sealed/draft multitask, which was a dead end?} That paired two different inputs (a
 Sealed pool and a draft) for one deck-strength target. Here it's one input with two targets that are
-mechanically linked. The frozen probe is the cheap test of whether the link is real.
+mechanically linked. Step 1, the frozen trunk, is the cheap test of whether the link is real.
 
 \end{document}

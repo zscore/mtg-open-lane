@@ -1,0 +1,13 @@
+warning: 3 returning packs are not subsets of the passed pack; clipping
+cfg={'n_picks': 14, 'n_ctx': 2} train={'lr': 0.001, 'batch': 128, 'wd': 0.01, 'val_only': 0, 'name': 'wheelnet_time'} inputs={'rank': False, 'skill': False, 'time': True, 'types': False} card_feats=14
+device=mps params=3,835,969 steps=2544
+epoch 0: train_loss=0.4843 val_logloss=0.4310 val_auc=0.8582 (150s)
+epoch 1: train_loss=0.4364 val_logloss=0.4214 val_auc=0.8655 (154s)
+epoch 2: train_loss=0.4316 val_logloss=0.4197 val_auc=0.8668 (154s)
+epoch 3: train_loss=0.4291 val_logloss=0.4195 val_auc=0.8668 (152s)
+epoch 4: train_loss=0.4270 val_logloss=0.4171 val_auc=0.8684 (155s)
+epoch 5: train_loss=0.4252 val_logloss=0.4164 val_auc=0.8689 (155s)
+epoch 6: train_loss=0.4235 val_logloss=0.4165 val_auc=0.8689 (157s)
+epoch 7: train_loss=0.4227 val_logloss=0.4163 val_auc=0.8691 (155s)
+best val_logloss=0.4163
+wheelnet_time test {'logloss': 0.4170697331428528, 'brier': 0.13615290820598602, 'auc': 0.8685569674040401, 'ece': 0.0018879116944420246}
