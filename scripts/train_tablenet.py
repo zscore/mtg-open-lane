@@ -106,11 +106,11 @@ class WheelHead(nn.Module):
         return self.head(z).squeeze(-1)
 
 
-@torch.no_grad()
-def head_inputs(m, x7, npk):
-    """Frozen trunk -> per-token head inputs [B,21,P,3d+3], mask, label."""
+def head_inputs(m, x7, npk, trunk_out=None):
+    """Trunk -> per-token head inputs [B,21,P,3d+3], mask, label. Differentiable (the caller decides on
+    no_grad); pass trunk_out to reuse a trunk() pass that is already computed."""
     idx, cnt, pick = x7[0], x7[1], x7[2]
-    x, h, tab, logit = trunk(m, *x7)
+    x, h, tab, logit = trunk(m, *x7) if trunk_out is None else trunk_out
     wp = WP.to(idx.device)
     passed, mask, label = wheel_targets(idx, cnt, pick, npk)
     lp = logit.masked_fill(cnt == 0, float("-inf")).log_softmax(-1)[:, wp]       # [B,21,P]
@@ -230,7 +230,8 @@ def main(*kv):
         b = next(gen)
         x7 = [v.to(DEV) for v in b[:7]]
         npk = pack_size(x7[1])
-        f, mask, label = head_inputs(pn, x7, npk)
+        with torch.no_grad():
+            f, mask, label = head_inputs(pn, x7, npk)
         for L, h in heads.items():
             loss = F.binary_cross_entropy_with_logits(h(f, mask)[mask], label[mask].float())
             opts[L].zero_grad()
