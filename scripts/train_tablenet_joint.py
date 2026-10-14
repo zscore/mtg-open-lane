@@ -11,9 +11,12 @@ PickNet gets a low learning rate (it is already trained), the head a higher one.
 as step 1 (up to max_per_set per set, all 19 sets), one-cycle schedule, batch 32. Scores every set's Premier test
 drafts for picks (NLL, top-1, top-1 on non-forced picks) and wheels (log loss, AUC) in one pass.
 wheel_w=0 is the pick-only control: the same fine-tune without the wheel loss.
+resume=<joint .pt> continues a finished run for another pass: PickNet and head start from that checkpoint, and
+the batch stream starts at epoch 1 (a fresh shuffle of the same training drafts).
 
 Keys: init, head (step 1 L=1 head), wheel_w (0.3), deck_w (0.3), lr_trunk (5e-5), lr_head (3e-4), epochs (1),
-batch (32), max_per_set (15000), val_per_set (1000), val_every (2000), name ("tablenet_joint"), test_sets, bench.
+batch (32), max_per_set (15000), val_per_set (1000), val_every (2000), name ("tablenet_joint"), test_sets, bench,
+resume ("").
 Writes results/tablenet/{name}.json and models/{name}.pt (PickNet state + head state).
 """
 import json
@@ -33,7 +36,7 @@ from picknet.model import pick_loss  # noqa: E402
 CFG = dict(init=str(PICKNET / "results" / "picknet_all" / "models" / "frahob_freeze.pt"),
            head=str(OUT / "models" / "tablenet_L1.pt"), wheel_w=0.3, deck_w=0.3, lr_trunk=5e-5, lr_head=3e-4,
            wd=0.01, epochs=1, batch=32, max_per_set=15000, val_per_set=1000, val_every=2000,
-           name="tablenet_joint", test_sets="", bench=0, seed=0)
+           name="tablenet_joint", test_sets="", bench=0, seed=0, resume="")
 
 
 def deck_loss(m, h, tab, pick, valid, rate):
@@ -96,6 +99,11 @@ def main(*kv):
     hk = torch.load(cfg["head"], map_location="cpu", weights_only=False)
     head = WheelHead(pc["d"], hk["cfg"]["d"], hk["layers"]).to(DEV)
     head.load_state_dict(hk["state"])
+    if cfg["resume"]:
+        jk = torch.load(cfg["resume"], map_location="cpu", weights_only=False)
+        pn.load_state_dict(jk["picknet"])
+        head.load_state_dict(jk["head"])
+        pn, head = pn.to(DEV), head.to(DEV)
     print(f"{name}: sets {names}, train {len(train):,} drafts, val {len(val):,}; PickNet "
           f"{sum(p.numel() for p in pn.parameters()):,} + head {sum(p.numel() for p in head.parameters()):,} params; "
           f"cfg {cfg} [{time.time() - t0:.0f}s]", flush=True)
@@ -133,7 +141,7 @@ def main(*kv):
     print(f"start, MSH test: pick top-1 {s0['pick_top1']:.4f} (published {ref['top1']:.4f}), nll {s0['pick_nll']:.4f} "
           f"(published {ref['nll']:.4f}); wheel {s0['wheel_logloss']:.4f} (step 1: 0.4267) [{time.time() - t0:.0f}s]",
           flush=True)
-    assert abs(s0["pick_top1"] - ref["top1"]) < 1e-3, "scorer does not reproduce PickNet's published MSH numbers"
+    assert cfg["resume"] or abs(s0["pick_top1"] - ref["top1"]) < 1e-3, "scorer does not reproduce PickNet's published MSH numbers"
 
     per_epoch = len(train) // cfg["batch"]
     steps = 20 if cfg["bench"] else cfg["epochs"] * per_epoch
@@ -144,7 +152,7 @@ def main(*kv):
                                                 total_steps=cfg["epochs"] * per_epoch, pct_start=0.05)
     pn.train()
     head.train()
-    gen = train_batches(shards, train, cfg["batch"], cfg["seed"], 0)
+    gen = train_batches(shards, train, cfg["batch"], cfg["seed"], per_epoch if cfg["resume"] else 0)
     hist, tot, tt = [], {"nll": 0.0, "deck": 0.0, "wheel": 0.0}, time.time()
     for step in range(1, steps + 1):
         b = next(gen)
