@@ -1,0 +1,112 @@
+  step1 batch 50/1000: cos(pick,wheel) all +0.0054 [1.0 min]
+  step1 batch 100/1000: cos(pick,wheel) all +0.0048 [1.9 min]
+  step1 batch 150/1000: cos(pick,wheel) all +0.0024 [3.0 min]
+  step1 batch 200/1000: cos(pick,wheel) all +0.0019 [4.3 min]
+  step1 batch 250/1000: cos(pick,wheel) all +0.0030 [5.6 min]
+  step1 batch 300/1000: cos(pick,wheel) all +0.0034 [6.8 min]
+  step1 batch 350/1000: cos(pick,wheel) all +0.0034 [8.1 min]
+  step1 batch 400/1000: cos(pick,wheel) all +0.0036 [9.4 min]
+  step1 batch 450/1000: cos(pick,wheel) all +0.0037 [10.7 min]
+  step1 batch 500/1000: cos(pick,wheel) all +0.0037 [12.0 min]
+  step1 batch 550/1000: cos(pick,wheel) all +0.0036 [13.2 min]
+  step1 batch 600/1000: cos(pick,wheel) all +0.0034 [14.4 min]
+  step1 batch 650/1000: cos(pick,wheel) all +0.0035 [15.6 min]
+  step1 batch 700/1000: cos(pick,wheel) all +0.0032 [16.8 min]
+  step1 batch 750/1000: cos(pick,wheel) all +0.0032 [18.0 min]
+  step1 batch 800/1000: cos(pick,wheel) all +0.0034 [19.2 min]
+  step1 batch 850/1000: cos(pick,wheel) all +0.0036 [20.5 min]
+  step1 batch 900/1000: cos(pick,wheel) all +0.0037 [21.7 min]
+  step1 batch 950/1000: cos(pick,wheel) all +0.0035 [22.9 min]
+  step1 batch 1000/1000: cos(pick,wheel) all +0.0035 [24.1 min]
+
+step1 (step1): 1000 batches of 32
+group                   params |            pick-wheel |            deck-wheel |             pick-deck |  |g| pick     deck    wheel
+                               |     batch (sd)   mean |     batch (sd)   mean |     batch (sd)   mean |
+card table           1,544,704 | +0.006(0.03) -0.034 | +0.009(0.04) +0.062 | +0.070(0.04) +0.088 |    0.1762   0.1846   0.0463
+deck head              197,376 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0000   0.1589   0.0000
+decoder blocks.0     1,053,440 | +0.005(0.02) -0.005 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0789   0.0000   0.0223
+decoder blocks.1     1,053,440 | +0.002(0.01) +0.019 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0613   0.0000   0.0205
+decoder blocks.2     1,053,440 | +0.000(0.02) +0.006 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0614   0.0000   0.0184
+history (norm)             512 | -0.004(0.14) -0.363 | +0.001(0.12) +0.059 | +0.025(0.14) -0.121 |    0.0372   0.0424   0.0108
+history layer 0        789,760 | +0.001(0.04) -0.143 | +0.006(0.03) -0.092 | +0.096(0.07) +0.030 |    0.0440   0.0527   0.0110
+history layer 1        789,760 | +0.001(0.04) -0.191 | +0.014(0.06) -0.107 | +0.098(0.08) +0.076 |    0.0383   0.0507   0.0110
+history layer 2        789,760 | -0.000(0.04) -0.184 | +0.008(0.04) -0.208 | +0.104(0.08) +0.041 |    0.0378   0.0503   0.0090
+history layer 3        789,760 | +0.001(0.04) -0.184 | +0.002(0.04) -0.127 | +0.063(0.06) -0.017 |    0.0406   0.0616   0.0086
+input embeddings       351,232 | +0.001(0.03) -0.146 | +0.005(0.03) -0.090 | +0.089(0.06) +0.081 |    0.0722   0.0777   0.0194
+pick head               66,561 | +0.006(0.29) +0.086 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.1407   0.0000   0.0013
+ALL                  8,479,745 | +0.003(0.02) -0.066 | +0.006(0.02) -0.006 | +0.046(0.02) +0.045 |    0.2797   0.2823   0.0656
+  w0.3 batch 50/1000: cos(pick,wheel) all +0.0059 [25.3 min]
+  w0.3 batch 100/1000: cos(pick,wheel) all +0.0051 [26.5 min]
+  w0.3 batch 150/1000: cos(pick,wheel) all +0.0028 [27.8 min]
+  w0.3 batch 200/1000: cos(pick,wheel) all +0.0022 [29.0 min]
+  w0.3 batch 250/1000: cos(pick,wheel) all +0.0034 [30.2 min]
+  w0.3 batch 300/1000: cos(pick,wheel) all +0.0041 [31.4 min]
+  w0.3 batch 350/1000: cos(pick,wheel) all +0.0041 [32.6 min]
+  w0.3 batch 400/1000: cos(pick,wheel) all +0.0043 [33.8 min]
+  w0.3 batch 450/1000: cos(pick,wheel) all +0.0043 [35.0 min]
+  w0.3 batch 500/1000: cos(pick,wheel) all +0.0041 [36.2 min]
+  w0.3 batch 550/1000: cos(pick,wheel) all +0.0040 [37.5 min]
+  w0.3 batch 600/1000: cos(pick,wheel) all +0.0037 [38.7 min]
+  w0.3 batch 650/1000: cos(pick,wheel) all +0.0037 [39.9 min]
+  w0.3 batch 700/1000: cos(pick,wheel) all +0.0034 [41.1 min]
+  w0.3 batch 750/1000: cos(pick,wheel) all +0.0034 [42.3 min]
+  w0.3 batch 800/1000: cos(pick,wheel) all +0.0036 [43.5 min]
+  w0.3 batch 850/1000: cos(pick,wheel) all +0.0038 [44.8 min]
+  w0.3 batch 900/1000: cos(pick,wheel) all +0.0039 [46.0 min]
+  w0.3 batch 950/1000: cos(pick,wheel) all +0.0038 [47.2 min]
+  w0.3 batch 1000/1000: cos(pick,wheel) all +0.0038 [48.4 min]
+
+w0.3 (/Users/zblanton/Documents/repos/wheelnet/results/tablenet/models/tablenet_joint.pt): 1000 batches of 32
+group                   params |            pick-wheel |            deck-wheel |             pick-deck |  |g| pick     deck    wheel
+                               |     batch (sd)   mean |     batch (sd)   mean |     batch (sd)   mean |
+card table           1,544,704 | +0.007(0.03) +0.014 | +0.010(0.04) -0.015 | +0.069(0.04) +0.101 |    0.1776   0.1846   0.0435
+deck head              197,376 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0000   0.1578   0.0000
+decoder blocks.0     1,053,440 | +0.005(0.02) -0.055 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0792   0.0000   0.0204
+decoder blocks.1     1,053,440 | +0.002(0.01) -0.046 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0615   0.0000   0.0174
+decoder blocks.2     1,053,440 | +0.001(0.02) -0.010 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0627   0.0000   0.0147
+history (norm)             512 | -0.003(0.15) -0.203 | +0.002(0.12) -0.056 | +0.025(0.14) +0.231 |    0.0374   0.0424   0.0095
+history layer 0        789,760 | +0.001(0.04) -0.087 | +0.005(0.03) -0.049 | +0.094(0.07) +0.092 |    0.0445   0.0532   0.0105
+history layer 1        789,760 | +0.000(0.04) -0.185 | +0.012(0.05) -0.080 | +0.096(0.08) +0.106 |    0.0387   0.0512   0.0104
+history layer 2        789,760 | -0.000(0.04) -0.212 | +0.008(0.04) -0.168 | +0.101(0.08) +0.141 |    0.0385   0.0513   0.0083
+history layer 3        789,760 | +0.001(0.04) -0.256 | +0.002(0.04) -0.130 | +0.061(0.06) +0.068 |    0.0410   0.0620   0.0077
+input embeddings       351,232 | +0.001(0.04) -0.083 | +0.004(0.03) -0.054 | +0.087(0.06) +0.147 |    0.0731   0.0785   0.0185
+pick head               66,561 | +0.004(0.28) -0.664 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.1408   0.0000   0.0012
+ALL                  8,479,745 | +0.004(0.02) -0.068 | +0.006(0.02) -0.033 | +0.045(0.02) +0.065 |    0.2816   0.2824   0.0602
+  w1 batch 50/1000: cos(pick,wheel) all +0.0065 [49.6 min]
+  w1 batch 100/1000: cos(pick,wheel) all +0.0054 [50.9 min]
+  w1 batch 150/1000: cos(pick,wheel) all +0.0031 [52.1 min]
+  w1 batch 200/1000: cos(pick,wheel) all +0.0025 [53.3 min]
+  w1 batch 250/1000: cos(pick,wheel) all +0.0036 [54.5 min]
+  w1 batch 300/1000: cos(pick,wheel) all +0.0043 [55.7 min]
+  w1 batch 350/1000: cos(pick,wheel) all +0.0043 [56.9 min]
+  w1 batch 400/1000: cos(pick,wheel) all +0.0045 [58.1 min]
+  w1 batch 450/1000: cos(pick,wheel) all +0.0044 [59.3 min]
+  w1 batch 500/1000: cos(pick,wheel) all +0.0041 [60.5 min]
+  w1 batch 550/1000: cos(pick,wheel) all +0.0041 [61.7 min]
+  w1 batch 600/1000: cos(pick,wheel) all +0.0039 [63.0 min]
+  w1 batch 650/1000: cos(pick,wheel) all +0.0039 [64.2 min]
+  w1 batch 700/1000: cos(pick,wheel) all +0.0035 [65.4 min]
+  w1 batch 750/1000: cos(pick,wheel) all +0.0035 [66.6 min]
+  w1 batch 800/1000: cos(pick,wheel) all +0.0037 [67.8 min]
+  w1 batch 850/1000: cos(pick,wheel) all +0.0038 [69.0 min]
+  w1 batch 900/1000: cos(pick,wheel) all +0.0040 [70.2 min]
+  w1 batch 950/1000: cos(pick,wheel) all +0.0038 [71.4 min]
+  w1 batch 1000/1000: cos(pick,wheel) all +0.0038 [72.7 min]
+
+w1 (/Users/zblanton/Documents/repos/wheelnet/results/tablenet/models/tablenet_joint_w1.pt): 1000 batches of 32
+group                   params |            pick-wheel |            deck-wheel |             pick-deck |  |g| pick     deck    wheel
+                               |     batch (sd)   mean |     batch (sd)   mean |     batch (sd)   mean |
+card table           1,544,704 | +0.007(0.03) +0.006 | +0.010(0.04) -0.032 | +0.070(0.04) +0.102 |    0.1773   0.1843   0.0429
+deck head              197,376 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0000   0.1577   0.0000
+decoder blocks.0     1,053,440 | +0.005(0.02) -0.083 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0789   0.0000   0.0198
+decoder blocks.1     1,053,440 | +0.002(0.01) -0.072 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0614   0.0000   0.0158
+decoder blocks.2     1,053,440 | +0.001(0.03) -0.055 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.0633   0.0000   0.0130
+history (norm)             512 | -0.002(0.15) -0.135 | +0.001(0.13) -0.031 | +0.025(0.14) +0.222 |    0.0378   0.0427   0.0085
+history layer 0        789,760 | -0.000(0.04) -0.209 | +0.004(0.03) -0.123 | +0.094(0.07) +0.127 |    0.0446   0.0533   0.0101
+history layer 1        789,760 | -0.000(0.04) -0.275 | +0.010(0.05) -0.169 | +0.098(0.08) +0.148 |    0.0386   0.0513   0.0098
+history layer 2        789,760 | -0.001(0.04) -0.303 | +0.006(0.04) -0.243 | +0.102(0.08) +0.191 |    0.0386   0.0517   0.0077
+history layer 3        789,760 | +0.000(0.04) -0.383 | +0.001(0.04) -0.159 | +0.062(0.06) +0.113 |    0.0412   0.0625   0.0069
+input embeddings       351,232 | +0.000(0.04) -0.147 | +0.004(0.03) -0.094 | +0.088(0.06) +0.169 |    0.0734   0.0789   0.0180
+pick head               66,561 | +0.007(0.28) -0.648 | +0.000(0.00) +0.000 | +0.000(0.00) +0.000 |    0.1414   0.0000   0.0011
+ALL                  8,479,745 | +0.004(0.02) -0.094 | +0.006(0.02) -0.055 | +0.045(0.02) +0.073 |    0.2819   0.2825   0.0579
+done [72.7 min]

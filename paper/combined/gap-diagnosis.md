@@ -151,3 +151,57 @@ together:
 5. Branch into A/B/C by the results
 6. Distillation from the multi-set WheelNet, whatever the diagnosis
 7. Wheel → pick feedback
+
+## Results
+
+### D0, part 1: wheel weight 1.0 (2026-10-15; `tablenet_joint_w1.json`)
+
+Compared with step 2 (w=0.3): wheel log loss is 0.30–0.41% better on all 19 sets (mean −0.34%). Pick top-1
+changes by −0.02 to +0.01 points (mean −0.01). The gap to the per-set WheelNet drops to:
+- **+0.19% mean, +0.04% median**
+- 15 of 16 sets within 1%; 9 at or past parity
+- still behind on BLB (+1.1%), HOB, ECL and SOS (about +0.9%)
+
+On MSH: 0.4239, compared with 0.4218 for `wheelnet_time` and 0.4188 for the multi-set WheelNet.
+
+Supports H1 (under-training). No pick cost, so no visible H2 yet.
+
+### D1: gradient cosines (`grad_cosine.json`, `grad_cosine.log`; 1000 training batches of 32 per checkpoint)
+
+**Per-batch cosines are ≈ 0 everywhere.** Overall pick–wheel is +0.003 to +0.004 (sd 0.02). Single minibatches
+are dominated by noise, so there is no batch-level fight.
+
+**The batch-averaged cosine is negative, and the disagreement is in the history encoder:**
+
+| group | step 1 | w=0.3 | w=1 |
+|---|---|---|---|
+| card table | −0.03 | +0.01 | +0.01 |
+| input embeddings | −0.15 | −0.08 | −0.15 |
+| history layers 0–3 | −0.14 / −0.19 / −0.18 / −0.18 | −0.09 / −0.19 / −0.21 / −0.26 | −0.21 / −0.28 / −0.30 / −0.38 |
+| decoder blocks 0–2 | −0.01 / +0.02 / +0.01 | −0.06 / −0.05 / −0.01 | −0.08 / −0.07 / −0.06 |
+| **all of PickNet** | −0.07 | −0.07 | −0.09 |
+
+- **The deck loss shows the same pattern against the wheel.** Deck–wheel cosine in the history layers at w=1 is
+  −0.12 to −0.24. Pick and deck agree with each other everywhere (+0.05 to +0.19).
+- **The wheel gradient is small.** Its per-batch norm is about 1/5 of the pick gradient's (0.06 vs 0.28
+  overall), so at w=0.3 the wheel loss was about 6% of PickNet's update.
+
+#### Reading
+- **There is a real but mild conflict, and it is localized.** In the history encoder, the wheel task wants
+  changes that the pick and deck tasks resist. Plausibly this is because that encoder summarizes *my* picks and
+  plan, while the wheel task needs what the *other* seats are doing. The card table and the pack decoder are
+  close to neutral.
+- **Step 1 is the cleanest evidence.** There, only PickNet's own training had shaped the network, and the
+  history encoder is already at −0.14 to −0.19.
+- **The cosines in the jointly trained checkpoints overstate the conflict.** At a stationary point of
+  pick + 0.3·deck + w·wheel, the averaged gradients must cancel, so they turn anti-aligned by construction. That
+  is why they deepen as w grows. `grad_cosine_late` also reports |mean g| to show how stationary each loss is.
+- **The conflict costs nothing yet.** Pick top-1 moves by −0.01 points at w=1. Raising the weight is still
+  cheap. The w=3 run shows whether that stays true.
+
+#### What it suggests
+- If w=3 starts costing picks, fix **just the history encoder**: per-task LoRA/adapters on the history layers,
+  or a separate small history/signal encoder for the wheel head. Don't use PCGrad over the whole model, and
+  don't split the decoder blocks; that is where the tasks already agree.
+- This also fits H4 and the "signal features" fix (C). The wheel head needs a summary of the table that the
+  history encoder isn't built to provide.

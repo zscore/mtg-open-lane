@@ -10,6 +10,8 @@ left out). Reports, per parameter group and overall:
               follows on average; per-batch cosines are diluted toward 0 by minibatch noise)
   norm        mean per-batch gradient norm of each loss, unweighted (multiply by the loss weight to compare
               with the training step: pick 1, deck 0.3, wheel wheel_w)
+  mnorm       norm of the batch-averaged gradient; mnorm/norm near 0 means the loss is at a stationary point
+              there and its cos_mean is mostly the residual of a compromise between the losses
 See paper/combined/gap-diagnosis.md (D1) for how to read them.
 
 Keys: ckpts (comma list of name=path; "step1" means init + head), batches (300), batch (32), seed (1),
@@ -157,17 +159,18 @@ def main(*kv):
                                  "cos_mean": float(mdot[(a, c)][i] / max(np.sqrt(msq[a][i] * msq[c][i]), 1e-30))}
             for k in nrm:
                 r[f"norm_{k}"] = float(np.mean([x[i] for x in nrm[k]]))
+                r[f"mnorm_{k}"] = float(np.sqrt(msq[k][i]) / cfg["batches"])
             out[gname] = r
         res["ckpts"][tag] = out
         print(f"\n{tag} ({spec}): {cfg['batches']} batches of {cfg['batch']}")
         print(f"{'group':20}{'params':>10} | {'pick-wheel':>21} | {'deck-wheel':>21} | {'pick-deck':>21} | "
-              f"{'|g| pick':>9}{'deck':>9}{'wheel':>9}")
+              f"{'|g| pick':>9}{'deck':>9}{'wheel':>9}{'|mean g| pick':>14}{'deck':>9}{'wheel':>9}")
         print(f"{'':31}| {'batch (sd)   mean':>21} | {'batch (sd)   mean':>21} | {'batch (sd)   mean':>21} |")
         for gname, r in out.items():
             cells = " | ".join(f"{r[f'{a}-{c}']['cos_batch']:+.3f}({r[f'{a}-{c}']['cos_batch_sd']:.2f}) "
                                f"{r[f'{a}-{c}']['cos_mean']:+.3f}" for a, c in PAIRS)
             print(f"{gname:20}{r['params']:>10,} | {cells} | {r['norm_pick']:9.4f}{r['norm_deck']:9.4f}"
-                  f"{r['norm_wheel']:9.4f}", flush=True)
+                  f"{r['norm_wheel']:9.4f}{r['mnorm_pick']:14.4f}{r['mnorm_deck']:9.4f}{r['mnorm_wheel']:9.4f}", flush=True)
         (OUT / f"{cfg['name']}.json").write_text(json.dumps(res, indent=1))
         del pn, head, acc
         if DEV == "mps":
