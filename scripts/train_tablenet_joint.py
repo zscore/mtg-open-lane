@@ -36,6 +36,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from sklearn.metrics import roc_auc_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from train_tablenet import (DEV, OUT, PICKNET, SHARDS, WP, PickNet, Shard, WheelHead, gather,  # noqa: E402
@@ -163,6 +164,7 @@ def main(*kv):
         for m_ in mods:
             m_.eval()
         nll_sum, hit, n, hit_nf, n_nf, wp, wy = 0.0, 0, 0, 0, 0, [], []
+        pp, py, auc_pack = [], [], 0.0
         for i in range(0, len(pr), batch):
             b = to_torch(gather(shards, pr[i:i + batch]))
             x7, out, _, lp, wl, mask, label = forward(pn, head, b, wh)
@@ -173,12 +175,22 @@ def main(*kv):
             nll_sum += float(-lt[valid].sum())
             hit, n = hit + int(h_[valid].sum()), n + int(valid.sum())
             hit_nf, n_nf = hit_nf + int(h_[nf].sum()), n_nf + int(nf.sum())
+            # pick AUCs over non-forced picks: every candidate card, label = it was taken, score = pick probability
+            cand = (x7[1] > 0) & nf[..., None]
+            took = torch.zeros_like(cand).scatter_(-1, target[..., None], True) & cand
+            pp.append(lp.exp()[cand].float().cpu().numpy())
+            py.append(took[cand].cpu().numpy())
+            other = cand & ~took
+            below = ((lp < lt[..., None]) & other).sum(-1) + 0.5 * ((lp == lt[..., None]) & other).sum(-1)
+            auc_pack += float((below / other.sum(-1).clamp(min=1))[nf].sum())
             wp.append(torch.sigmoid(wl)[mask].cpu().numpy())
             wy.append(label[mask].cpu().numpy())
         for m_ in mods:
             m_.train()
         wm = metrics(np.concatenate(wy), np.concatenate(wp))
         return {"pick_nll": nll_sum / n, "pick_top1": hit / n, "pick_top1_nonforced": hit_nf / n_nf, "picks": n,
+                "pick_auc": float(roc_auc_score(np.concatenate(py), np.concatenate(pp))),
+                "pick_auc_pack": auc_pack / n_nf,
                 "wheel_logloss": wm["logloss"], "wheel_auc": wm["auc"], "wheel_ece": wm["ece"],
                 "wheel_n": int(sum(len(y) for y in wy))}
 
@@ -187,7 +199,8 @@ def main(*kv):
     rows = np.flatnonzero(shards[msh].split == 2)
     s0 = score(np.stack([np.full(len(rows), msh), rows], 1))
     ref = json.loads((PICKNET / "results" / "picknet_all" / "all_d256_ep3.json").read_text())["test"]["MSH"]
-    print(f"start, MSH test: pick top-1 {s0['pick_top1']:.4f} (published {ref['top1']:.4f}), nll {s0['pick_nll']:.4f} "
+    print(f"start, MSH test: pick AUC {s0['pick_auc']:.4f} (within-pack {s0['pick_auc_pack']:.4f}), "
+          f"top-1 {s0['pick_top1']:.4f} (published {ref['top1']:.4f}), nll {s0['pick_nll']:.4f} "
           f"(published {ref['nll']:.4f}); wheel {s0['wheel_logloss']:.4f} (step 1: 0.4267) [{time.time() - t0:.0f}s]",
           flush=True)
     assert cfg["resume"] or abs(s0["pick_top1"] - ref["top1"]) < 1e-3, "scorer does not reproduce PickNet's published MSH numbers"
@@ -262,7 +275,7 @@ def main(*kv):
         if step % cfg["val_every"] == 0 or step == steps:
             v = score(val)
             hist.append({"step": step, **v})
-            print(f"VAL step {step}: pick nll {v['pick_nll']:.4f} top-1 {v['pick_top1']:.4f}  "
+            print(f"VAL step {step}: pick nll {v['pick_nll']:.4f} auc {v['pick_auc']:.4f} top-1 {v['pick_top1']:.4f}  "
                   f"wheel {v['wheel_logloss']:.4f} auc {v['wheel_auc']:.4f}", flush=True)
     torch.save({"cfg": cfg, "picknet": pn.state_dict(), "head": head.state_dict(), "head_layers": hk["layers"],
                 "head_d": hk["cfg"]["d"], "feat_mu": ck["feat_mu"], "feat_sd": ck["feat_sd"], "n_ctx": ck["n_ctx"],
@@ -276,7 +289,8 @@ def main(*kv):
         rows = np.flatnonzero(s.split == 2)
         r = score(np.stack([np.full(len(rows), i), rows], 1))
         res["test"][names[i]] = r
-        print(f"TEST {names[i]}: pick top-1 {r['pick_top1']:.4f} nll {r['pick_nll']:.4f}  wheel {r['wheel_logloss']:.4f} "
+        print(f"TEST {names[i]}: pick auc {r['pick_auc']:.4f} (pack {r['pick_auc_pack']:.4f}) top-1 {r['pick_top1']:.4f} "
+              f"nll {r['pick_nll']:.4f}  wheel {r['wheel_logloss']:.4f} "
               f"auc {r['wheel_auc']:.4f} n={r['wheel_n']:,} [{(time.time() - t0) / 60:.0f} min]", flush=True)
         (OUT / f"{name}.json").write_text(json.dumps(res, indent=1, default=float))
     print(f"done [{(time.time() - t0) / 3600:.2f} h]", flush=True)
