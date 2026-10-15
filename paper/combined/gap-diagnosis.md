@@ -282,3 +282,44 @@ point of the weighted loss, and much of the anti-alignment is the compromise its
 
 **The useful information is where the compromise is struck.** It is almost entirely in the history encoder and
 its inputs, which is exactly what `wheel_block=hist` removes from the wheel task.
+
+### D1, part 3: w=3 with the wheel gradient blocked from the history encoder (`tablenet_joint_w3_hblock.json`)
+
+`wheel_block=hist` keeps the wheel loss out of 3.44M PickNet parameters: the history encoder and everything that
+only feeds it. All other settings match w=3.
+
+| run | wheel vs WheelNet | pick top-1 vs w=0 (mean / worst) | pick NLL vs w=0 |
+|---|---|---|---|
+| w=1 | +0.19% | −0.010 / −0.03 | +0.0002 |
+| w=3 | −0.22% | −0.034 / −0.09 (HOB) | +0.0012 |
+| w=3, history blocked | +0.22% | −0.013 / −0.06 (HOB) | +0.0006 |
+
+- **Wheels:** blocking removes *all* of w=3's gain over w=1. The blocked run is 0.44% worse than w=3 on every
+  set, and level with w=1 (+0.03%).
+- **Picks:** about two-thirds of w=3's pick cost comes back (top-1 −0.013 vs −0.034, NLL +0.0006 vs +0.0012).
+  The rest comes from the decoder and card table, where the wheel loss still acts.
+
+**Reading.** The history encoder is both where the tasks disagree *and* where the wheel task gets its extra
+accuracy. With the history encoder blocked, the wheel task can still change the decoder and card table, but that
+gains nothing past w=1.
+- **This supports H4 (representation mismatch).** Past what one shared summary can hold, the wheel task needs
+  the history of the draft summarized differently than the pick task does. A plausible explanation is that it
+  needs what the other seats are doing, not just my plan.
+- **Blocking and PCGrad-style fixes are ruled out.** They protect picks by giving up exactly the wheel gain we
+  want.
+
+## Next steps (updated 2026-10-15)
+
+1. **Give the wheel task its own history capacity** instead of sharing or blocking. In rough order of cost:
+   - **Separate wheel history encoder:** a small causal encoder over the same input tokens (e.g. 2 layers,
+     d=256). Its state h_t goes into the wheel-head features alongside PickNet's. One extra encoder pass,
+     probably about +20% step time. PickNet then trains on pick + deck + a small wheel weight, or none.
+   - **Wheel-only LoRA adapters on the history layers:** stays closer to PickNet, but needs a second trunk pass
+     (about 2× step time).
+
+   Either one passes if the wheel result matches or beats w=3 with picks at the w=0 level.
+2. **Train longer at a moderate weight.** Two passes at w=1 matched most of w=3's wheel gain at a third of the
+   NLL cost. Pair this with (1).
+3. **A two-pass w=0 control**, so the w1_ep2 pick comparison becomes like-for-like.
+4. **Distillation from the multi-set WheelNet** and **D3 (where the gap is)**, as before. BLB, ECL, HOB and SOS
+   remain the hard sets in every run.

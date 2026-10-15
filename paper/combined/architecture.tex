@@ -449,6 +449,40 @@ does not reach ``at least ties WheelNet''. One network now does both jobs at 99.
 models' log loss. Next candidates: a higher wheel weight ($\lambda_{\text{w}}=1$), since picks show no strain;
 a second pass; and the draft-time context the newer WheelNets use.
 
+\paragraph{Step 2 follow-ups (2026-10-15).} Same setup unless noted. Pick changes are against a pick-only
+control: the same fine-tune with $\lambda_{\text{w}}=0$. Full write-up: \code{paper/combined/gap-diagnosis.md}.
+
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule
+run & wheel vs WheelNet (mean) & pick top-1 vs control (mean / worst) & pick NLL vs control \\
+\midrule
+$\lambda_{\text{w}}=0.3$ (step 2) & +0.53\% & $-$0.001 / $-$0.02 & 0.0000 \\
+$\lambda_{\text{w}}=1$ & +0.19\% & $-$0.010 / $-$0.03 & +0.0002 \\
+$\lambda_{\text{w}}=1$, second pass & $-$0.10\% & $-$0.013 / $-$0.08 & +0.0004 \\
+$\lambda_{\text{w}}=3$ & \textbf{$-$0.22\%} & $-$0.034 / $-$0.09 & +0.0012 \\
+$\lambda_{\text{w}}=3$, history encoder blocked & +0.22\% & $-$0.013 / $-$0.06 & +0.0006 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+\item \textbf{The wheel loss does not help picks.} The control's picks match step 2's (FRA's and HOB's gains come
+from training on their drafts).
+\item \textbf{More wheel signal closes the gap.} At $\lambda_{\text{w}}=3$, TableNet is past the per-set WheelNet on
+average (11 of 16 sets at or past parity), and pick top-1 stays inside the 0.1-point bar, with no margin left.
+A second pass at $\lambda_{\text{w}}=1$ gets most of that gain at a third of the pick NLL cost. On MSH the best run
+(0.4224) is still behind \code{wheelnet\_time} (0.4218) and the multi-set WheelNet (0.4188).
+\item \textbf{Where the tasks disagree.} Averaged over 1000 batches, the pick and wheel gradients on PickNet's
+weights are close to orthogonal in the card table and pack decoder, but anti-aligned in the history encoder
+($-$0.14 to $-$0.19 at step 1; $-$0.36 to $-$0.52 at $\lambda_{\text{w}}=3$).
+\item \textbf{The history encoder is where the wheel gain comes from.} Keeping the wheel gradient out of it (and its
+input embeddings) removes all of $\lambda_{\text{w}}=3$'s wheel gain and two-thirds of its pick cost. The wheel
+task needs the history summarized differently from the pick task. Next: give the wheel task its own history
+capacity (a small separate history encoder for the wheel head, or wheel-only adapters) rather than sharing or
+blocking it.
+\end{itemize}
+
 \noindent\textbf{How to read step 1.} If the frozen head gets close to WheelNet, PickNet's representation
 already contains what the wheel task needs, and step 2 should be easy. If it falls well short, the gap shows
 how much the wheel task needs features that picks alone don't teach. That doesn't kill the idea, since step 2
