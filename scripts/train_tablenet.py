@@ -94,10 +94,13 @@ class WheelHead(nn.Module):
             self.enc = nn.TransformerEncoder(layer, layers, enable_nested_tensor=False)
         self.head = nn.Sequential(nn.LayerNorm(d), nn.Linear(d, d), nn.GELU(), nn.Dropout(dropout), nn.Linear(d, 1))
 
-    def forward(self, feats, mask):
-        """feats [B,21,P,3d+3] -> logits [B,21,P]; self-attention (if any) within one pack's passed cards."""
+    def forward(self, feats, mask, extra=None):
+        """feats [B,21,P,3d+3] -> logits [B,21,P]; self-attention (if any) within one pack's passed cards.
+        extra [B,21,d], if given, is added to every token of its slot (the wheel history state in the joint model)."""
         B, S, P, _ = feats.shape
         z = self.inp(feats) + self.pick_pos.weight[None, :, None]
+        if extra is not None:
+            z = z + extra[:, :, None]
         if self.layers:
             m = mask.reshape(B * S, P)
             pad = ~m

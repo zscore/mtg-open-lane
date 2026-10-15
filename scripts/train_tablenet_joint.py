@@ -15,12 +15,17 @@ resume=<joint .pt> continues a finished run for another pass: PickNet and head s
 the batch stream starts at epoch 1 (a fresh shuffle of the same training drafts).
 wheel_block=<comma list of PickNet parameter-name prefixes> keeps the wheel loss's gradient out of those
 parameters (they train on pick + deck only). "hist" is shorthand for the history encoder and everything that only
-feeds it: hist,hist_norm,pack_bag,pick_in,oth_bag,ctx_mlp,set_emb,pos (gap-diagnosis.md, D1).
+feeds it: hist,hist_norm,pack_bag,pick_in,oth_bag,ctx_mlp,set_emb,pos (gap-diagnosis.md, D1); "all" is every
+PickNet parameter (PickNet then trains exactly like the w=0 control).
+whist_layers=L>0 gives the wheel head its own history encoder (WheelHistory): the same inputs as PickNet's history
+(read through PickNet's card table), its own embeddings and L causal layers of width whist_d; its state at each
+wheel slot is added to that slot's head tokens through a zero-initialised projection, so training starts exactly
+at the step 1 head. Trained at lr_whist.
 
 Keys: init, head (step 1 L=1 head), wheel_w (0.3), deck_w (0.3), lr_trunk (5e-5), lr_head (3e-4), epochs (1),
 batch (32), max_per_set (15000), val_per_set (1000), val_every (2000), name ("tablenet_joint"), test_sets, bench,
-resume (""), wheel_block ("").
-Writes results/tablenet/{name}.json and models/{name}.pt (PickNet state + head state).
+resume (""), wheel_block (""), whist_layers (0), whist_d (256), lr_whist (1e-3).
+Writes results/tablenet/{name}.json and models/{name}.pt (PickNet state + head state [+ wheel history state]).
 """
 import json
 import sys
@@ -29,17 +34,19 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from train_tablenet import (DEV, OUT, PICKNET, SHARDS, PickNet, Shard, WheelHead, gather, head_inputs,  # noqa: E402
-                            metrics, pack_size, to_torch, train_batches, trunk, value)
-from picknet.model import pick_loss  # noqa: E402
+from train_tablenet import (DEV, OUT, PICKNET, SHARDS, WP, PickNet, Shard, WheelHead, gather,  # noqa: E402
+                            head_inputs, metrics, pack_size, to_torch, train_batches, trunk, value)
+from picknet.model import bag, pick_loss  # noqa: E402
 
 CFG = dict(init=str(PICKNET / "results" / "picknet_all" / "models" / "frahob_freeze.pt"),
            head=str(OUT / "models" / "tablenet_L1.pt"), wheel_w=0.3, deck_w=0.3, lr_trunk=5e-5, lr_head=3e-4,
            wd=0.01, epochs=1, batch=32, max_per_set=15000, val_per_set=1000, val_every=2000,
-           name="tablenet_joint", test_sets="", bench=0, seed=0, resume="", wheel_block="")
+           name="tablenet_joint", test_sets="", bench=0, seed=0, resume="", wheel_block="", whist_layers=0,
+           whist_d=256, lr_whist=1e-3)
 HIST = "hist,hist_norm,pack_bag,pick_in,oth_bag,ctx_mlp,set_emb,pos"
 
 
@@ -56,14 +63,45 @@ def deck_loss(m, h, tab, pick, valid, rate):
     return (bce * w).sum() / w.sum().clamp(min=1)
 
 
-def forward(pn, head, b):
-    """One batch -> pick NLL, log-probs, wheel logits/mask/label, and the trunk outputs."""
+class WheelHistory(nn.Module):
+    """A history encoder for the wheel head only: PickNet's history inputs (pack bag, previous pick, others' bag,
+    context, set, position), read through PickNet's card table, into its own causal encoder. Output [B,T,d_out]
+    through a zero-initialised projection."""
+
+    def __init__(self, d_card, d_out, T, n_ctx, n_sets, d=256, layers=2, heads=8, dropout=0.1):
+        super().__init__()
+        self.pack_bag, self.pick_in, self.oth_bag = (nn.Linear(d_card, d) for _ in range(3))
+        self.pos = nn.Embedding(T, d)
+        self.set_emb = nn.Embedding(n_sets, d)
+        for e in (self.pos, self.set_emb):
+            nn.init.normal_(e.weight, std=0.02)
+        self.ctx_mlp = nn.Sequential(nn.Linear(n_ctx, d), nn.GELU(), nn.Linear(d, d))
+        layer = nn.TransformerEncoderLayer(d, heads, 4 * d, dropout, batch_first=True, norm_first=True)
+        self.enc = nn.TransformerEncoder(layer, layers, enable_nested_tensor=False)
+        self.norm = nn.LayerNorm(d)
+        self.out = nn.Linear(d, d_out)
+        nn.init.zeros_(self.out.weight)
+        nn.init.zeros_(self.out.bias)
+
+    def forward(self, tab, causal, idx, cnt, pick, oidx, ocnt, ctx, sid):
+        T = idx.shape[1]
+        e_pick = F.embedding(pick, tab)
+        prev = torch.cat([torch.zeros_like(e_pick[:, :1]), e_pick[:, :-1]], 1)
+        h = self.pos.weight[None, :T] + self.pack_bag(bag(tab, idx, cnt)) + self.ctx_mlp(ctx)[:, None]
+        h = h + self.set_emb(sid.long())[:, None] + self.pick_in(prev) + self.oth_bag(bag(tab, oidx, ocnt))
+        h = self.enc(h, mask=causal[:T, :T], is_causal=True)
+        return self.out(self.norm(h))
+
+
+def forward(pn, head, b, wh=None):
+    """One batch -> pick NLL, log-probs, wheel logits/mask/label, and the trunk outputs. wh: optional WheelHistory."""
     x7 = [v.to(DEV, non_blocking=True) for v in b[:7]]
     target, valid = b[7].to(DEV), b[8].to(DEV)
     out = trunk(pn, *x7)
     nll, lp = pick_loss(out[3].float(), x7[1], target, valid)
     f, mask, label = head_inputs(pn, x7, pack_size(x7[1]), trunk_out=out)
-    return x7, out, nll, lp, head(f, mask), mask, label
+    extra = wh(out[2], pn.causal, *x7)[:, WP.to(f.device)] if wh is not None else None
+    return x7, out, nll, lp, head(f, mask, extra), mask, label
 
 
 def main(*kv):
@@ -103,24 +141,31 @@ def main(*kv):
     hk = torch.load(cfg["head"], map_location="cpu", weights_only=False)
     head = WheelHead(pc["d"], hk["cfg"]["d"], hk["layers"]).to(DEV)
     head.load_state_dict(hk["state"])
+    wh = None
+    if cfg["whist_layers"]:
+        wh = WheelHistory(pc["d"], hk["cfg"]["d"], pn.pos.weight.shape[0], ck["n_ctx"], len(cards["sets"]),
+                          d=cfg["whist_d"], layers=cfg["whist_layers"]).to(DEV)
     if cfg["resume"]:
         jk = torch.load(cfg["resume"], map_location="cpu", weights_only=False)
         pn.load_state_dict(jk["picknet"])
         head.load_state_dict(jk["head"])
-        pn, head = pn.to(DEV), head.to(DEV)
+        if wh is not None:
+            wh.load_state_dict(jk["whist"])
+    mods = [pn, head] + ([wh] if wh is not None else [])
     print(f"{name}: sets {names}, train {len(train):,} drafts, val {len(val):,}; PickNet "
-          f"{sum(p.numel() for p in pn.parameters()):,} + head {sum(p.numel() for p in head.parameters()):,} params; "
-          f"cfg {cfg} [{time.time() - t0:.0f}s]", flush=True)
+          f"{sum(p.numel() for p in pn.parameters()):,} + head {sum(p.numel() for p in head.parameters()):,}"
+          + (f" + wheel history {sum(p.numel() for p in wh.parameters()):,}" if wh is not None else "")
+          + f" params; cfg {cfg} [{time.time() - t0:.0f}s]", flush=True)
 
     @torch.no_grad()
     def score(pr, batch=128):
         """Pick NLL / top-1 / non-forced top-1 and wheel log loss / AUC over the drafts in pr."""
-        pn.eval()
-        head.eval()
+        for m_ in mods:
+            m_.eval()
         nll_sum, hit, n, hit_nf, n_nf, wp, wy = 0.0, 0, 0, 0, 0, [], []
         for i in range(0, len(pr), batch):
             b = to_torch(gather(shards, pr[i:i + batch]))
-            x7, out, _, lp, wl, mask, label = forward(pn, head, b)
+            x7, out, _, lp, wl, mask, label = forward(pn, head, b, wh)
             target, valid = b[7].to(DEV), b[8].to(DEV)
             lt = lp.gather(-1, target[..., None]).squeeze(-1)
             h_ = lp.argmax(-1) == target
@@ -130,8 +175,8 @@ def main(*kv):
             hit_nf, n_nf = hit_nf + int(h_[nf].sum()), n_nf + int(nf.sum())
             wp.append(torch.sigmoid(wl)[mask].cpu().numpy())
             wy.append(label[mask].cpu().numpy())
-        pn.train()
-        head.train()
+        for m_ in mods:
+            m_.train()
         wm = metrics(np.concatenate(wy), np.concatenate(wp))
         return {"pick_nll": nll_sum / n, "pick_top1": hit / n, "pick_top1_nonforced": hit_nf / n_nf, "picks": n,
                 "wheel_logloss": wm["logloss"], "wheel_auc": wm["auc"], "wheel_ece": wm["ece"],
@@ -151,28 +196,48 @@ def main(*kv):
     steps = 20 if cfg["bench"] else cfg["epochs"] * per_epoch
     groups = [{"params": list(pn.parameters()), "lr": cfg["lr_trunk"]},
               {"params": list(head.parameters()), "lr": cfg["lr_head"]}]
+    if wh is not None:
+        groups.append({"params": list(wh.parameters()), "lr": cfg["lr_whist"]})
     opt = torch.optim.AdamW(groups, weight_decay=cfg["wd"])
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=[cfg["lr_trunk"], cfg["lr_head"]],
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=[g["lr"] for g in groups],
                                                 total_steps=cfg["epochs"] * per_epoch, pct_start=0.05)
-    block = tuple(p + "." for p in (HIST if cfg["wheel_block"] == "hist" else cfg["wheel_block"]).split(",")
-                  if p) if cfg["wheel_block"] else ()
-    wheel_params = [p for n, p in pn.named_parameters() if not n.startswith(block)] + list(head.parameters())
-    if block:
-        print(f"wheel gradient blocked from {sum(p.numel() for n, p in pn.named_parameters() if n.startswith(block)):,} "
-              f"PickNet parameters ({', '.join(sorted({n.split('.')[0] for n, _ in pn.named_parameters() if n.startswith(block)}))})",
-              flush=True)
-    pn.train()
-    head.train()
+    if cfg["wheel_block"] == "all":
+        blocked = {n for n, _ in pn.named_parameters()}
+    else:
+        pre = tuple(p + "." for p in (HIST if cfg["wheel_block"] == "hist" else cfg["wheel_block"]).split(",") if p)
+        blocked = {n for n, _ in pn.named_parameters() if pre and n.startswith(pre)}
+    wheel_params = [p for n, p in pn.named_parameters() if n not in blocked] + [p for m_ in mods[1:] for p in m_.parameters()]
+    if blocked:
+        print(f"wheel gradient blocked from {sum(p.numel() for n, p in pn.named_parameters() if n in blocked):,} "
+              f"PickNet parameters ({', '.join(sorted({n.split('.')[0] for n in blocked}))})", flush=True)
+    if wh is not None:
+        # leakage guard, as in step 1: blanking every slot after t leaves the wheel history at t unchanged
+        with torch.no_grad():
+            wh.eval()
+            nn.init.normal_(wh.out.weight, std=0.02)  # the real projection is zero, which would hide any leak
+            x7 = [v.to(DEV) for v in to_torch(gather(shards, train[:8]))[:7]]
+            tab = pn.cards()
+            base = wh(tab, pn.causal, *x7)
+            for t in (0, 5, 14, 20, 30, 44):
+                blank = [v.clone() for v in x7]
+                for j, fill in ((0, pad), (1, 0), (2, pad), (3, pad), (4, 0)):  # card indices -> pad, counts -> 0
+                    blank[j][:, t + 1:] = fill
+                g = float((wh(tab, pn.causal, *blank)[:, t] - base[:, t]).abs().max())
+                assert g < 1e-3, f"wheel history at slot {t} depends on later slots: {g}"
+            nn.init.zeros_(wh.out.weight)
+        print("leakage guard passed: wheel history at t ignores slots after t", flush=True)
+    for m_ in mods:
+        m_.train()
     gen = train_batches(shards, train, cfg["batch"], cfg["seed"], per_epoch if cfg["resume"] else 0)
     hist, tot, tt = [], {"nll": 0.0, "deck": 0.0, "wheel": 0.0}, time.time()
     for step in range(1, steps + 1):
         b = next(gen)
-        x7, (x, h, tab, logit), nll, lp, wl, mask, label = forward(pn, head, b)
+        x7, (x, h, tab, logit), nll, lp, wl, mask, label = forward(pn, head, b, wh)
         dk = deck_loss(pn, h, tab, x7[2], b[8].to(DEV), b[9].to(DEV)) if cfg["deck_w"] else torch.zeros((), device=DEV)
         wb = F.binary_cross_entropy_with_logits(wl[mask], label[mask].float())
         loss = nll + cfg["deck_w"] * dk + cfg["wheel_w"] * wb
         opt.zero_grad()
-        if block:
+        if blocked:
             gw = torch.autograd.grad(cfg["wheel_w"] * wb, wheel_params, retain_graph=True, allow_unused=True)
             (nll + cfg["deck_w"] * dk).backward()
             for p, g in zip(wheel_params, gw):
@@ -180,7 +245,7 @@ def main(*kv):
                     p.grad = g if p.grad is None else p.grad + g
         else:
             loss.backward()
-        torch.nn.utils.clip_grad_norm_(list(pn.parameters()) + list(head.parameters()), 1.0)
+        torch.nn.utils.clip_grad_norm_([p for m_ in mods for p in m_.parameters()], 1.0)
         opt.step()
         sched.step()
         for k, v in (("nll", nll), ("deck", dk), ("wheel", wb)):
@@ -200,7 +265,8 @@ def main(*kv):
             print(f"VAL step {step}: pick nll {v['pick_nll']:.4f} top-1 {v['pick_top1']:.4f}  "
                   f"wheel {v['wheel_logloss']:.4f} auc {v['wheel_auc']:.4f}", flush=True)
     torch.save({"cfg": cfg, "picknet": pn.state_dict(), "head": head.state_dict(), "head_layers": hk["layers"],
-                "head_d": hk["cfg"]["d"], "feat_mu": ck["feat_mu"], "feat_sd": ck["feat_sd"], "n_ctx": ck["n_ctx"]},
+                "head_d": hk["cfg"]["d"], "feat_mu": ck["feat_mu"], "feat_sd": ck["feat_sd"], "n_ctx": ck["n_ctx"],
+                **({"whist": wh.state_dict()} if wh is not None else {})},
                OUT / "models" / f"{name}.pt")
 
     res = {"cfg": cfg, "start_msh": s0, "history": hist, "test": {}}
