@@ -1,0 +1,41 @@
+% One-page TableNet architecture diagram with the wheel history encoder: tectonic tablenet_whist_diagram.tex
+\documentclass[11pt]{article}
+\usepackage[paperwidth=8.5in,paperheight=7.4in,margin=0.5in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{xcolor,tikz,amsmath}
+\usetikzlibrary{positioning,fit,arrows.meta,calc,backgrounds}
+\pagestyle{empty}
+\definecolor{cblue}{HTML}{2a78d6}
+\definecolor{corange}{HTML}{eb6834}
+\definecolor{caqua}{HTML}{1baf7a}
+\definecolor{cpurple}{HTML}{8c5bd6}
+\definecolor{cgray}{HTML}{8a8984}
+\tikzset{
+  arr/.style={-{Stealth[length=5pt]},draw=black!60,thick},
+  box/.style={draw=#1!80!black,fill=#1!10,rounded corners=2pt,inner sep=4pt,align=center},
+  box/.default=cgray,
+}
+\begin{document}
+\begin{center}
+{\large\bfseries TableNet with a wheel history encoder}\\[2pt]
+{\small one network for picks and wheels \quad\textperiodcentered\quad \texttt{train\_tablenet\_joint.py whist\_layers=2}}
+\end{center}
+\vspace{6pt}
+\begin{center}
+\input{figs/tablenet_whist_tikz.tex}
+\end{center}
+\vspace{4pt}
+{\small
+\noindent\textbf{Why the new box.} With one shared history encoder, the pick and wheel losses pull it in opposite
+directions, and the wheel task's extra accuracy came only from reshaping it, at a cost to picks. The wheel history
+encoder gives the wheel head its own summary of the draft. It reads the same inputs as PickNet's, through PickNet's
+card table, so PickNet's history can stay tuned for picks. Its output
+projection starts at zero, so training begins exactly at the step-1 wheel head.
+
+\noindent\textbf{Who trains what.} PickNet always trains on the pick and deck losses. The wheel loss trains the wheel
+head and the wheel history encoder. How far the wheel loss also reaches into PickNet is set by \texttt{wheel\_block}:
+\texttt{all} keeps it out of PickNet entirely (run A); \texttt{hist} keeps it out of PickNet's history encoder only,
+so it can still adjust the card table and pack decoder (run B).
+}
+\end{document}

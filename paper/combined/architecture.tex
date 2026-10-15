@@ -23,7 +23,7 @@
 
 \title{\Large\bfseries TableNet: One Network for Picks and Wheels\\[2pt]\large The architecture of a combined PickNet + WheelNet}
 \author{Design note. Companion to \emph{How PickNet Works} and \emph{How WheelNet Works}}
-\date{\small October 2026 \quad\textperiodcentered\quad Status: steps 1 and 2 done}
+\date{\small October 2026 \quad\textperiodcentered\quad Status: steps 1 and 2 done, step 3 running}
 
 \begin{document}
 \maketitle
@@ -482,6 +482,27 @@ task needs the history summarized differently from the pick task. Next: give the
 capacity (a small separate history encoder for the wheel head, or wheel-only adapters) rather than sharing or
 blocking it.
 \end{itemize}
+
+\paragraph{Step 3 (in progress): a history encoder for the wheel head.} Figure~\ref{fig:whist} shows the change.
+\code{whist\_layers=2} adds a second, small causal history encoder (1.93M parameters) used only by the wheel head.
+It reads the same inputs as PickNet's history encoder, through PickNet's card table, with its own embeddings. Its
+state at each wheel slot is added to that slot's passed-card tokens. Its output projection starts at zero, so
+training begins exactly at the step-1 head. A start-up check confirms that its state at $t$ ignores every later
+slot. Two runs are under way:
+\begin{itemize}
+\item \textbf{Run A} (\code{wheel\_block=all}, $\lambda_{\text{w}}=1$): the wheel loss never reaches PickNet.
+\item \textbf{Run B} (\code{wheel\_block=hist}, $\lambda_{\text{w}}=3$): the wheel loss reaches PickNet's card
+table and decoder, but not its history encoder.
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\linewidth}{!}{\input{figs/tablenet_whist_tikz.tex}}
+\caption{TableNet with a wheel history encoder. Blue: PickNet's trunk. Orange: its pick head. Purple: the new wheel
+history encoder. Green: the wheel head. The dashed outlines mark which losses train which parts; how far the wheel
+loss reaches into PickNet is set by \code{wheel\_block}.}
+\label{fig:whist}
+\end{figure}
 
 \noindent\textbf{How to read step 1.} If the frozen head gets close to WheelNet, PickNet's representation
 already contains what the wheel task needs, and step 2 should be easy. If it falls well short, the gap shows
