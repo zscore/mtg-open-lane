@@ -13,10 +13,13 @@ drafts for picks (NLL, top-1, top-1 on non-forced picks) and wheels (log loss, A
 wheel_w=0 is the pick-only control: the same fine-tune without the wheel loss.
 resume=<joint .pt> continues a finished run for another pass: PickNet and head start from that checkpoint, and
 the batch stream starts at epoch 1 (a fresh shuffle of the same training drafts).
+wheel_block=<comma list of PickNet parameter-name prefixes> keeps the wheel loss's gradient out of those
+parameters (they train on pick + deck only). "hist" is shorthand for the history encoder and everything that only
+feeds it: hist,hist_norm,pack_bag,pick_in,oth_bag,ctx_mlp,set_emb,pos (gap-diagnosis.md, D1).
 
 Keys: init, head (step 1 L=1 head), wheel_w (0.3), deck_w (0.3), lr_trunk (5e-5), lr_head (3e-4), epochs (1),
 batch (32), max_per_set (15000), val_per_set (1000), val_every (2000), name ("tablenet_joint"), test_sets, bench,
-resume ("").
+resume (""), wheel_block ("").
 Writes results/tablenet/{name}.json and models/{name}.pt (PickNet state + head state).
 """
 import json
@@ -36,7 +39,8 @@ from picknet.model import pick_loss  # noqa: E402
 CFG = dict(init=str(PICKNET / "results" / "picknet_all" / "models" / "frahob_freeze.pt"),
            head=str(OUT / "models" / "tablenet_L1.pt"), wheel_w=0.3, deck_w=0.3, lr_trunk=5e-5, lr_head=3e-4,
            wd=0.01, epochs=1, batch=32, max_per_set=15000, val_per_set=1000, val_every=2000,
-           name="tablenet_joint", test_sets="", bench=0, seed=0, resume="")
+           name="tablenet_joint", test_sets="", bench=0, seed=0, resume="", wheel_block="")
+HIST = "hist,hist_norm,pack_bag,pick_in,oth_bag,ctx_mlp,set_emb,pos"
 
 
 def deck_loss(m, h, tab, pick, valid, rate):
@@ -150,6 +154,13 @@ def main(*kv):
     opt = torch.optim.AdamW(groups, weight_decay=cfg["wd"])
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=[cfg["lr_trunk"], cfg["lr_head"]],
                                                 total_steps=cfg["epochs"] * per_epoch, pct_start=0.05)
+    block = tuple(p + "." for p in (HIST if cfg["wheel_block"] == "hist" else cfg["wheel_block"]).split(",")
+                  if p) if cfg["wheel_block"] else ()
+    wheel_params = [p for n, p in pn.named_parameters() if not n.startswith(block)] + list(head.parameters())
+    if block:
+        print(f"wheel gradient blocked from {sum(p.numel() for n, p in pn.named_parameters() if n.startswith(block)):,} "
+              f"PickNet parameters ({', '.join(sorted({n.split('.')[0] for n, _ in pn.named_parameters() if n.startswith(block)}))})",
+              flush=True)
     pn.train()
     head.train()
     gen = train_batches(shards, train, cfg["batch"], cfg["seed"], per_epoch if cfg["resume"] else 0)
@@ -161,7 +172,14 @@ def main(*kv):
         wb = F.binary_cross_entropy_with_logits(wl[mask], label[mask].float())
         loss = nll + cfg["deck_w"] * dk + cfg["wheel_w"] * wb
         opt.zero_grad()
-        loss.backward()
+        if block:
+            gw = torch.autograd.grad(cfg["wheel_w"] * wb, wheel_params, retain_graph=True, allow_unused=True)
+            (nll + cfg["deck_w"] * dk).backward()
+            for p, g in zip(wheel_params, gw):
+                if g is not None:
+                    p.grad = g if p.grad is None else p.grad + g
+        else:
+            loss.backward()
         torch.nn.utils.clip_grad_norm_(list(pn.parameters()) + list(head.parameters()), 1.0)
         opt.step()
         sched.step()

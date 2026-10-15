@@ -220,3 +220,25 @@ What this means:
   far below the 0.1-point bar. It matches D1: a mild conflict in the history encoder.
 - **Sharing is nearly free.** One network matches the per-set WheelNet (+0.19%) at a pick cost of 0.01
   points. The open question is where this costs more as w rises (the w=3 run).
+
+### D0, part 3: wheel weight 3.0 (2026-10-15; `tablenet_joint_w3.json`)
+
+**Wheels:** 0.33–0.53% better than w=1 on all 19 sets. Against the per-set WheelNet:
+- **−0.22% mean, −0.34% median**
+- 11 of 16 sets at or past parity; all 16 within 1% (worst BLB +0.6%)
+- MSH 0.4224: past the per-set WheelNet, still behind `wheelnet_time` (0.4218) and the multi-set WheelNet (0.4188)
+
+**Picks** (against the w=0 control): top-1 −0.034 points mean, lower on 18 of 19 sets. The worst are HOB
+(−0.09) and MOM (−0.08), close to the 0.1-point bar. Pick NLL is +0.0012, five times the w=1 cost.
+
+**The pick/wheel trade-off so far:**
+
+| wheel weight | wheel vs WheelNet (mean) | pick top-1 vs w=0 (mean / worst set) | pick NLL vs w=0 |
+|---|---|---|---|
+| 0.3 | +0.53% | −0.001 / −0.02 | ≈0 |
+| 1 | +0.19% | −0.010 / −0.03 | +0.0002 |
+| 3 | **−0.22%** | −0.034 / −0.09 | +0.0012 |
+
+At w=3, TableNet beats the per-set WheelNets and still passes the pick bar, but with no margin left. The pick
+cost now grows faster than the wheel gain. The next run, `tablenet_joint_w3_hblock` (w=3 with
+`wheel_block=hist`), tests whether that cost comes from the history encoder, as D1 suggests.
