@@ -127,7 +127,8 @@ is better than WheelNet). Picks: change against the pick-only control.}
 \centering\includegraphics[width=0.82\linewidth]{figs/tradeoff.pdf}
 \caption{The pick/wheel trade-off; down and left is better. The blue line is the wheel-weight sweep (one pass
 each). A second pass reaches nearly the same wheel accuracy as $\lw=3$ at a third of the pick cost. Blocking the
-history encoder gives up the wheel gain.}
+history encoder gives up the wheel gain. Run B (own wheel history encoder, PickNet's history blocked, $\lw=3$) matches
+$\lw=3$'s wheels at a third of its pick cost.}
 \label{fig:tradeoff}
 \end{figure}
 
@@ -237,8 +238,7 @@ parameters) used only by the wheel head.
 zero. Training therefore starts exactly at the step-1 head (MSH wheel 0.4267, reproduced).
 \item \textbf{Leakage check:} at start-up, a check confirms that its state at pick $t$ ignores every later pick.
 \end{itemize}
-Two runs were planned (\code{results/tablenet/run\_whist.sh}). Run A has finished; run B was paused before it
-started.
+Two runs (\code{results/tablenet/run\_whist.sh}, \code{run\_whist\_b.sh}):
 \begin{enumerate}[label=\Alph*.]
 \item \textbf{Wheel loss kept out of PickNet entirely} (\code{wheel\_block=all}, $\lw=1$). Picks then train exactly
 as in the control, so any wheel improvement is pure gain. \emph{Success:} wheel log loss at or below the $\lw=1$
@@ -260,6 +260,24 @@ information.
 which uses no PickNet, is still the best wheel model (0.4188, vs.\ 0.4224 for TableNet's best). The next test is an
 ablation ladder that removes PickNet's history, then its representations, then its card table from the wheel head.
 \end{itemize}
+
+\paragraph{Run B result: the best trade-off so far.}
+\begin{itemize}
+\item \textbf{Wheels:} the same accuracy as $\lw=3$ ($-0.19\%$ against the per-set WheelNet; $+0.01\%$ from
+$\lw=3$, better on 9 of 19 sets). 11 of 16 sets are at or past parity.
+\item \textbf{Picks:} a third of $\lw=3$'s pick cost. Top-1 is $-0.010$ points against the control (worst set HOB,
+$-0.05$), and NLL is $+0.0005$ (vs.\ $+0.0012$).
+\item \textbf{Pick AUC}, the first run to report it: 0.953 pooled and 0.910 within-pack, averaged over the 19 sets.
+On MSH, 0.9505 vs.\ 0.9506 for the starting PickNet.
+\end{itemize}
+Set side by side with the blocked run (Figure~\ref{fig:tradeoff}), B shows that the wheel task needs two things:
+its own summary of the draft, and the freedom to adjust the shared card table and pack decoder, where the tasks
+don't conflict. Neither alone is enough. The remaining pick cost comes from those shared parts.
+
+B still does not beat the strongest pure WheelNet. On MSH it scores 0.4227 against the multi-set WheelNet's
+0.4188. A multi-set WheelNet for all 19 sets (one model per pack size, scored on exactly TableNet's test examples)
+is written and tested (\code{scripts/train\_wheelnet\_allsets.py}), and will show whether that gap holds on every
+set.
 
 \section{Reproducing}
 

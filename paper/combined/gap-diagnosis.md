@@ -344,3 +344,32 @@ decoder at w=3) was paused at the user's request before it started.
 
 The scorer now also reports pick AUC (pooled over candidates, and within-pack) on non-forced picks. Earlier runs
 predate it; re-scoring their checkpoints would put every run on AUC.
+
+### Step 3, run B: own wheel history encoder + wheel loss kept out of PickNet's history encoder, w=3 (`tablenet_whist_hist_w3.json`)
+
+The wheel loss trains the wheel head, the wheel history encoder, and PickNet's card table and pack decoder. It does
+not reach PickNet's history encoder.
+
+| run | wheel vs WheelNet (mean / median) | at or past parity | pick top-1 vs control (mean / worst) | pick NLL vs control |
+|---|---|---|---|---|
+| w=3, shared | −0.22% / −0.34% | 11/16 | −0.034 / −0.09 | +0.0012 |
+| w=3, history blocked | +0.22% | 8/16 | −0.013 / −0.06 | +0.0006 |
+| A: own history, PickNet untouched | +0.26% / +0.13% | 6/16 | +0.002 / −0.01 | +0.00001 |
+| **B: own history + history blocked** | **−0.19% / −0.31%** | **11/16** | **−0.010 / −0.05 (HOB)** | **+0.0005** |
+
+- **Wheels:** B matches w=3 (+0.01% on average, between −0.12% and +0.14% per set, better on 9 of 19).
+- **Picks:** B costs a third of w=3's top-1 cost and less than half its NLL cost. Its worst set is HOB at −0.05
+  points (w=3: −0.09).
+- **Pick AUC** (first run with it): 0.9526 pooled and 0.910 within-pack, averaged over 19 sets. MSH is 0.9505,
+  vs. 0.9506 for the starting PickNet.
+
+**Reading.**
+- **This is the best trade-off so far.** Compare it with the blocked run without an encoder: adding the wheel's own
+  history encoder brings back all the wheel accuracy that blocking had lost.
+- **The wheel task needs two things:** its own summary of the draft, and freedom to adjust the shared card table
+  and decoder, where the tasks don't conflict. Neither alone is enough (A; blocked run).
+- **The remaining pick cost comes from the card table and decoder.**
+- **B still does not beat a strong pure WheelNet.** MSH is 0.4227, vs. 0.4188 for the multi-set WheelNet.
+
+The all-sets pure-WheelNet baseline (`run_wheelnet_allsets.sh`) is written and tested, but paused at the user's
+request.

@@ -23,7 +23,7 @@
 
 \title{\Large\bfseries TableNet: One Network for Picks and Wheels\\[2pt]\large The architecture of a combined PickNet + WheelNet}
 \author{Design note. Companion to \emph{How PickNet Works} and \emph{How WheelNet Works}}
-\date{\small October 2026 \quad\textperiodcentered\quad Status: steps 1 and 2 done, step 3 running}
+\date{\small October 2026 \quad\textperiodcentered\quad Status: steps 1--3 done}
 
 \begin{document}
 \maketitle
@@ -494,6 +494,16 @@ slot. Two runs are under way:
 \item \textbf{Run B} (\code{wheel\_block=hist}, $\lambda_{\text{w}}=3$): the wheel loss reaches PickNet's card
 table and decoder, but not its history encoder.
 \end{itemize}
+\noindent\textbf{Results.}
+\begin{itemize}
+\item \textbf{Run A} gives the $\lambda_{\text{w}}=1$ wheel accuracy ($+0.26\%$ against the per-set WheelNet) with no
+pick cost at all.
+\item \textbf{Run B} gives the $\lambda_{\text{w}}=3$ wheel accuracy ($-0.19\%$; 11 of 16 sets at or past parity) at a
+third of its pick cost. Top-1 is $-0.010$ points against the pick-only control (worst set $-0.05$), and NLL is
+$+0.0005$.
+\end{itemize}
+B is the best trade-off so far. On MSH, the multi-set WheelNet (0.4188) is still better than B (0.4227). Details:
+\code{overnight\_findings.pdf}.
 
 \begin{figure}[!htbp]
 \centering

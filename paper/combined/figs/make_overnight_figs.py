@@ -39,7 +39,8 @@ def summary(name, w0):
 def tradeoff():
     w0 = test("tablenet_joint_w0")
     sweep = [("w=0.3", "tablenet_joint"), ("w=1", "tablenet_joint_w1"), ("w=3", "tablenet_joint_w3")]
-    other = [("w=1, 2 passes", "tablenet_joint_w1_ep2"), ("w=3, history blocked", "tablenet_joint_w3_hblock")]
+    other = [("w=1, 2 passes", "tablenet_joint_w1_ep2"), ("w=3, history blocked", "tablenet_joint_w3_hblock"),
+             ("A: own wheel history", "tablenet_whist_all"), ("B: own wheel history, w=3", "tablenet_whist_hist_w3")]
     fig, ax = plt.subplots(figsize=(5.6, 3.3))
     ax.axhline(0, color=INK2, lw=0.8, ls=(0, (4, 3)))
     ax.text(0.00125, 0.03, "per-set WheelNet", color=INK2, ha="right", va="bottom", fontsize=8)
@@ -52,8 +53,10 @@ def tradeoff():
         p = summary(n, w0)
         ax.plot(p[1], p[0], ls="none", marker="s", ms=7, color=ORANGE, mec="white", mew=2, zorder=3,
                 label="variants" if lab.startswith("w=1") else None)
-        ax.annotate(lab, (p[1], p[0]), xytext=(6, -10 if "blocked" in lab else 4), textcoords="offset points",
-                    color=INK, fontsize=8)
+        off = {"w=3, history blocked": (6, -10), "A: own wheel history": (6, 4), "B: own wheel history, w=3": (-8, 6)}
+        dx, dy = off.get(lab, (6, 4))
+        ax.annotate(lab, (p[1], p[0]), xytext=(dx, dy), textcoords="offset points", color=INK, fontsize=8,
+                    ha="right" if dx < 0 else "left")
     ax.set_xlabel("pick NLL cost vs. pick-only control (nats/pick, mean over 19 sets)")
     ax.set_ylabel("wheel log loss vs. WheelNet (%)")
     ax.grid(axis="y", color=GRID, lw=0.6)
