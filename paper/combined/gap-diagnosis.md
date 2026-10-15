@@ -242,3 +242,43 @@ What this means:
 At w=3, TableNet beats the per-set WheelNets and still passes the pick bar, but with no margin left. The pick
 cost now grows faster than the wheel gain. The next run, `tablenet_joint_w3_hblock` (w=3 with
 `wheel_block=hist`), tests whether that cost comes from the history encoder, as D1 suggests.
+
+### D0, part 4: a second pass at w=1 (2026-10-15; `tablenet_joint_w1_ep2.json`, resumed from `tablenet_joint_w1`)
+
+**Wheels:** 0.29% better than one pass on average. Against the per-set WheelNet:
+- **−0.10% mean, −0.23% median**
+- 10 of 16 sets at or past parity; all 16 within 1%
+- MSH 0.4229
+- still behind on BLB (+0.7%), ECL, HOB (+0.6%) and SOS (+0.4%)
+
+**Picks** (against the one-pass w=0 control): top-1 −0.013 mean, worst MOM −0.08; NLL +0.0004.
+- **Caveat:** this comparison is not like-for-like. There is no two-pass w=0 control, so some of the pick
+  change could come from the extra pass itself.
+
+| run | wheel vs WheelNet | pick top-1 vs w=0 (mean / worst) | pick NLL vs w=0 |
+|---|---|---|---|
+| w=1, one pass | +0.19% | −0.010 / −0.03 | +0.0002 |
+| w=1, two passes | −0.10% | −0.013 / −0.08 (MOM) | +0.0004 |
+| w=3, one pass | −0.22% | −0.034 / −0.09 (HOB) | +0.0012 |
+
+- **H1 is confirmed.** One pass was under-training the wheel task.
+- **Training longer is cheaper than raising the weight.** Per unit of wheel gain, the second pass costs picks
+  much less on average (NLL +0.0004 vs +0.0012). The worst set is about the same in both runs.
+
+### D1, part 2: gradient cosines at w=3 and after two passes (`grad_cosine_late.json/.log`)
+
+**The same picture, sharper.** The batch-averaged pick–wheel cosine at w=3:
+- **history layers 0–3:** −0.36, −0.37, −0.39, −0.52
+- **input embeddings:** −0.22
+- **decoder blocks:** −0.10 to −0.06
+- **card table:** about 0
+
+The deck loss again sides with the pick loss (pick–deck +0.21 to +0.31 in the history layers; deck–wheel −0.22
+to −0.33).
+
+**The stationarity check confirms the caveat above.** The averaged gradient is only about 4% of the per-batch
+norm for both losses: pick 0.010 vs 0.28, wheel 0.0024 vs 0.055. So these checkpoints are near a stationary
+point of the weighted loss, and much of the anti-alignment is the compromise itself.
+
+**The useful information is where the compromise is struck.** It is almost entirely in the history encoder and
+its inputs, which is exactly what `wheel_block=hist` removes from the wheel task.
