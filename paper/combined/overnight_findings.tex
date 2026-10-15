@@ -227,7 +227,7 @@ probably under memory pressure). It resumed from the same state, so its results 
 timings are off.
 \end{itemize}
 
-\section{In progress: a history encoder for the wheel head}\label{sec:next}
+\section{Follow-up: a history encoder for the wheel head}\label{sec:next}
 
 \code{train\_tablenet\_joint.py whist\_layers=2} adds a separate 2-layer causal history encoder (1.93M
 parameters) used only by the wheel head.
@@ -237,7 +237,8 @@ parameters) used only by the wheel head.
 zero. Training therefore starts exactly at the step-1 head (MSH wheel 0.4267, reproduced).
 \item \textbf{Leakage check:} at start-up, a check confirms that its state at pick $t$ ignores every later pick.
 \end{itemize}
-Two runs are queued (\code{results/tablenet/run\_whist.sh}):
+Two runs were planned (\code{results/tablenet/run\_whist.sh}). Run A has finished; run B was paused before it
+started.
 \begin{enumerate}[label=\Alph*.]
 \item \textbf{Wheel loss kept out of PickNet entirely} (\code{wheel\_block=all}, $\lw=1$). Picks then train exactly
 as in the control, so any wheel improvement is pure gain. \emph{Success:} wheel log loss at or below the $\lw=1$
@@ -246,6 +247,19 @@ run (+0.19\%) with picks equal to the control.
 task can still shape the card table and decoder, where the tasks don't conflict. \emph{Success:} wheel log loss
 at or below $\lw=3$ ($-$0.22\%) at the blocked run's pick cost or less.
 \end{enumerate}
+
+\paragraph{Run A result.} Picks are identical to the control, as designed: top-1 $+0.002$ points, NLL
+$+0.000005$. Wheel log loss is $+0.26\%$ against the per-set WheelNet, about the $\lw=1$ level ($+0.06\%$ from it,
+better on 6 of 19 sets) and 0.31--0.61\% behind $\lw=3$ on every set.
+\begin{itemize}
+\item \textbf{The good news:} a wheel-only history encoder buys the $\lw=1$ wheel accuracy with no pick cost.
+\item \textbf{The limit:} it adds nothing beyond that. The extra gain at $\lw=3$ came from reshaping PickNet's
+shared parts, which a separate history summary does not reproduce. So the wheel head was not short of history
+information.
+\item \textbf{Still open:} whether PickNet's features help the wheel task at all. On MSH, the multi-set WheelNet,
+which uses no PickNet, is still the best wheel model (0.4188, vs.\ 0.4224 for TableNet's best). The next test is an
+ablation ladder that removes PickNet's history, then its representations, then its card table from the wheel head.
+\end{itemize}
 
 \section{Reproducing}
 

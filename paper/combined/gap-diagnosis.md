@@ -323,3 +323,24 @@ gains nothing past w=1.
 3. **A two-pass w=0 control**, so the w1_ep2 pick comparison becomes like-for-like.
 4. **Distillation from the multi-set WheelNet** and **D3 (where the gap is)**, as before. BLB, ECL, HOB and SOS
    remain the hard sets in every run.
+
+### Step 3, run A: own wheel history encoder, wheel loss kept out of PickNet (`tablenet_whist_all.json`)
+
+Settings: `whist_layers=2 wheel_block=all wheel_w=1`. The wheel loss trains only the wheel head and the new
+1.93M-parameter wheel history encoder.
+
+- **Picks:** identical to the w=0 control, as designed (top-1 +0.002 points, range −0.006 to +0.017; NLL
+  +0.000005).
+- **Wheels:** +0.26% mean against the per-set WheelNet (median +0.13%; 6 of 16 at or past parity, 14 within 1%).
+  - Against w=1 (shared PickNet): +0.06% on average, better on only 6 of 19 sets.
+  - Against w=3: 0.31–0.61% worse on every set.
+  - MSH: 0.4246.
+
+**Reading.** A wheel-only history encoder reaches about the w=1 wheel level with zero pick cost. Before, that level
+cost picks 0.01 points. But it adds nothing beyond w=1. The gain from w=3 came from reshaping PickNet's shared
+parts, and a second, separate history summary does not reproduce it. This is evidence that the wheel head is not
+short of history information. Run B (the same encoder, with the wheel loss allowed into PickNet's card table and
+decoder at w=3) was paused at the user's request before it started.
+
+The scorer now also reports pick AUC (pooled over candidates, and within-pack) on non-forced picks. Earlier runs
+predate it; re-scoring their checkpoints would put every run on AUC.
