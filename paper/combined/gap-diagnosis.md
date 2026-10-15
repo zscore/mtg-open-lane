@@ -205,3 +205,18 @@ are dominated by noise, so there is no batch-level fight.
   don't split the decoder blocks; that is where the tasks already agree.
 - This also fits H4 and the "signal features" fix (C). The wheel head needs a summary of the table that the
   history encoder isn't built to provide.
+
+### D0, part 2: pick-only control, w=0 (2026-10-15; `tablenet_joint_w0.json`)
+
+Same fine-tune, no wheel loss. Pick top-1, w0 vs the runs with the wheel loss:
+- **w=0.3:** −0.001 points (identical).
+- **w=1:** −0.010 points mean (lower on 17 of 19 sets). Pick NLL is higher on 18 of 19 sets, but only by +0.0002
+  nats on average.
+
+What this means:
+- **The wheel loss does not help picks (no positive transfer).** The FRA (+0.29) and HOB (+0.21) gains seen in
+  step 2 also appear in w0, so they come from training the whole network on those drafts for the first time.
+- **At w=1 there is a measurable but negligible pick cost.** It is consistent in sign across sets and
+  far below the 0.1-point bar. It matches D1: a mild conflict in the history encoder.
+- **Sharing is nearly free.** One network matches the per-set WheelNet (+0.19%) at a pick cost of 0.01
+  points. The open question is where this costs more as w rises (the w=3 run).
